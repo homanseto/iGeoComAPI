@@ -2,10 +2,9 @@
 
 namespace iGeoComAPI.Services
 {
-    public interface IGrabberAPI
+    public interface IGrabberAPI<T>
     {
         Task<List<IGeoComModel>?> GetWebSiteItems();
-        List<IGeoComModel> MergeEnAndZh(List<SevenElevenModel> enResult, List<SevenElevenModel> zhResult);
-        Task SaveDataBase();
+        List<IGeoComModel> MergeEnAndZh(List<T> enResult, List<T> zhResult);
     }
 }

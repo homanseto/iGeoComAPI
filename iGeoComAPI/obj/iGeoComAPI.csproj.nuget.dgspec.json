@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Project\\iGeoComAPI\\iGeoComAPI\\iGeoComAPI.csproj": {}
+    "C:\\Users\\user\\Desktop\\Seto\\coding\\iGeoComAPI\\iGeoComAPI\\iGeoComAPI.csproj": {}
   },
   "projects": {
-    "D:\\Project\\iGeoComAPI\\iGeoComAPI\\iGeoComAPI.csproj": {
+    "C:\\Users\\user\\Desktop\\Seto\\coding\\iGeoComAPI\\iGeoComAPI\\iGeoComAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Project\\iGeoComAPI\\iGeoComAPI\\iGeoComAPI.csproj",
+        "projectUniqueName": "C:\\Users\\user\\Desktop\\Seto\\coding\\iGeoComAPI\\iGeoComAPI\\iGeoComAPI.csproj",
         "projectName": "iGeoComAPI",
-        "projectPath": "D:\\Project\\iGeoComAPI\\iGeoComAPI\\iGeoComAPI.csproj",
-        "packagesPath": "C:\\Users\\ehmseto_01\\.nuget\\packages\\",
-        "outputPath": "D:\\Project\\iGeoComAPI\\iGeoComAPI\\obj\\",
+        "projectPath": "C:\\Users\\user\\Desktop\\Seto\\coding\\iGeoComAPI\\iGeoComAPI\\iGeoComAPI.csproj",
+        "packagesPath": "C:\\Users\\user\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\user\\Desktop\\Seto\\coding\\iGeoComAPI\\iGeoComAPI\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\ehmseto_01\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\user\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -65,6 +65,10 @@
               "version": "[6.0.0, )"
             },
             "Microsoft.Extensions.DependencyInjection": {
+              "target": "Package",
+              "version": "[6.0.0, )"
+            },
+            "Microsoft.Extensions.Http": {
               "target": "Package",
               "version": "[6.0.0, )"
             },

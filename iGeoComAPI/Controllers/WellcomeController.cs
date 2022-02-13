@@ -9,17 +9,15 @@ namespace iGeoComAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class SevenElevenController : ControllerBase
-
+    public class WellcomeController : ControllerBase
     {
-       // private readonly ConfigurationManager _configuration;
-        private readonly ILogger<SevenElevenController> _logger;
-        private readonly SevenElevenGrabber _sevenElevenGrabber;
+        private readonly ILogger<WellcomeController> _logger;
+        private readonly WellcomeGrabber _wellcomeGrabber;
         private readonly DataAccess _dataAccess;
         private readonly IOptions<DataSQLOptions> _options;
-        public SevenElevenController(SevenElevenGrabber sevenElevenGrabber, ILogger<SevenElevenController> logger, DataAccess dataAccess, IOptions<DataSQLOptions> options)
+        public WellcomeController(WellcomeGrabber wellcomeGrabber, ILogger<WellcomeController> logger, DataAccess dataAccess, IOptions<DataSQLOptions> options)
         {
-            _sevenElevenGrabber = sevenElevenGrabber;
+            _wellcomeGrabber = wellcomeGrabber;
             _logger = logger;
             _options = options;
             _dataAccess = dataAccess;
@@ -28,12 +26,9 @@ namespace iGeoComAPI.Controllers
         [HttpGet]
         public async Task<List<IGeoComModel>?> Get()
         {
-            var result = await _sevenElevenGrabber.GetWebSiteItems();
+            var result = await _wellcomeGrabber.GetWebSiteItems();
             _dataAccess.SaveGrabbedData(_options.Value.InsertSql, result);
             return result;
         }
-
-        
     }
-
 }

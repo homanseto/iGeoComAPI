@@ -1,16 +1,22 @@
 ﻿using Dapper;
 using iGeoComAPI.Models;
+using iGeoComAPI.Options;
+using Microsoft.Extensions.Options;
 using MySql.Data.MySqlClient;
 using System.Data;
-using System.Text;
 
 namespace iGeoComAPI.Utilities
 {
     public class DataAccess
     {
-        public async Task<List<IGeoComModel>> LoadData(string sql, string connectionString)
+        private readonly IOptions<ConnectionStringsOptions> _options;
+        public DataAccess(IOptions<ConnectionStringsOptions> options)
         {
-            using (IDbConnection connection = new MySqlConnection(connectionString))
+            _options = options;
+        }
+        public async Task<List<IGeoComModel>> LoadData(string sql)
+        {
+            using (IDbConnection connection = new MySqlConnection(_options.Value.Default))
             {
                 var rows = await connection.QueryAsync<IGeoComModel>(sql);
 
@@ -18,9 +24,9 @@ namespace iGeoComAPI.Utilities
             }
         }
 
-        public void SaveGrabbedData(string sql, List<IGeoComModel> parameters, string connectionString)
+        public void SaveGrabbedData(string sql, List<IGeoComModel> parameters)
         {
-            using (IDbConnection connection = new MySqlConnection(connectionString))
+            using (IDbConnection connection = new MySqlConnection(_options.Value.Default))
             {
                 foreach(var param in parameters)
                 {
