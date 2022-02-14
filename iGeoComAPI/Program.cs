@@ -15,6 +15,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 //builder.Services.AddHttpClient();
 builder.Services.AddSingleton<SevenElevenGrabber>();
+builder.Services.AddSingleton<WellcomeGrabber>();
 builder.Services.AddSingleton<ConnectClient>();
 builder.Services.AddSingleton<SerializeFunction>();
 builder.Services.AddSingleton<Regexs>();
