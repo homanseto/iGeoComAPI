@@ -11,24 +11,32 @@ namespace iGeoComAPI.Controllers
     [ApiController]
     public class WellcomeController : ControllerBase
     {
+        private string InsertSql = "INSERT INTO igeocomtable VALUES (@GEONAMEID,@ENGLISHNAME,@CHINESENAME,@ClASS,@TYPE, @SUBCAT,@EASTING,@NORTHING,@SOURCE,@E_FLOOR,@C_FLOOR,@E_SITENAME,@C_SITENAME,@E_AREA,@C_AREA,@E_DISTRICT,@C_DISTRICT,@E_REGION,@C_REGION,@E_ADDRESS,@C_ADDRESS,@TEL_NO,@FAX_NO,@WEB_SITE,@REV_DATE,@GRAB_ID,@Latitude,@Longitude);";
+        private string SelectWellcome = "SELECT * FROM igeocomtable WHERE GRAB_ID LIKE '%wellcome%'";
+
         private readonly ILogger<WellcomeController> _logger;
         private readonly WellcomeGrabber _wellcomeGrabber;
         private readonly DataAccess _dataAccess;
-        private readonly IOptions<DataSQLOptions> _options;
-        public WellcomeController(WellcomeGrabber wellcomeGrabber, ILogger<WellcomeController> logger, DataAccess dataAccess, IOptions<DataSQLOptions> options)
+        public WellcomeController(WellcomeGrabber wellcomeGrabber, ILogger<WellcomeController> logger, DataAccess dataAccess)
         {
             _wellcomeGrabber = wellcomeGrabber;
             _logger = logger;
-            _options = options;
             _dataAccess = dataAccess;
         }
 
         [HttpGet]
         public async Task<List<IGeoComModel>?> Get()
         {
-            var result = await _wellcomeGrabber.GetWebSiteItems();
-            _dataAccess.SaveGrabbedData(_options.Value.InsertSql, result);
+            var result  = await _dataAccess.LoadData<IGeoComModel>(SelectWellcome);
             return result;
+        }
+
+        [HttpPost]
+        public async Task<List<IGeoComModel?>> Create()
+        {
+            var GrabbedResult =await _wellcomeGrabber.GetWebSiteItems();
+            _dataAccess.SaveGrabbedData(InsertSql, GrabbedResult);
+            return GrabbedResult;
         }
     }
 }

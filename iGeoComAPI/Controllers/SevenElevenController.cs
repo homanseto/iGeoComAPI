@@ -12,16 +12,15 @@ namespace iGeoComAPI.Controllers
     public class SevenElevenController : ControllerBase
 
     {
-       // private readonly ConfigurationManager _configuration;
+        private string InsertSql = "INSERT INTO igeocomtable VALUES (@GEONAMEID,@ENGLISHNAME,@CHINESENAME,@ClASS,@TYPE, @SUBCAT,@EASTING,@NORTHING,@SOURCE,@E_FLOOR,@C_FLOOR,@E_SITENAME,@C_SITENAME,@E_AREA,@C_AREA,@E_DISTRICT,@C_DISTRICT,@E_REGION,@C_REGION,@E_ADDRESS,@C_ADDRESS,@TEL_NO,@FAX_NO,@WEB_SITE,@REV_DATE,@GRAB_ID,@Latitude,@Longitude);";
+        // private readonly ConfigurationManager _configuration;
         private readonly ILogger<SevenElevenController> _logger;
         private readonly SevenElevenGrabber _sevenElevenGrabber;
         private readonly DataAccess _dataAccess;
-        private readonly IOptions<DataSQLOptions> _options;
-        public SevenElevenController(SevenElevenGrabber sevenElevenGrabber, ILogger<SevenElevenController> logger, DataAccess dataAccess, IOptions<DataSQLOptions> options)
+        public SevenElevenController(SevenElevenGrabber sevenElevenGrabber, ILogger<SevenElevenController> logger, DataAccess dataAccess)
         {
             _sevenElevenGrabber = sevenElevenGrabber;
             _logger = logger;
-            _options = options;
             _dataAccess = dataAccess;
         }
 
@@ -29,7 +28,7 @@ namespace iGeoComAPI.Controllers
         public async Task<List<IGeoComModel>?> Get()
         {
             var result = await _sevenElevenGrabber.GetWebSiteItems();
-            _dataAccess.SaveGrabbedData(_options.Value.InsertSql, result);
+            _dataAccess.SaveGrabbedData(InsertSql, result);
             return result;
         }
 

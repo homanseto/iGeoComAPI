@@ -2,9 +2,9 @@
 
 namespace iGeoComAPI.Utilities
 {
-    public class Regexs
+    public static class Regexs
     {
-        public Regex ExtractLagLong()
+        public static Regex ExtractLagLong()
         {
             string regMatch = "([^|]*)";
             Regex reg = new Regex(regMatch);

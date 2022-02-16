@@ -14,17 +14,17 @@ namespace iGeoComAPI.Utilities
         {
             _options = options;
         }
-        public async Task<List<IGeoComModel>> LoadData(string sql)
+        public async Task<List<T>> LoadData<T>(string sql)
         {
             using (IDbConnection connection = new MySqlConnection(_options.Value.Default))
             {
-                var rows = await connection.QueryAsync<IGeoComModel>(sql);
+                var rows = await connection.QueryAsync<T>(sql);
 
                 return rows.ToList();
             }
         }
 
-        public void SaveGrabbedData(string sql, List<IGeoComModel> parameters)
+        public void SaveGrabbedData<T>(string sql, List<T> parameters)
         {
             using (IDbConnection connection = new MySqlConnection(_options.Value.Default))
             {

@@ -8,7 +8,6 @@ namespace iGeoComAPI.Services
     public class WellcomeGrabber
     {
         private readonly PuppeteerConnection _puppeteerConnection;
-        private readonly Regexs _regexs;
         private readonly IOptions<WellcomeOptions> _options;
         private readonly string infoCode = @"() =>{
                                  const selectors = Array.from(document.querySelectorAll('.table-responsive > .table-striped > tbody > tr'));
@@ -18,10 +17,9 @@ namespace iGeoComAPI.Services
                                    }});
                                  }";
 
-        public WellcomeGrabber(PuppeteerConnection puppeteerConnection, Regexs regexs, IOptions<WellcomeOptions> options)
+        public WellcomeGrabber(PuppeteerConnection puppeteerConnection, IOptions<WellcomeOptions> options)
         {
             _puppeteerConnection = puppeteerConnection;
-            _regexs = regexs;
             _options = options;
         }
 
@@ -34,7 +32,7 @@ namespace iGeoComAPI.Services
 
         public List<IGeoComModel> MergeEnAndZh(WellcomeModel[] enResult, WellcomeModel[] zhResult)
         {
-            var _rgx = _regexs.ExtractLagLong();
+            var _rgx = Regexs.ExtractLagLong();
             List<IGeoComModel> WellcomeIGeoComList = new List<IGeoComModel>();
             foreach (var shopEn in enResult)
             {
@@ -45,6 +43,8 @@ namespace iGeoComAPI.Services
                 WellcomeIGeoCom.Latitude = matchesEn[0].Value;
                 WellcomeIGeoCom.Longitude = matchesEn[2].Value;
                 WellcomeIGeoCom.Tel_No = shopEn.Phone;
+                WellcomeIGeoCom.Web_Site = _options.Value.BaseUrl;
+                WellcomeIGeoCom.Grab_ID = $"wellcome_{shopEn.LatLng}{shopEn.Phone}{shopEn.Name}".Replace(" ", "").Replace("|", "").Replace(".","");
                 foreach (var shopZh in zhResult)
                 {
                     var matchesZh = _rgx.Matches(shopZh.LatLng!);

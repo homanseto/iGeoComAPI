@@ -11,7 +11,6 @@ namespace iGeoComAPI.Services
         //private readonly IOptions<SevenElevenOptions> _options;
         private readonly ConnectClient _httpClient;
         private readonly SerializeFunction _serializeFunction;   
-        private readonly Regexs _regexs;
         private readonly IOptions<SevenElevenOptions> _options;
 
         /*
@@ -22,11 +21,10 @@ namespace iGeoComAPI.Services
         }
         */
         
-        public SevenElevenGrabber(ConnectClient httpClient, SerializeFunction serializeFunction, Regexs regexs, IOptions<SevenElevenOptions> options)
+        public SevenElevenGrabber(ConnectClient httpClient, SerializeFunction serializeFunction, IOptions<SevenElevenOptions> options)
         {
             _httpClient = httpClient;
             _serializeFunction = serializeFunction;
-            _regexs = regexs;
             _options = options;
         }
         
@@ -56,7 +54,7 @@ namespace iGeoComAPI.Services
 
         public List<IGeoComModel> MergeEnAndZh(List<SevenElevenModel> enResult, List<SevenElevenModel> zhResult)
         {
-            var _rgx = _regexs.ExtractLagLong();
+            var _rgx = Regexs.ExtractLagLong();
             List<IGeoComModel> SevenElevenIGeoComList = new List<IGeoComModel>();
             if (enResult != null && zhResult != null)
             {
@@ -77,7 +75,7 @@ namespace iGeoComAPI.Services
                     {
                         sevenElevenIGeoCom.Subcat = "false";
                     }
-                    sevenElevenIGeoCom.Grab_ID = $"sevenEleven{shopEn.LatLng}";
+                    sevenElevenIGeoCom.Grab_ID = $"seveneleven_{shopEn.Address?.Replace(" ","").Replace("/","").Replace(",","").Replace(".","")}";
                     sevenElevenIGeoCom.Web_Site = _options.Value.BaseUrl;
 
                     foreach (SevenElevenModel shopZh in zhResult)

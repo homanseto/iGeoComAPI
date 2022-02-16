@@ -15,9 +15,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 //builder.Services.AddHttpClient();
 builder.Services.AddSingleton<SevenElevenGrabber>();
+builder.Services.AddSingleton<WellcomeGrabber>();
 builder.Services.AddSingleton<ConnectClient>();
 builder.Services.AddSingleton<SerializeFunction>();
-builder.Services.AddSingleton<Regexs>();
 builder.Services.AddSingleton<DataAccess>();
 builder.Services.AddSingleton<PuppeteerConnection>();
 builder.Services.Configure<SevenElevenOptions>(_configuration.GetSection(SevenElevenOptions.SectionName));
@@ -25,8 +25,6 @@ builder.Services.Configure<ConnectionStringsOptions>(_configuration.GetSection(C
 builder.Services.Configure<DataSQLOptions>(_configuration.GetSection(DataSQLOptions.SectionName));
 builder.Services.Configure<WellcomeOptions>(_configuration.GetSection(WellcomeOptions.SectionName));
 builder.Services.AddOptions(); //IOptions<T>
-
-
 
 
 var app = builder.Build();
