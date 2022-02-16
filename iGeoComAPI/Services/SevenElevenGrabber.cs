@@ -2,6 +2,7 @@
 using iGeoComAPI.Utilities;
 using Microsoft.Extensions.Options;
 using iGeoComAPI.Options;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace iGeoComAPI.Services
 {
@@ -12,6 +13,7 @@ namespace iGeoComAPI.Services
         private readonly ConnectClient _httpClient;
         private readonly SerializeFunction _serializeFunction;   
         private readonly IOptions<SevenElevenOptions> _options;
+        private readonly IMemoryCache _memoryCache;
 
         /*
         public SevenElevenGrabber(HttpClient client, IOptions<SevenElevenOptions> options)
@@ -20,12 +22,13 @@ namespace iGeoComAPI.Services
             _options = options;
         }
         */
-        
-        public SevenElevenGrabber(ConnectClient httpClient, SerializeFunction serializeFunction, IOptions<SevenElevenOptions> options)
+
+        public SevenElevenGrabber(ConnectClient httpClient, SerializeFunction serializeFunction, IOptions<SevenElevenOptions> options, IMemoryCache memoryCache)
         {
             _httpClient = httpClient;
             _serializeFunction = serializeFunction;
             _options = options;
+            _memoryCache = memoryCache;
         }
         
         //HttpClient _HttpClient = new HttpClient();
@@ -37,12 +40,9 @@ namespace iGeoComAPI.Services
                 var enSerializedResult = await _serializeFunction.Diserialize<SevenElevenModel>(enConnectHttp);
                 var zhConnectHttp = await _httpClient.SendAsync(_options.Value.ZhUrl);
                 var zhSerializedResult = await _serializeFunction.Diserialize<SevenElevenModel>(zhConnectHttp);
-                var result = MergeEnAndZh(enSerializedResult, zhSerializedResult);
-
-               // _dataAccess.SaveGrabbedData("INSERT INTO igeocomtable VALUES (@GEONAMEID,@ENGLISHNAME,@CHINESENAME,@ClASS,@TYPE, @SUBCAT,@EASTING,@NORTHING,@SOURCE,@E_FLOOR,@C_FLOOR,@E_SITENAME,@C_SITENAME,@E_AREA,@C_AREA,@E_DISTRICT,@C_DISTRICT,@E_REGION,@C_REGION,@E_ADDRESS,@C_ADDRESS,@TEL_NO,@FAX_NO,@WEB_SITE,@REV_DATE,@GRAB_ID,@Latitude,@Longitude)", result, "Server=127.0.0.1;Port=3306;database=igeocom; user id=root; password=YouMeK100");
-
-                return result;
-
+                var mergeResult = MergeEnAndZh(enSerializedResult, zhSerializedResult);
+                _memoryCache.Set("iGeoCom", mergeResult, TimeSpan.FromHours(2));
+                return mergeResult;
             }
             catch (Exception ex)
             {

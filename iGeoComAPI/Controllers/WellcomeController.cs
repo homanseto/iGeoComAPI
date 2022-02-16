@@ -31,6 +31,14 @@ namespace iGeoComAPI.Controllers
             return result;
         }
 
+        [HttpGet("cache")]
+        public List<IGeoComModel>? GetTodoItem()
+        {
+            var result = _dataAccess.LoadDataCache<IGeoComModel>();
+            return result.Where(r => r.Grab_ID.Contains("wellcome")).ToList();
+
+        }
+
         [HttpPost]
         public async Task<List<IGeoComModel?>> Create()
         {

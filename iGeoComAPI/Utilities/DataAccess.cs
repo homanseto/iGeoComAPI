@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using iGeoComAPI.Models;
 using iGeoComAPI.Options;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using MySql.Data.MySqlClient;
 using System.Data;
@@ -10,9 +11,12 @@ namespace iGeoComAPI.Utilities
     public class DataAccess
     {
         private readonly IOptions<ConnectionStringsOptions> _options;
-        public DataAccess(IOptions<ConnectionStringsOptions> options)
+        private readonly IMemoryCache _memoryCache;
+
+        public DataAccess(IOptions<ConnectionStringsOptions> options, IMemoryCache memoryCache)
         {
             _options = options;
+            _memoryCache = memoryCache;
         }
         public async Task<List<T>> LoadData<T>(string sql)
         {
@@ -22,6 +26,23 @@ namespace iGeoComAPI.Utilities
 
                 return rows.ToList();
             }
+        }
+
+        public List<T> LoadDataCache<T>()
+        {
+            List<T> output;
+            output = _memoryCache.Get<List<T>>("iGeoCom");
+            /*
+            if(output is null)
+            {
+                // get result fro memory
+
+                //how much and how long you save data in cache
+                _memoryCache.Set("iGeoCom", output, TimeSpan.FromMinutes(1));
+
+            }
+            */
+            return output;
         }
 
         public void SaveGrabbedData<T>(string sql, List<T> parameters)

@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "9orpUsIaD0vjjGN0dXgP5ricqCfA9fYG+RGL6XQtFf54CU9To+3B19efqKJEONZXrtfzNuqMISG2OieeYKyA4Q==",
+  "dgSpecHash": "aNsFOXsQRkdrKEk5mGzVGGNMOIhaOjvGw9/jiPbi5Bvh7mp1AhGD0K1wyNDgDFV45N7pxtqx8LDE0M7UPFbdJw==",
   "success": true,
   "projectFilePath": "C:\\Users\\user\\Desktop\\Seto\\coding\\iGeoComAPI\\iGeoComAPI\\iGeoComAPI.csproj",
   "expectedPackageFiles": [
@@ -15,6 +15,8 @@
     "C:\\Users\\user\\.nuget\\packages\\microsoft.aspnetcore.webutilities\\2.0.2\\microsoft.aspnetcore.webutilities.2.0.2.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\1.1.0\\microsoft.bcl.asyncinterfaces.1.1.0.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\microsoft.extensions.apidescription.server\\3.0.0\\microsoft.extensions.apidescription.server.3.0.0.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\microsoft.extensions.caching.abstractions\\6.0.0\\microsoft.extensions.caching.abstractions.6.0.0.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\microsoft.extensions.caching.memory\\6.0.1\\microsoft.extensions.caching.memory.6.0.1.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\microsoft.extensions.configuration\\6.0.0\\microsoft.extensions.configuration.6.0.0.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\microsoft.extensions.configuration.abstractions\\6.0.0\\microsoft.extensions.configuration.abstractions.6.0.0.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\microsoft.extensions.configuration.fileextensions\\6.0.0\\microsoft.extensions.configuration.fileextensions.6.0.0.nupkg.sha512",
