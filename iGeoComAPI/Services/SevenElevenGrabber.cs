@@ -41,7 +41,7 @@ namespace iGeoComAPI.Services
                 var zhConnectHttp = await _httpClient.SendAsync(_options.Value.ZhUrl);
                 var zhSerializedResult = await _serializeFunction.Diserialize<SevenElevenModel>(zhConnectHttp);
                 var mergeResult = MergeEnAndZh(enSerializedResult, zhSerializedResult);
-                _memoryCache.Set("iGeoCom", mergeResult, TimeSpan.FromHours(2));
+               // _memoryCache.Set("iGeoCom", mergeResult, TimeSpan.FromHours(2));
                 return mergeResult;
             }
             catch (Exception ex)
@@ -61,19 +61,21 @@ namespace iGeoComAPI.Services
                 foreach (SevenElevenModel shopEn in enResult)
                 {
                     IGeoComModel sevenElevenIGeoCom = new IGeoComModel();
-                    sevenElevenIGeoCom.E_Address = shopEn.Address;
+                    sevenElevenIGeoCom.E_Address = shopEn.Address?.Replace(",","");
                     sevenElevenIGeoCom.E_Region = shopEn.Region;
                     sevenElevenIGeoCom.E_District = shopEn.District;
                     var matchesEn = _rgx.Matches(shopEn.LatLng!);
                     sevenElevenIGeoCom.Latitude = matchesEn[0].Value;
                     sevenElevenIGeoCom.Longitude = matchesEn[2].Value;
+                    sevenElevenIGeoCom.Class = "CMF";
+                    sevenElevenIGeoCom.Type = "CVS";
                     if (shopEn.Opening_24 == "1")
                     {
-                        sevenElevenIGeoCom.Subcat = "true";
+                        sevenElevenIGeoCom.Subcat = " ";
                     }
                     else
                     {
-                        sevenElevenIGeoCom.Subcat = "false";
+                        sevenElevenIGeoCom.Subcat = "NON24R";
                     }
                     sevenElevenIGeoCom.Grab_ID = $"seveneleven_{shopEn.Address?.Replace(" ", "").Replace("/", "").Replace(",", "").Replace(".", "")}";
                     sevenElevenIGeoCom.Web_Site = _options.Value.BaseUrl;
@@ -85,8 +87,18 @@ namespace iGeoComAPI.Services
                         {
                             if (sevenElevenIGeoCom.Latitude == matchesZh[0].Value && sevenElevenIGeoCom.Longitude == matchesZh[2].Value)
                             {
-                                sevenElevenIGeoCom.C_Address = shopZh.Address;
-                                sevenElevenIGeoCom.C_Region = shopZh.Region;
+                                sevenElevenIGeoCom.C_Address = shopZh.Address?.Replace(",", "");
+                                if(shopZh.Region == "Kowloon")
+                                {
+                                    sevenElevenIGeoCom.C_Region = "九龍";
+                                }else if(shopZh.Region == "New Territories")
+                                {
+                                    sevenElevenIGeoCom.C_Region = "新界";
+                                }
+                                else
+                                {
+                                    sevenElevenIGeoCom.C_Region = "香港";
+                                }
                                 sevenElevenIGeoCom.C_District = shopZh.District;
                                 continue;
                             }

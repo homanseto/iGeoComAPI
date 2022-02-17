@@ -28,6 +28,7 @@ namespace iGeoComAPI.Controllers
         public async Task<List<IGeoComModel>?> Get()
         {
             var result = await _dataAccess.LoadData<IGeoComModel>(SelectSevenEleven);
+            CsvFile.DownloadCsv(result, "SevenEleven_Grabbed_Result");
             return result;
         }
 

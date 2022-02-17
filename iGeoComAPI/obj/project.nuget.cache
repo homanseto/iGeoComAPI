@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "vakjDrAIHRlyLiVixWJVZvzPyhFKyCjscyy3837yf31LHJ1+g9b3an1i44f3I228BM/KXBfPJCdXd/XF6HGGZA==",
+  "dgSpecHash": "8mRRjAyxYGeaO+v+/z9eA486zCAMgDnnGe7f7D250lCnY4T/Ic2Y2pEXVZ0PbI3wbm7CwUoGGsnvIQgYWnTi3w==",
   "success": true,
-  "projectFilePath": "C:\\Users\\user\\Desktop\\Seto\\coding\\iGeoComAPI\\iGeoComAPI\\iGeoComAPI.csproj",
+  "projectFilePath": "C:\\Users\\user\\Desktop\\Seto\\3DM\\iGeoComAPI\\iGeoComAPI\\iGeoComAPI.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\user\\.nuget\\packages\\autofac\\6.3.0\\autofac.6.3.0.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\dapper\\2.0.123\\dapper.2.0.123.nupkg.sha512",

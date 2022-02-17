@@ -31,7 +31,7 @@ namespace iGeoComAPI.Services
            var enResult = await _puppeteerConnection.PuppeteerGrabber<WellcomeModel>(_options.Value.EnUrl, infoCode);
            var zhResult = await _puppeteerConnection.PuppeteerGrabber<WellcomeModel>(_options.Value.ZhUrl, infoCode);
            var mergeResult = MergeEnAndZh(enResult, zhResult);
-           _memoryCache.Set("iGeoCom", mergeResult, TimeSpan.FromHours(2));
+           //_memoryCache.Set("iGeoCom", mergeResult, TimeSpan.FromHours(2));
             return mergeResult;
 
         }
@@ -43,13 +43,15 @@ namespace iGeoComAPI.Services
             foreach (var shopEn in enResult)
             {
                 IGeoComModel WellcomeIGeoCom = new IGeoComModel();
-                WellcomeIGeoCom.E_Address = shopEn.Address;
-                WellcomeIGeoCom.EnglishName = shopEn.Name;
+                WellcomeIGeoCom.E_Address = shopEn.Address?.Replace(",", "");
+                WellcomeIGeoCom.EnglishName = $"Wellcome Supermarket-{shopEn.Name}";
                 var matchesEn = _rgx.Matches(shopEn.LatLng!);
                 WellcomeIGeoCom.Latitude = matchesEn[0].Value;
                 WellcomeIGeoCom.Longitude = matchesEn[2].Value;
                 WellcomeIGeoCom.Tel_No = shopEn.Phone;
                 WellcomeIGeoCom.Web_Site = _options.Value.BaseUrl;
+                WellcomeIGeoCom.Class = "CMF";
+                WellcomeIGeoCom.Type = "SMK";
                 WellcomeIGeoCom.Grab_ID = $"wellcome_{shopEn.LatLng}{shopEn.Phone}{shopEn.Name}".Replace(" ", "").Replace("|", "").Replace(".","");
                 foreach (var shopZh in zhResult)
                 {
@@ -58,8 +60,8 @@ namespace iGeoComAPI.Services
                     {
                         if (WellcomeIGeoCom.Latitude == matchesZh[0].Value && WellcomeIGeoCom.Longitude == matchesZh[2].Value && WellcomeIGeoCom.Tel_No == shopZh.Phone)
                         {
-                            WellcomeIGeoCom.C_Address = shopZh.Address;
-                            WellcomeIGeoCom.ChineseName = shopZh.Name;
+                            WellcomeIGeoCom.C_Address = shopZh.Address?.Replace(",", "");
+                            WellcomeIGeoCom.ChineseName = $"惠康超級市場-{shopZh.Name}";
                             continue;
                         }
                     }
@@ -69,6 +71,12 @@ namespace iGeoComAPI.Services
             return WellcomeIGeoComList;
         }
 
+        /*
+        public List<IGeoComModel> DeltaChange()
+        {
+
+        }
+        */
 
     }
 }

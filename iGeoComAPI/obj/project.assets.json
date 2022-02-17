@@ -6232,11 +6232,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\user\\Desktop\\Seto\\coding\\iGeoComAPI\\iGeoComAPI\\iGeoComAPI.csproj",
+      "projectUniqueName": "C:\\Users\\user\\Desktop\\Seto\\3DM\\iGeoComAPI\\iGeoComAPI\\iGeoComAPI.csproj",
       "projectName": "iGeoComAPI",
-      "projectPath": "C:\\Users\\user\\Desktop\\Seto\\coding\\iGeoComAPI\\iGeoComAPI\\iGeoComAPI.csproj",
+      "projectPath": "C:\\Users\\user\\Desktop\\Seto\\3DM\\iGeoComAPI\\iGeoComAPI\\iGeoComAPI.csproj",
       "packagesPath": "C:\\Users\\user\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\user\\Desktop\\Seto\\coding\\iGeoComAPI\\iGeoComAPI\\obj\\",
+      "outputPath": "C:\\Users\\user\\Desktop\\Seto\\3DM\\iGeoComAPI\\iGeoComAPI\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\user\\AppData\\Roaming\\NuGet\\NuGet.Config",
