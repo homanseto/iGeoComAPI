@@ -23,7 +23,6 @@ builder.Services.AddSingleton<PuppeteerConnection>();
 builder.Services.AddMemoryCache();
 builder.Services.Configure<SevenElevenOptions>(_configuration.GetSection(SevenElevenOptions.SectionName));
 builder.Services.Configure<ConnectionStringsOptions>(_configuration.GetSection(ConnectionStringsOptions.SectionName));
-builder.Services.Configure<DataSQLOptions>(_configuration.GetSection(DataSQLOptions.SectionName));
 builder.Services.Configure<WellcomeOptions>(_configuration.GetSection(WellcomeOptions.SectionName));
 builder.Services.AddOptions(); //IOptions<T>
 

@@ -3,8 +3,8 @@ using iGeoComAPI.Models;
 using iGeoComAPI.Options;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
-using MySql.Data.MySqlClient;
-using System.Data;
+using System.Data.SqlClient;
+
 
 namespace iGeoComAPI.Utilities
 {
@@ -20,7 +20,7 @@ namespace iGeoComAPI.Utilities
         }
         public async Task<List<T>> LoadData<T>(string sql)
         {
-            using (IDbConnection connection = new MySqlConnection(_options.Value.Default))
+            using (SqlConnection connection = new SqlConnection(_options.Value.DefaultConnection))
             {
                 var rows = await connection.QueryAsync<T>(sql);
 
@@ -47,7 +47,7 @@ namespace iGeoComAPI.Utilities
 
         public void SaveGrabbedData<T>(string sql, List<T> parameters)
         {
-            using (IDbConnection connection = new MySqlConnection(_options.Value.Default))
+            using (SqlConnection connection = new SqlConnection(_options.Value.DefaultConnection))
             {
                 foreach(var param in parameters)
                 {
