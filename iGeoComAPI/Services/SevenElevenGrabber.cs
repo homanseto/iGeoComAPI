@@ -75,7 +75,7 @@ namespace iGeoComAPI.Services
                     {
                         sevenElevenIGeoCom.Subcat = "false";
                     }
-                    sevenElevenIGeoCom.Grab_ID = $"seveneleven_{shopEn.Address?.Replace(" ","").Replace("/","").Replace(",","").Replace(".","")}";
+                    sevenElevenIGeoCom.Grab_ID = $"seveneleven_{shopEn.Address?.Replace(" ", "").Replace("/", "").Replace(",", "").Replace(".", "")}";
                     sevenElevenIGeoCom.Web_Site = _options.Value.BaseUrl;
 
                     foreach (SevenElevenModel shopZh in zhResult)
@@ -96,7 +96,7 @@ namespace iGeoComAPI.Services
 
                 }
             }
-            return SevenElevenIGeoComList;
+            return SevenElevenIGeoComList.Where(shop => shop.E_Region != "Macau").ToList();
         }
     }
 }
