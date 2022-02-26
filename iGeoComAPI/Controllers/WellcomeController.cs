@@ -13,7 +13,7 @@ namespace iGeoComAPI.Controllers
     {
         private string InsertSql = "INSERT INTO igeocomtable VALUES (@GEONAMEID,@ENGLISHNAME,@CHINESENAME,@ClASS,@TYPE, @SUBCAT,@EASTING,@NORTHING,@SOURCE,@E_FLOOR,@C_FLOOR,@E_SITENAME,@C_SITENAME,@E_AREA,@C_AREA,@E_DISTRICT,@C_DISTRICT,@E_REGION,@C_REGION,@E_ADDRESS,@C_ADDRESS,@TEL_NO,@FAX_NO,@WEB_SITE,@REV_DATE,@GRAB_ID,@Latitude,@Longitude);";
         private string SelectWellcome = "SELECT * FROM igeocomtable WHERE GRAB_ID LIKE '%wellcome%'";
-
+        private string SelectWellcomeFromDataBase = "SELECT * FROM iGeoCom_Dec2021 WHERE ENGLISHNAME LIKE '%wellcome super%' ";
         private readonly ILogger<WellcomeController> _logger;
         private readonly WellcomeGrabber _wellcomeGrabber;
         private readonly DataAccess _dataAccess;
@@ -25,22 +25,70 @@ namespace iGeoComAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<List<IGeoComModel>?> Get()
+        public async Task<List<IGeoComGrabModel>?> Get()
         {
-            var result  = await _dataAccess.LoadData<IGeoComModel>(SelectWellcome);
+            var result  = await _dataAccess.LoadData<IGeoComGrabModel>(SelectWellcome);
             return result;
         }
 
+        /*
         [HttpGet("cache")]
-        public List<IGeoComModel>? GetTodoItem()
+        public List<IGeoComGrabModel>? Get()
         {
-            var result = _dataAccess.LoadDataCache<IGeoComModel>();
+            var result = _dataAccess.LoadDataCache<IGeoComGrabModel>();
             return result.Where(r => r.Grab_ID.Contains("wellcome")).ToList();
+        }
+        */
+        
+        [HttpGet("added")]
+        public async Task<List<IGeoComDeltaModel>?> GetAdded()
+        {
+            var previousResult = await _dataAccess.LoadData<IGeoComModel>(SelectWellcomeFromDataBase);
+            var newResult = await _dataAccess.LoadData<IGeoComGrabModel>(SelectWellcome);
+            var finalResult = _wellcomeGrabber.FindAdded(newResult,previousResult);
+            return finalResult;
+        }
 
+        [HttpGet("removed")]
+        public async Task<List<IGeoComDeltaModel>?> GetRemoved()
+        {
+            var previousResult = await _dataAccess.LoadData<IGeoComModel>(SelectWellcomeFromDataBase);
+            var newResult = await _dataAccess.LoadData<IGeoComGrabModel>(SelectWellcome);
+            var finalResult = _wellcomeGrabber.FindRemoved(previousResult, newResult);
+            return finalResult;
+        }
+
+        [HttpGet("oldmodified")]
+        public async Task<List<IGeoComDeltaModel>?> GetLeft()
+        {
+            var previousResult = await _dataAccess.LoadData<IGeoComModel>(SelectWellcomeFromDataBase);
+            var newResult = await _dataAccess.LoadData<IGeoComGrabModel>(SelectWellcome);
+            var removedResult = _wellcomeGrabber.FindRemoved(previousResult, newResult);
+            var addedResult = _wellcomeGrabber.FindAdded(newResult, previousResult);
+            var leftResult = _wellcomeGrabber.LeftIntersection(newResult, addedResult);
+            var rightResult = _wellcomeGrabber.RightIntersection(previousResult, removedResult);
+            var finalResult = _wellcomeGrabber.orgModified(rightResult, leftResult);
+            return finalResult;
+        }
+
+        [HttpGet("finalresult")]
+        public async Task<List<IGeoComDeltaModel>?> GetRight()
+        {
+            var previousResult = await _dataAccess.LoadData<IGeoComModel>(SelectWellcomeFromDataBase);
+            var newResult = await _dataAccess.LoadData<IGeoComGrabModel>(SelectWellcome);
+            var removedResult = _wellcomeGrabber.FindRemoved(previousResult, newResult);
+            var addedResult = _wellcomeGrabber.FindAdded(newResult, previousResult);
+            var leftResult = _wellcomeGrabber.LeftIntersection(newResult, addedResult);
+            var rightResult = _wellcomeGrabber.RightIntersection(previousResult, removedResult);
+            var orgModified = _wellcomeGrabber.orgModified(rightResult, leftResult);
+            var newModified = _wellcomeGrabber.newModified(leftResult, rightResult);
+            var finalResult = _wellcomeGrabber.MergeResults(addedResult, removedResult, newModified, orgModified);
+            CsvFile.DownloadCsv(finalResult, "Wellcome_Result");
+            return finalResult;
         }
 
         [HttpPost]
-        public async Task<List<IGeoComModel?>> Create()
+        public async Task<List<IGeoComGrabModel?>> Create()
         {
             var GrabbedResult =await _wellcomeGrabber.GetWebSiteItems();
             _dataAccess.SaveGrabbedData(InsertSql, GrabbedResult);

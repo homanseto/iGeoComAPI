@@ -16,6 +16,7 @@ builder.Services.AddSwaggerGen();
 //builder.Services.AddHttpClient();
 builder.Services.AddSingleton<SevenElevenGrabber>();
 builder.Services.AddSingleton<WellcomeGrabber>();
+builder.Services.AddSingleton<WmoovGrabber>();
 builder.Services.AddSingleton<ConnectClient>();
 builder.Services.AddSingleton<SerializeFunction>();
 builder.Services.AddSingleton<DataAccess>();
@@ -24,6 +25,7 @@ builder.Services.AddMemoryCache();
 builder.Services.Configure<SevenElevenOptions>(_configuration.GetSection(SevenElevenOptions.SectionName));
 builder.Services.Configure<ConnectionStringsOptions>(_configuration.GetSection(ConnectionStringsOptions.SectionName));
 builder.Services.Configure<WellcomeOptions>(_configuration.GetSection(WellcomeOptions.SectionName));
+builder.Services.Configure<WmoovOptions>(_configuration.GetSection(WmoovOptions.SectionName));
 builder.Services.AddOptions(); //IOptions<T>
 
 

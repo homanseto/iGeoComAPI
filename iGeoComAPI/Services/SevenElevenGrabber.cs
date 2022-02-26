@@ -32,7 +32,7 @@ namespace iGeoComAPI.Services
         }
         
         //HttpClient _HttpClient = new HttpClient();
-        public async Task<List<IGeoComModel>?> GetWebSiteItems()
+        public async Task<List<IGeoComGrabModel>?> GetWebSiteItems()
         {
             try
             {
@@ -52,17 +52,28 @@ namespace iGeoComAPI.Services
 
         }
 
-        public List<IGeoComModel> MergeEnAndZh(List<SevenElevenModel> enResult, List<SevenElevenModel> zhResult)
+        public List<IGeoComGrabModel> MergeEnAndZh(List<SevenElevenModel> enResult, List<SevenElevenModel> zhResult)
         {
             var _rgx = Regexs.ExtractLagLong();
-            List<IGeoComModel> SevenElevenIGeoComList = new List<IGeoComModel>();
+            List<IGeoComGrabModel> SevenElevenIGeoComList = new List<IGeoComGrabModel>();
             if (enResult != null && zhResult != null)
             {
                 foreach (SevenElevenModel shopEn in enResult)
                 {
-                    IGeoComModel sevenElevenIGeoCom = new IGeoComModel();
+                    IGeoComGrabModel sevenElevenIGeoCom = new IGeoComGrabModel();
                     sevenElevenIGeoCom.E_Address = shopEn.Address?.Replace(",","");
-                    sevenElevenIGeoCom.E_Region = shopEn.Region;
+                    if (shopEn.Region == "Kowloon")
+                    {
+                        sevenElevenIGeoCom.E_Region = "KLN";
+                    }
+                    else if (shopEn.Region == "New Territories")
+                    {
+                        sevenElevenIGeoCom.C_Region = "NT";
+                    }
+                    else
+                    {
+                        sevenElevenIGeoCom.C_Region = "HK";
+                    }
                     sevenElevenIGeoCom.E_District = shopEn.District;
                     var matchesEn = _rgx.Matches(shopEn.LatLng!);
                     sevenElevenIGeoCom.Latitude = matchesEn[0].Value;
@@ -108,7 +119,30 @@ namespace iGeoComAPI.Services
 
                 }
             }
-            return SevenElevenIGeoComList.Where(shop => shop.E_Region != "Macau").ToList();
+            return SevenElevenIGeoComList.Where(shop => shop.E_District != "Macau").ToList();
+        }
+
+        public List<IGeoComGrabModel> FindAdded(List<IGeoComGrabModel> newData, List<IGeoComModel> previousData)
+        {
+            int newDataLength = newData.Count;
+            int previousDataLength = previousData.Count;
+            List<IGeoComGrabModel> AddedSevenElevenIGeoComList = new List<IGeoComGrabModel>();
+
+            for (int i = 0; i < newDataLength; i++)
+            {
+                int j;
+                for (j = 0; j < previousDataLength; j++)
+                    if (newData[i].E_Address?.Replace(",", "").Replace(" ", "") == previousData[j].E_Address?.Replace(",", "").Replace(" ", "") |
+                       newData[i].C_Address?.Replace(",", "").Replace(" ", "") == previousData[j].C_Address?.Replace(",", "").Replace(" ", "")
+                        )
+                        break;
+                    if (j == previousDataLength)
+                    {
+                        AddedSevenElevenIGeoComList.Add(newData[i]);
+                    }
+            }
+            Console.WriteLine(AddedSevenElevenIGeoComList.Count);
+            return AddedSevenElevenIGeoComList;
         }
     }
 }

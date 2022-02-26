@@ -27,8 +27,5 @@
         public string? Fax_No { get; set; }
         public string? Web_Site { get; set; }
         public string? Rev_Date { get; set; }
-        public string? Grab_ID { get; set; }
-        public string? Latitude { get; set; }
-        public string? Longitude { get; set; }
     }
 }
