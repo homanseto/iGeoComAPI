@@ -2,12 +2,19 @@ using iGeoComAPI.Services;
 using iGeoComAPI.Options;
 using Microsoft.Extensions.DependencyInjection;
 using iGeoComAPI.Utilities;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 ConfigurationManager _configuration = builder.Configuration;
 IWebHostEnvironment _environment = builder.Environment;
+var logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(_configuration)
+    .Enrich.WithThreadId()
+    .CreateLogger();
+builder.Logging.ClearProviders();
+builder.Logging.AddSerilog(logger);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -30,7 +37,7 @@ builder.Services.AddOptions(); //IOptions<T>
 
 
 var app = builder.Build();
-
+app.Logger.LogInformation("Project start");
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

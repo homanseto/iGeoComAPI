@@ -14,6 +14,8 @@ namespace iGeoComAPI.Services
         private readonly SerializeFunction _serializeFunction;   
         private readonly IOptions<SevenElevenOptions> _options;
         private readonly IMemoryCache _memoryCache;
+        private readonly ILogger _logger;
+
 
         /*
         public SevenElevenGrabber(HttpClient client, IOptions<SevenElevenOptions> options)
@@ -23,12 +25,13 @@ namespace iGeoComAPI.Services
         }
         */
 
-        public SevenElevenGrabber(ConnectClient httpClient, SerializeFunction serializeFunction, IOptions<SevenElevenOptions> options, IMemoryCache memoryCache)
+        public SevenElevenGrabber(ConnectClient httpClient, SerializeFunction serializeFunction, IOptions<SevenElevenOptions> options, IMemoryCache memoryCache, ILogger logger)
         {
             _httpClient = httpClient;
             _serializeFunction = serializeFunction;
             _options = options;
             _memoryCache = memoryCache;
+            _logger = logger;
         }
         
         //HttpClient _HttpClient = new HttpClient();
@@ -36,6 +39,7 @@ namespace iGeoComAPI.Services
         {
             try
             {
+                _logger.LogInformation("start grabbing 7-11 rowdata");
                 var enConnectHttp = await _httpClient.SendAsync(_options.Value.EnUrl);
                 var enSerializedResult = await _serializeFunction.Diserialize<SevenElevenModel>(enConnectHttp);
                 var zhConnectHttp = await _httpClient.SendAsync(_options.Value.ZhUrl);
@@ -46,7 +50,7 @@ namespace iGeoComAPI.Services
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine(ex.Message);
+                _logger.LogError(ex.Message, "fail to grab  7-11");
                 throw;
             }
 
@@ -56,70 +60,81 @@ namespace iGeoComAPI.Services
         {
             var _rgx = Regexs.ExtractLagLong();
             List<IGeoComGrabModel> SevenElevenIGeoComList = new List<IGeoComGrabModel>();
-            if (enResult != null && zhResult != null)
+            try
             {
-                foreach (SevenElevenModel shopEn in enResult)
+                _logger.LogInformation("Start merging 7-11 eng and Zh");
+                if (enResult != null && zhResult != null)
                 {
-                    IGeoComGrabModel sevenElevenIGeoCom = new IGeoComGrabModel();
-                    sevenElevenIGeoCom.E_Address = shopEn.Address?.Replace(",","");
-                    if (shopEn.Region == "Kowloon")
+                    foreach (SevenElevenModel shopEn in enResult)
                     {
-                        sevenElevenIGeoCom.E_Region = "KLN";
-                    }
-                    else if (shopEn.Region == "New Territories")
-                    {
-                        sevenElevenIGeoCom.C_Region = "NT";
-                    }
-                    else
-                    {
-                        sevenElevenIGeoCom.C_Region = "HK";
-                    }
-                    sevenElevenIGeoCom.E_District = shopEn.District;
-                    var matchesEn = _rgx.Matches(shopEn.LatLng!);
-                    sevenElevenIGeoCom.Latitude = matchesEn[0].Value;
-                    sevenElevenIGeoCom.Longitude = matchesEn[2].Value;
-                    sevenElevenIGeoCom.Class = "CMF";
-                    sevenElevenIGeoCom.Type = "CVS";
-                    if (shopEn.Opening_24 == "1")
-                    {
-                        sevenElevenIGeoCom.Subcat = " ";
-                    }
-                    else
-                    {
-                        sevenElevenIGeoCom.Subcat = "NON24R";
-                    }
-                    sevenElevenIGeoCom.Grab_ID = $"seveneleven_{shopEn.Address?.Replace(" ", "").Replace("/", "").Replace(",", "").Replace(".", "")}";
-                    sevenElevenIGeoCom.Web_Site = _options.Value.BaseUrl;
-
-                    foreach (SevenElevenModel shopZh in zhResult)
-                    {
-                        var matchesZh = _rgx.Matches(shopZh.LatLng!);
-                        if (matchesZh.Count > 0 && matchesZh != null)
+                        IGeoComGrabModel sevenElevenIGeoCom = new IGeoComGrabModel();
+                        sevenElevenIGeoCom.E_Address = shopEn.Address?.Replace(",", "");
+                        if (shopEn.Region == "Kowloon")
                         {
-                            if (sevenElevenIGeoCom.Latitude == matchesZh[0].Value && sevenElevenIGeoCom.Longitude == matchesZh[2].Value)
+                            sevenElevenIGeoCom.E_Region = "KLN";
+                        }
+                        else if (shopEn.Region == "New Territories")
+                        {
+                            sevenElevenIGeoCom.C_Region = "NT";
+                        }
+                        else
+                        {
+                            sevenElevenIGeoCom.C_Region = "HK";
+                        }
+                        sevenElevenIGeoCom.E_District = shopEn.District;
+                        var matchesEn = _rgx.Matches(shopEn.LatLng!);
+                        sevenElevenIGeoCom.Latitude = matchesEn[0].Value;
+                        sevenElevenIGeoCom.Longitude = matchesEn[2].Value;
+                        sevenElevenIGeoCom.Class = "CMF";
+                        sevenElevenIGeoCom.Type = "CVS";
+                        if (shopEn.Opening_24 == "1")
+                        {
+                            sevenElevenIGeoCom.Subcat = " ";
+                        }
+                        else
+                        {
+                            sevenElevenIGeoCom.Subcat = "NON24R";
+                        }
+                        sevenElevenIGeoCom.Grab_ID = $"seveneleven_{shopEn.Address?.Replace(" ", "").Replace("/", "").Replace(",", "").Replace(".", "")}";
+                        sevenElevenIGeoCom.Web_Site = _options.Value.BaseUrl;
+
+                        foreach (SevenElevenModel shopZh in zhResult)
+                        {
+                            var matchesZh = _rgx.Matches(shopZh.LatLng!);
+                            if (matchesZh.Count > 0 && matchesZh != null)
                             {
-                                sevenElevenIGeoCom.C_Address = shopZh.Address?.Replace(",", "");
-                                if(shopZh.Region == "Kowloon")
+                                if (sevenElevenIGeoCom.Latitude == matchesZh[0].Value && sevenElevenIGeoCom.Longitude == matchesZh[2].Value)
                                 {
-                                    sevenElevenIGeoCom.C_Region = "九龍";
-                                }else if(shopZh.Region == "New Territories")
-                                {
-                                    sevenElevenIGeoCom.C_Region = "新界";
+                                    sevenElevenIGeoCom.C_Address = shopZh.Address?.Replace(",", "");
+                                    if (shopZh.Region == "Kowloon")
+                                    {
+                                        sevenElevenIGeoCom.C_Region = "九龍";
+                                    }
+                                    else if (shopZh.Region == "New Territories")
+                                    {
+                                        sevenElevenIGeoCom.C_Region = "新界";
+                                    }
+                                    else
+                                    {
+                                        sevenElevenIGeoCom.C_Region = "香港";
+                                    }
+                                    sevenElevenIGeoCom.C_District = shopZh.District;
+                                    continue;
                                 }
-                                else
-                                {
-                                    sevenElevenIGeoCom.C_Region = "香港";
-                                }
-                                sevenElevenIGeoCom.C_District = shopZh.District;
-                                continue;
                             }
                         }
-                    }
-                    SevenElevenIGeoComList.Add(sevenElevenIGeoCom);
+                        SevenElevenIGeoComList.Add(sevenElevenIGeoCom);
 
+                    }
                 }
+                return SevenElevenIGeoComList.Where(shop => shop.E_District != "Macau").ToList();
             }
-            return SevenElevenIGeoComList.Where(shop => shop.E_District != "Macau").ToList();
+            catch(Exception ex)
+            {
+                _logger.LogError(ex.Message, "fail to merge Eng and Zh RawData");
+                throw;
+            }
+            
         }
 
         public List<IGeoComGrabModel> FindAdded(List<IGeoComGrabModel> newData, List<IGeoComModel> previousData)
@@ -141,7 +156,6 @@ namespace iGeoComAPI.Services
                         AddedSevenElevenIGeoComList.Add(newData[i]);
                     }
             }
-            Console.WriteLine(AddedSevenElevenIGeoComList.Count);
             return AddedSevenElevenIGeoComList;
         }
     }
