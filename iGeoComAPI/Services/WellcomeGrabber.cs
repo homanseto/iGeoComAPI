@@ -6,11 +6,12 @@ using Microsoft.Extensions.Options;
 
 namespace iGeoComAPI.Services
 {
-    public class WellcomeGrabber
+    public class WellcomeGrabber: IGrabberAPI<WellcomeModel>
     {
         private readonly PuppeteerConnection _puppeteerConnection;
         private readonly IOptions<WellcomeOptions> _options;
         private readonly IMemoryCache _memoryCache;
+        private readonly ILogger<WellcomeGrabber> _logger;
         private readonly string infoCode = @"() =>{
                                  const selectors = Array.from(document.querySelectorAll('.table-responsive > .table-striped > tbody > tr'));
                                  return selectors.map(v => {return {Address: v.querySelector('.views-field-field-address').textContent.trim(), Name: v.querySelector(
@@ -19,11 +20,12 @@ namespace iGeoComAPI.Services
                                    }});
                                  }";
 
-        public WellcomeGrabber(PuppeteerConnection puppeteerConnection, IOptions<WellcomeOptions> options, IMemoryCache memoryCache)
+        public WellcomeGrabber(PuppeteerConnection puppeteerConnection, IOptions<WellcomeOptions> options, IMemoryCache memoryCache, ILogger<WellcomeGrabber> logger)
         {
             _puppeteerConnection = puppeteerConnection;
             _options = options;
             _memoryCache = memoryCache;
+            _logger = logger;
         }
 
         public async Task<List<IGeoComGrabModel>?> GetWebSiteItems()
@@ -40,37 +42,46 @@ namespace iGeoComAPI.Services
 
         public List<IGeoComGrabModel> MergeEnAndZh(List<WellcomeModel> enResult, List<WellcomeModel> zhResult)
         {
-            var _rgx = Regexs.ExtractLagLong();
-            List<IGeoComGrabModel> WellcomeIGeoComList = new List<IGeoComGrabModel>();
-            foreach (var shopEn in enResult)
+            try
             {
-                IGeoComGrabModel WellcomeIGeoCom = new IGeoComGrabModel();
-                WellcomeIGeoCom.E_Address = shopEn.Address;
-                WellcomeIGeoCom.EnglishName = $"Wellcome Supermarket-{shopEn.Name}";
-                var matchesEn = _rgx.Matches(shopEn.LatLng!);
-                WellcomeIGeoCom.Latitude = matchesEn[0].Value;
-                WellcomeIGeoCom.Longitude = matchesEn[2].Value;
-                WellcomeIGeoCom.Tel_No = shopEn.Phone;
-                WellcomeIGeoCom.Web_Site = _options.Value.BaseUrl;
-                WellcomeIGeoCom.Class = "CMF";
-                WellcomeIGeoCom.Type = "SMK";
-                WellcomeIGeoCom.Grab_ID = $"wellcome_{shopEn.LatLng}{shopEn.Phone}{shopEn.Name}".Replace(" ", "").Replace("|", "").Replace(".","");
-                foreach (var shopZh in zhResult)
+                _logger.LogInformation("Merge Wellcome En and Zh");
+                var _rgx = Regexs.ExtractLagLong();
+                List<IGeoComGrabModel> WellcomeIGeoComList = new List<IGeoComGrabModel>();
+                foreach (var shopEn in enResult)
                 {
-                    var matchesZh = _rgx.Matches(shopZh.LatLng!);
-                    if (matchesZh.Count > 0 && matchesZh != null)
+                    IGeoComGrabModel WellcomeIGeoCom = new IGeoComGrabModel();
+                    WellcomeIGeoCom.E_Address = shopEn.Address;
+                    WellcomeIGeoCom.EnglishName = $"Wellcome Supermarket-{shopEn.Name}";
+                    var matchesEn = _rgx.Matches(shopEn.LatLng!);
+                    WellcomeIGeoCom.Latitude = matchesEn[0].Value;
+                    WellcomeIGeoCom.Longitude = matchesEn[2].Value;
+                    WellcomeIGeoCom.Tel_No = shopEn.Phone;
+                    WellcomeIGeoCom.Web_Site = _options.Value.BaseUrl;
+                    WellcomeIGeoCom.Class = "CMF";
+                    WellcomeIGeoCom.Type = "SMK";
+                    WellcomeIGeoCom.Grab_ID = $"wellcome_{shopEn.LatLng}{shopEn.Phone}{shopEn.Name}".Replace(" ", "").Replace("|", "").Replace(".", "");
+                    foreach (var shopZh in zhResult)
                     {
-                        if (WellcomeIGeoCom.Latitude == matchesZh[0].Value && WellcomeIGeoCom.Longitude == matchesZh[2].Value && WellcomeIGeoCom.Tel_No == shopZh.Phone)
+                        var matchesZh = _rgx.Matches(shopZh.LatLng!);
+                        if (matchesZh.Count > 0 && matchesZh != null)
                         {
-                            WellcomeIGeoCom.C_Address = shopZh.Address?.Replace(",", "");
-                            WellcomeIGeoCom.ChineseName = $"惠康超級市場-{shopZh.Name}";
-                            continue;
+                            if (WellcomeIGeoCom.Latitude == matchesZh[0].Value && WellcomeIGeoCom.Longitude == matchesZh[2].Value && WellcomeIGeoCom.Tel_No == shopZh.Phone)
+                            {
+                                WellcomeIGeoCom.C_Address = shopZh.Address?.Replace(",", "");
+                                WellcomeIGeoCom.ChineseName = $"惠康超級市場-{shopZh.Name}";
+                                continue;
+                            }
                         }
                     }
+                    WellcomeIGeoComList.Add(WellcomeIGeoCom);
                 }
-                WellcomeIGeoComList.Add(WellcomeIGeoCom);
+                return WellcomeIGeoComList;
             }
-            return WellcomeIGeoComList;
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, "fail to merge Wellcome En and Zh");
+                throw;
+            }
         }
 
         

@@ -2,8 +2,8 @@
 {
     public class ConnectClient
     {
-        private readonly ILogger _logger;
-        public ConnectClient(ILogger logger )
+        private readonly ILogger<ConnectClient> _logger;
+        public ConnectClient(ILogger<ConnectClient> logger )
         {
             _logger = logger;
         }

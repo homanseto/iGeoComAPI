@@ -3,6 +3,7 @@ using iGeoComAPI.Options;
 using Microsoft.Extensions.DependencyInjection;
 using iGeoComAPI.Utilities;
 using Serilog;
+using iGeoComAPI.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,7 +22,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 //builder.Services.AddHttpClient();
-builder.Services.AddSingleton<SevenElevenGrabber>();
+builder.Services.AddSingleton<IGrabberAPI<SevenElevenModel>,SevenElevenGrabber>();
 builder.Services.AddSingleton<WellcomeGrabber>();
 builder.Services.AddSingleton<WmoovGrabber>();
 builder.Services.AddSingleton<ConnectClient>();

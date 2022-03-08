@@ -6,15 +6,15 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace iGeoComAPI.Services
 {
-    public partial class SevenElevenGrabber
+    public partial class SevenElevenGrabber : IGrabberAPI<SevenElevenModel>
     {
         //private readonly HttpClient _httpcClient;
         //private readonly IOptions<SevenElevenOptions> _options;
         private readonly ConnectClient _httpClient;
-        private readonly SerializeFunction _serializeFunction;   
+        private readonly SerializeFunction _serializeFunction;
         private readonly IOptions<SevenElevenOptions> _options;
         private readonly IMemoryCache _memoryCache;
-        private readonly ILogger _logger;
+        private readonly ILogger<SevenElevenGrabber> _logger;
 
 
         /*
@@ -25,7 +25,7 @@ namespace iGeoComAPI.Services
         }
         */
 
-        public SevenElevenGrabber(ConnectClient httpClient, SerializeFunction serializeFunction, IOptions<SevenElevenOptions> options, IMemoryCache memoryCache, ILogger logger)
+        public SevenElevenGrabber(ConnectClient httpClient, SerializeFunction serializeFunction, IOptions<SevenElevenOptions> options, IMemoryCache memoryCache, ILogger<SevenElevenGrabber> logger)
         {
             _httpClient = httpClient;
             _serializeFunction = serializeFunction;
@@ -33,7 +33,7 @@ namespace iGeoComAPI.Services
             _memoryCache = memoryCache;
             _logger = logger;
         }
-        
+
         //HttpClient _HttpClient = new HttpClient();
         public async Task<List<IGeoComGrabModel>?> GetWebSiteItems()
         {
@@ -45,7 +45,7 @@ namespace iGeoComAPI.Services
                 var zhConnectHttp = await _httpClient.SendAsync(_options.Value.ZhUrl);
                 var zhSerializedResult = await _serializeFunction.Diserialize<SevenElevenModel>(zhConnectHttp);
                 var mergeResult = MergeEnAndZh(enSerializedResult, zhSerializedResult);
-               // _memoryCache.Set("iGeoCom", mergeResult, TimeSpan.FromHours(2));
+                // _memoryCache.Set("iGeoCom", mergeResult, TimeSpan.FromHours(2));
                 return mergeResult;
             }
             catch (Exception ex)
@@ -129,19 +129,19 @@ namespace iGeoComAPI.Services
                 }
                 return SevenElevenIGeoComList.Where(shop => shop.E_District != "Macau").ToList();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError(ex.Message, "fail to merge Eng and Zh RawData");
                 throw;
             }
-            
+
         }
 
-        public List<IGeoComGrabModel> FindAdded(List<IGeoComGrabModel> newData, List<IGeoComModel> previousData)
+        public List<IGeoComModel> FindAdded(List<IGeoComModel> newData, List<IGeoComModel> previousData)
         {
             int newDataLength = newData.Count;
             int previousDataLength = previousData.Count;
-            List<IGeoComGrabModel> AddedSevenElevenIGeoComList = new List<IGeoComGrabModel>();
+            List<IGeoComModel> AddedSevenElevenIGeoComList = new List<IGeoComModel>();
 
             for (int i = 0; i < newDataLength; i++)
             {
@@ -151,10 +151,10 @@ namespace iGeoComAPI.Services
                        newData[i].C_Address?.Replace(",", "").Replace(" ", "") == previousData[j].C_Address?.Replace(",", "").Replace(" ", "")
                         )
                         break;
-                    if (j == previousDataLength)
-                    {
-                        AddedSevenElevenIGeoComList.Add(newData[i]);
-                    }
+                if (j == previousDataLength)
+                {
+                    AddedSevenElevenIGeoComList.Add(newData[i]);
+                }
             }
             return AddedSevenElevenIGeoComList;
         }

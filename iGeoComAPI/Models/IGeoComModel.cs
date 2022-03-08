@@ -2,6 +2,7 @@
 {
     public class IGeoComModel
     {
+        public string? status { get; set; }
         public string? GeoNameId { get; set; }
         public string? EnglishName { get; set; }
         public string? ChineseName { get; set; }
@@ -27,5 +28,7 @@
         public string? Fax_No { get; set; }
         public string? Web_Site { get; set; }
         public string? Rev_Date { get; set; }
+        public string? Latitude { get; set; }
+        public string? Longitude { get; set; }
     }
 }
