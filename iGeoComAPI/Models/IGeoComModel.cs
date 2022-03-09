@@ -1,8 +1,8 @@
 ﻿namespace iGeoComAPI.Models
 {
-    public class IGeoComModel
+    public class IGeoComModel 
     {
-        public string? status { get; set; }
+        // public string? status { get; set; }
         public string? GeoNameId { get; set; }
         public string? EnglishName { get; set; }
         public string? ChineseName { get; set; }
@@ -28,7 +28,8 @@
         public string? Fax_No { get; set; }
         public string? Web_Site { get; set; }
         public string? Rev_Date { get; set; }
-        public string? Latitude { get; set; }
-        public string? Longitude { get; set; }
+       //  public string? Grab_ID { get; set; }
+       // public string? Latitude { get; set; }
+       // public string? Longitude { get; set; }
     }
 }

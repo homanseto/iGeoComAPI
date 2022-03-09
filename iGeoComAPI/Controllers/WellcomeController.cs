@@ -31,6 +31,15 @@ namespace iGeoComAPI.Controllers
             return result;
         }
 
+        [HttpGet("testing")]
+        public async Task GetTesting()
+        {
+            List<String> lists = new List<string> { "E_Address", "Tel_No" };
+            var previousResult = await _dataAccess.LoadData<IGeoComModel>(SelectWellcomeFromDataBase);
+            var newResult = await _dataAccess.LoadData<IGeoComGrabModel>(SelectWellcome);
+            Comparator.FindDiffernet(previousResult, newResult, "added", lists);
+        }
+
         /*
         [HttpGet("cache")]
         public List<IGeoComGrabModel>? Get()
@@ -39,7 +48,7 @@ namespace iGeoComAPI.Controllers
             return result.Where(r => r.Grab_ID.Contains("wellcome")).ToList();
         }
         */
-        
+
         [HttpGet("added")]
         public async Task<List<IGeoComDeltaModel>?> GetAdded()
         {

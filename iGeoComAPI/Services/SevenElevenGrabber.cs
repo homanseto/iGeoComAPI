@@ -10,11 +10,11 @@ namespace iGeoComAPI.Services
     {
         //private readonly HttpClient _httpcClient;
         //private readonly IOptions<SevenElevenOptions> _options;
-        private readonly ConnectClient _httpClient;
-        private readonly SerializeFunction _serializeFunction;
-        private readonly IOptions<SevenElevenOptions> _options;
-        private readonly IMemoryCache _memoryCache;
-        private readonly ILogger<SevenElevenGrabber> _logger;
+        private ConnectClient _httpClient;
+        private SerializeFunction _serializeFunction;
+        private IOptions<SevenElevenOptions> _options;
+        private  IMemoryCache _memoryCache;
+        private ILogger<SevenElevenGrabber> _logger;
 
 
         /*
@@ -137,11 +137,11 @@ namespace iGeoComAPI.Services
 
         }
 
-        public List<IGeoComModel> FindAdded(List<IGeoComModel> newData, List<IGeoComModel> previousData)
+        public List<IGeoComGrabModel> FindAdded(List<IGeoComGrabModel> newData, List<IGeoComModel> previousData)
         {
             int newDataLength = newData.Count;
             int previousDataLength = previousData.Count;
-            List<IGeoComModel> AddedSevenElevenIGeoComList = new List<IGeoComModel>();
+            List<IGeoComGrabModel> AddedSevenElevenIGeoComList = new List<IGeoComGrabModel>();
 
             for (int i = 0; i < newDataLength; i++)
             {

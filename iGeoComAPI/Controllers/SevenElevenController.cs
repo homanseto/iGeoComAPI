@@ -16,9 +16,9 @@ namespace iGeoComAPI.Controllers
         private string SelectSevenEleven = "SELECT * FROM igeocomtable WHERE GRAB_ID LIKE '%seveneleven%'";
         private string SelectSevenElevenFromDataBase = "SELECT * FROM iGeoCom_Dec2021 WHERE ENGLISHNAME LIKE '%7-Eleven%' ";
         private readonly ILogger<SevenElevenController> _logger;
-        private readonly SevenElevenGrabber _sevenElevenGrabber;
+        private IGrabberAPI<SevenElevenModel> _sevenElevenGrabber;
         private readonly DataAccess _dataAccess;
-        public SevenElevenController(SevenElevenGrabber sevenElevenGrabber, ILogger<SevenElevenController> logger, DataAccess dataAccess)
+        public SevenElevenController(IGrabberAPI<SevenElevenModel> sevenElevenGrabber, ILogger<SevenElevenController> logger, DataAccess dataAccess)
         {
             _sevenElevenGrabber = sevenElevenGrabber;
             _logger = logger;
@@ -29,9 +29,30 @@ namespace iGeoComAPI.Controllers
         public async Task<List<IGeoComGrabModel>?> Get()
         {
             var result = await _dataAccess.LoadData<IGeoComGrabModel>(SelectSevenEleven);
+            List<String> lists  = new List<string> { "Latitude", "Longitude"};
+            foreach (var item in result)
+            {
+                foreach(var list in lists)
+                {
+                    var pi = item.GetType().GetProperty(list);
+                    if (pi != null)
+                    {
+                        var value = pi.GetValue(item, null);
+                       Console.WriteLine(value!.GetType());
+                       Console.WriteLine(value) ;
+                    }
+                }
+                for (int i = 0; i < 5; i++)
+                {
+                    Console.WriteLine(i);
+                }
+               
+                
+            }
             CsvFile.DownloadCsv(result, "SevenEleven_Grabbed_Result");
             return result;
         }
+
 
         /*
         [HttpGet("cache")]
@@ -40,7 +61,7 @@ namespace iGeoComAPI.Controllers
             var result = _dataAccess.LoadDataCache<IGeoComGrabModel>();
             return result.Where(r => r.Grab_ID.Contains("seveneleven")).ToList();
         }
-        */
+        
         [HttpGet("database")]
         public async Task<List<IGeoComGrabModel>?> GetTodoItem()
         {
@@ -49,7 +70,7 @@ namespace iGeoComAPI.Controllers
             var finalResult = _sevenElevenGrabber.FindAdded(newResult, previousResult);
             return finalResult;
         }
-
+        
         [HttpPost]
         public async Task<List<IGeoComGrabModel?>> Create()
         {
@@ -57,7 +78,7 @@ namespace iGeoComAPI.Controllers
             _dataAccess.SaveGrabbedData(InsertSql, GrabbedResult);
             return GrabbedResult;
         }
-
+        */
 
     }
 
