@@ -59,6 +59,7 @@ namespace iGeoComAPI.Services
                     ParknShopIGeoCom.Class = "CMF";
                     ParknShopIGeoCom.Type = "SMK";
                     ParknShopIGeoCom.Grab_ID = $"parknshop_{shopEn.BrandName}{shopEn.Latitude}{shopEn.Longitude}".Replace(".", "");
+                    ParknShopIGeoCom.Web_Site = _options.Value.BaseUrl;
                     foreach (var shopZh in zhResult)
                     {
                         if (shopEn.Latitude == shopZh.Latitude && shopEn.Longitude == shopZh.Longitude && shopEn.Phone == shopZh.Phone)
@@ -67,6 +68,7 @@ namespace iGeoComAPI.Services
                             ParknShopIGeoCom.C_Region = shopZh.Region;
                             ParknShopIGeoCom.C_Address = shopZh.Address;
                             ParknShopIGeoCom.C_District = shopZh.District;
+                            break;
                         }
                     }
                     ParknShopIGeoComList.Add(ParknShopIGeoCom);

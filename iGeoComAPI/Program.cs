@@ -27,6 +27,7 @@ builder.Services.AddSingleton< IGrabberAPI < WellcomeModel>, WellcomeGrabber >()
 builder.Services.AddSingleton<IGrabberAPI<WellcomeModel>, WellcomeGrabber>();
 builder.Services.AddSingleton<IGrabberAPI<CaltexModel>, CaltexGrabber>();
 builder.Services.AddSingleton<IGrabberAPI<ParknShopModel>, ParknShopGrabber>();
+builder.Services.AddSingleton<IGrabberAPI<AeonModel>, AeonGrabber>();
 builder.Services.AddSingleton<WmoovGrabber>();
 builder.Services.AddSingleton<ConnectClient>();
 builder.Services.AddSingleton<SerializeFunction>();
@@ -38,6 +39,7 @@ builder.Services.Configure<ConnectionStringsOptions>(_configuration.GetSection(C
 builder.Services.Configure<WellcomeOptions>(_configuration.GetSection(WellcomeOptions.SectionName));
 builder.Services.Configure<CaltexOptions>(_configuration.GetSection(CaltexOptions.SectionName));
 builder.Services.Configure<ParknShopOptions>(_configuration.GetSection(ParknShopOptions.SectionName));
+builder.Services.Configure<AeonOptions>(_configuration.GetSection(AeonOptions.SectionName));
 builder.Services.Configure<WmoovOptions>(_configuration.GetSection(WmoovOptions.SectionName));
 builder.Services.AddOptions(); //IOptions<T>
 

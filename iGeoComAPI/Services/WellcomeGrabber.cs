@@ -46,7 +46,7 @@ namespace iGeoComAPI.Services
             try
             {
                 _logger.LogInformation("Merge Wellcome En and Zh");
-                var _rgx = Regexs.ExtractLagLong();
+                var _rgx = Regexs.ExtractLagLng();
                 List<IGeoComGrabModel> WellcomeIGeoComList = new List<IGeoComGrabModel>();
                 foreach (var shopEn in enResult)
                 {

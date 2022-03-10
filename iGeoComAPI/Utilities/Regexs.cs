@@ -4,7 +4,7 @@ namespace iGeoComAPI.Utilities
 {
     public static class Regexs
     {
-        public static Regex ExtractLagLong()
+        public static Regex ExtractLagLng()
         {
             string regMatch = "([^|]*)";
             Regex reg = new Regex(regMatch);
@@ -29,5 +29,21 @@ namespace iGeoComAPI.Utilities
 
             return reg;
         }
+
+        public static Regex ExtractAeonLat()
+        {
+            string aeonLat = @"LatLng(.*),";
+            Regex reg = new Regex(aeonLat);
+
+            return reg;
+        }
+        public static Regex ExtractAeonLng()
+        {
+            string aeonLng = @", (.*)(?=\);m)";
+            Regex reg = new Regex(aeonLng);
+
+            return reg;
+        }
+
     }
 }

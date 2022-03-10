@@ -62,6 +62,7 @@ namespace iGeoComAPI.Services
                             {
                                 CaltexIGeoCom.ChineseName = $"加德士-{zh.Name!.Trim()}";
                                 CaltexIGeoCom.C_Address = zh.Street!.Trim().Replace(" ", "");
+                                break;
                             }
                         }
                         CaltexIGeoComList.Add(CaltexIGeoCom);
