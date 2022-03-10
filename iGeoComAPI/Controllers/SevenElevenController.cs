@@ -70,6 +70,7 @@ namespace iGeoComAPI.Controllers
             var finalResult = _sevenElevenGrabber.FindAdded(newResult, previousResult);
             return finalResult;
         }
+        */
         
         [HttpPost]
         public async Task<List<IGeoComGrabModel?>> Create()
@@ -78,7 +79,7 @@ namespace iGeoComAPI.Controllers
             _dataAccess.SaveGrabbedData(InsertSql, GrabbedResult);
             return GrabbedResult;
         }
-        */
+        
 
     }
 

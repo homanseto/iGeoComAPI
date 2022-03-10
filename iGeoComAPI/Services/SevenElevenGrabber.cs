@@ -6,7 +6,7 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace iGeoComAPI.Services
 {
-    public partial class SevenElevenGrabber : IGrabberAPI<SevenElevenModel>
+    public class SevenElevenGrabber : IGrabberAPI<SevenElevenModel>
     {
         //private readonly HttpClient _httpcClient;
         //private readonly IOptions<SevenElevenOptions> _options;
@@ -131,7 +131,7 @@ namespace iGeoComAPI.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message, "fail to merge Eng and Zh RawData");
+                _logger.LogError(ex.Message, "fail to merge  7-11 Eng and Zh RawData");
                 throw;
             }
 

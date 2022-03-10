@@ -23,7 +23,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 //builder.Services.AddHttpClient();
 builder.Services.AddSingleton<IGrabberAPI<SevenElevenModel>,SevenElevenGrabber>();
-builder.Services.AddSingleton<WellcomeGrabber>();
+builder.Services.AddSingleton< IGrabberAPI < WellcomeModel>, WellcomeGrabber >();
+builder.Services.AddSingleton<IGrabberAPI<WellcomeModel>, WellcomeGrabber>();
+builder.Services.AddSingleton<IGrabberAPI<CaltexModel>, CaltexGrabber>();
 builder.Services.AddSingleton<WmoovGrabber>();
 builder.Services.AddSingleton<ConnectClient>();
 builder.Services.AddSingleton<SerializeFunction>();
@@ -33,6 +35,7 @@ builder.Services.AddMemoryCache();
 builder.Services.Configure<SevenElevenOptions>(_configuration.GetSection(SevenElevenOptions.SectionName));
 builder.Services.Configure<ConnectionStringsOptions>(_configuration.GetSection(ConnectionStringsOptions.SectionName));
 builder.Services.Configure<WellcomeOptions>(_configuration.GetSection(WellcomeOptions.SectionName));
+builder.Services.Configure<CaltexOptions>(_configuration.GetSection(CaltexOptions.SectionName));
 builder.Services.Configure<WmoovOptions>(_configuration.GetSection(WmoovOptions.SectionName));
 builder.Services.AddOptions(); //IOptions<T>
 
