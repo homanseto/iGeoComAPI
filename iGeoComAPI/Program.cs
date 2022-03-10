@@ -26,6 +26,7 @@ builder.Services.AddSingleton<IGrabberAPI<SevenElevenModel>,SevenElevenGrabber>(
 builder.Services.AddSingleton< IGrabberAPI < WellcomeModel>, WellcomeGrabber >();
 builder.Services.AddSingleton<IGrabberAPI<WellcomeModel>, WellcomeGrabber>();
 builder.Services.AddSingleton<IGrabberAPI<CaltexModel>, CaltexGrabber>();
+builder.Services.AddSingleton<IGrabberAPI<ParknShopModel>, ParknShopGrabber>();
 builder.Services.AddSingleton<WmoovGrabber>();
 builder.Services.AddSingleton<ConnectClient>();
 builder.Services.AddSingleton<SerializeFunction>();
@@ -36,6 +37,7 @@ builder.Services.Configure<SevenElevenOptions>(_configuration.GetSection(SevenEl
 builder.Services.Configure<ConnectionStringsOptions>(_configuration.GetSection(ConnectionStringsOptions.SectionName));
 builder.Services.Configure<WellcomeOptions>(_configuration.GetSection(WellcomeOptions.SectionName));
 builder.Services.Configure<CaltexOptions>(_configuration.GetSection(CaltexOptions.SectionName));
+builder.Services.Configure<ParknShopOptions>(_configuration.GetSection(ParknShopOptions.SectionName));
 builder.Services.Configure<WmoovOptions>(_configuration.GetSection(WmoovOptions.SectionName));
 builder.Services.AddOptions(); //IOptions<T>
 

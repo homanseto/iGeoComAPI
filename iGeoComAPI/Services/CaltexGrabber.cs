@@ -49,10 +49,13 @@ namespace iGeoComAPI.Services
                         CaltexIGeoCom.Grab_ID = $"caltex_{en.Id}";
                         CaltexIGeoCom.EnglishName = $"Caltex-{en.Name!.Trim()}";
                         CaltexIGeoCom.E_Address = en.Street!.Trim();
-                        CaltexIGeoCom.Tel_No = en.PhoneNumber!.Replace("+852", "").Replace(" ", "");
+                        CaltexIGeoCom.Tel_No = en.PhoneNumber!.Replace(" ", "");
                         CaltexIGeoCom.Latitude = en.Latitude!.Trim();
                         CaltexIGeoCom.Longitude = en.Longitude!.Trim();
-
+                        CaltexIGeoCom.Web_Site = _options.Value.BaseUrl;
+                        CaltexIGeoCom.Class = "UTI";
+                        CaltexIGeoCom.Type = "PFS";
+                        CaltexIGeoCom.Source = "27";
                         foreach (var zh in zhResult)
                         {
                             if (en.Id == zh.Id)

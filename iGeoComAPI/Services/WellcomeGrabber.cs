@@ -8,17 +8,18 @@ namespace iGeoComAPI.Services
 {
     public class WellcomeGrabber: IGrabberAPI<WellcomeModel>
     {
-        private readonly PuppeteerConnection _puppeteerConnection;
-        private readonly IOptions<WellcomeOptions> _options;
-        private readonly IMemoryCache _memoryCache;
-        private readonly ILogger<WellcomeGrabber> _logger;
-        private readonly string infoCode = @"() =>{
+        private PuppeteerConnection _puppeteerConnection;
+        private IOptions<WellcomeOptions> _options;
+        private IMemoryCache _memoryCache;
+        private ILogger<WellcomeGrabber> _logger;
+        private string infoCode = @"() =>{
                                  const selectors = Array.from(document.querySelectorAll('.table-responsive > .table-striped > tbody > tr'));
                                  return selectors.map(v => {return {Address: v.querySelector('.views-field-field-address').textContent.trim(), Name: v.querySelector(
                                  '.views-field-title > .store-title',).textContent, LatLng: v.querySelector('.views-field-title > .store-title').getAttribute('data-latlng'),
                                  Phone: v.querySelector('.views-field-field-store-telephone').textContent.trim()
-                                   }});
+                                 }});
                                  }";
+        private string waitSelector = ".table-responsive";
 
         public WellcomeGrabber(PuppeteerConnection puppeteerConnection, IOptions<WellcomeOptions> options, IMemoryCache memoryCache, ILogger<WellcomeGrabber> logger)
         {
@@ -30,8 +31,8 @@ namespace iGeoComAPI.Services
 
         public async Task<List<IGeoComGrabModel>?> GetWebSiteItems()
         {
-           var enResult = await _puppeteerConnection.PuppeteerGrabber<WellcomeModel>(_options.Value.EnUrl, infoCode);
-           var zhResult = await _puppeteerConnection.PuppeteerGrabber<WellcomeModel>(_options.Value.ZhUrl, infoCode);
+           var enResult = await _puppeteerConnection.PuppeteerGrabber<WellcomeModel>(_options.Value.EnUrl, infoCode, waitSelector );
+           var zhResult = await _puppeteerConnection.PuppeteerGrabber<WellcomeModel>(_options.Value.ZhUrl, infoCode, waitSelector);
            var enResultList = enResult.ToList();
            var zhResultList = zhResult.ToList();
            var mergeResult = MergeEnAndZh(enResultList, zhResultList);

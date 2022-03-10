@@ -8,25 +8,29 @@ namespace iGeoComAPI.Services
 {
     public class WmoovGrabber
     {
-        private readonly PuppeteerConnection _puppeteerConnection;
-        private readonly IOptions<WmoovOptions> _options;
-        private readonly IMemoryCache _memoryCache;
+        private PuppeteerConnection _puppeteerConnection;
+        private IOptions<WmoovOptions> _options;
+        private IMemoryCache _memoryCache;
 
 
-        private readonly string shopCode = @"() =>{
+        private string shopCode = @"() =>{
                                  const selectors = Array.from(document.querySelectorAll('.section_cinema_list > .list > ul > li' ));
                                  return selectors.map(v=>{return {Name: v.querySelector('.gotomap').textContent.trim(),Latitude: v.querySelector('.gotomap').getAttribute('data-latitudes'),
                                  Longitude: v.querySelector('.gotomap').getAttribute('data-longitudes'), Website: v.querySelector('.gotomap').getAttribute('href')
                                  }})
                                  }";
-        private readonly string infoCode = @"() =>{
+        private string infoCode = @"() =>{
                                  const selectors = Array.from(document.querySelectorAll('.left > .info > dd' ));
                                   return selectors.length === 3 ?
                                  {Tel_no: selectors[0] == null ? '': selectors[0].textContent.trim(), Web_Site: selectors[1] == null ? '':selectors[1].querySelector('a').getAttribute('href'), C_Address: selectors[2] == null ? '':selectors[2].textContent.trim()}
                                  : {Web_Site: selectors[0] == null ? '':selectors[0].querySelector('a').getAttribute('href'), C_Address: selectors[1] == null ? '':selectors[1].textContent.trim()}
                                  }";
 
-        private readonly string test2Code = @"() =>{
+        private string waitSelectorShop = ".section_cinema_list";
+
+        private string waitSelectorInfo = ".left";
+
+        private string test2Code = @"() =>{
                                  const selectors = Array.from(document.querySelectorAll('.section_cinema_list > .list' ));
                                  for (let i = 0; i < selectors.length; i++){ Array.from(selectors[i].querySelectorAll('ul > li')).
                                  map(v=>{return {Region: selectors[i].querySelector('h3').textContent.trim(),Name: v.querySelector('.gotomap').textContent.trim()}})} 
@@ -43,13 +47,13 @@ namespace iGeoComAPI.Services
 
         public async Task<List<IGeoComGrabModel?>> GetWebSiteItems()
         {
-            var shopResult = await _puppeteerConnection.PuppeteerGrabber<WmoovModel>(_options.Value.BaseUrl, shopCode);
+            var shopResult = await _puppeteerConnection.PuppeteerGrabber<WmoovModel>(_options.Value.BaseUrl, shopCode, waitSelectorShop);
             var shopList = shopResult.ToList();
             var _rgx = Regexs.ExtractWmoovId();
             List<IGeoComGrabModel> WmoovIGeoComList = new List<IGeoComGrabModel>();
             foreach (var shop in shopList)
             {
-                var infoResult = await _puppeteerConnection.PuppeteerSignalGrabber<IGeoComGrabModel>(@$"https://wmoov.com{shop.Website}", infoCode);
+                var infoResult = await _puppeteerConnection.PuppeteerSignalGrabber<IGeoComGrabModel>(@$"https://wmoov.com{shop.Website}", infoCode, waitSelectorInfo);
         
                 infoResult.ChineseName = shop.Name;
                 infoResult.Latitude = shop.Latitude;
