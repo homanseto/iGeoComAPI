@@ -11,7 +11,7 @@ namespace iGeoComAPI.Services
         //private readonly HttpClient _httpcClient;
         //private readonly IOptions<SevenElevenOptions> _options;
         private ConnectClient _httpClient;
-        private SerializeFunction _serializeFunction;
+        private JSON _json;
         private IOptions<SevenElevenOptions> _options;
         private  IMemoryCache _memoryCache;
         private ILogger<SevenElevenGrabber> _logger;
@@ -25,10 +25,10 @@ namespace iGeoComAPI.Services
         }
         */
 
-        public SevenElevenGrabber(ConnectClient httpClient, SerializeFunction serializeFunction, IOptions<SevenElevenOptions> options, IMemoryCache memoryCache, ILogger<SevenElevenGrabber> logger)
+        public SevenElevenGrabber(ConnectClient httpClient, JSON json, IOptions<SevenElevenOptions> options, IMemoryCache memoryCache, ILogger<SevenElevenGrabber> logger)
         {
             _httpClient = httpClient;
-            _serializeFunction = serializeFunction;
+            _json = json;
             _options = options;
             _memoryCache = memoryCache;
             _logger = logger;
@@ -40,10 +40,10 @@ namespace iGeoComAPI.Services
             try
             {
                 _logger.LogInformation("start grabbing 7-11 rowdata");
-                var enConnectHttp = await _httpClient.SendAsync(_options.Value.EnUrl);
-                var enSerializedResult = await _serializeFunction.Diserialize<SevenElevenModel>(enConnectHttp);
-                var zhConnectHttp = await _httpClient.SendAsync(_options.Value.ZhUrl);
-                var zhSerializedResult = await _serializeFunction.Diserialize<SevenElevenModel>(zhConnectHttp);
+                var enConnectHttp = await _httpClient.GetAsync(_options.Value.EnUrl);
+                var enSerializedResult = await _json.Diserialize<SevenElevenModel>(enConnectHttp);
+                var zhConnectHttp = await _httpClient.GetAsync(_options.Value.ZhUrl);
+                var zhSerializedResult = await _json.Diserialize<SevenElevenModel>(zhConnectHttp);
                 var mergeResult = MergeEnAndZh(enSerializedResult, zhSerializedResult);
                 // _memoryCache.Set("iGeoCom", mergeResult, TimeSpan.FromHours(2));
                 return mergeResult;

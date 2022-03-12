@@ -8,17 +8,25 @@
             _logger = logger;
         }
         
-        public async Task<HttpResponseMessage> SendAsync(string url)
+        public async Task<HttpResponseMessage> GetAsync(string? url, string? parameter = ""  )
         {
             try
             {
                 _logger.LogInformation("HttpResponseMessage");
-                using (var client = new HttpClient())
+                if (url != null)
                 {
-                    HttpResponseMessage result = await client.GetAsync(url);
-                    result.EnsureSuccessStatusCode();
-                    return result;
+                    UriBuilder uriBuilder = new UriBuilder(url!);
+                    uriBuilder.Query = parameter;
+
+                    using (var client = new HttpClient())
+                    {
+                        HttpResponseMessage result = await client.GetAsync(uriBuilder.Uri);
+                        result.EnsureSuccessStatusCode();
+                        return result;
+                    }
                 }
+                _logger.LogError("url cannot be empty or null");
+                throw new Exception("url cannot be empty or null");
             }
             catch(Exception ex)
             {

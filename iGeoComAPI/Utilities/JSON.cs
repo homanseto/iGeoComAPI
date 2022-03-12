@@ -3,7 +3,7 @@
 namespace iGeoComAPI.Services
 {
 
-    public class SerializeFunction
+    public class JSON
     {
        
         public async Task<List<T>?> Diserialize<T>(HttpResponseMessage message)

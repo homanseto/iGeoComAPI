@@ -9,16 +9,16 @@ namespace iGeoComAPI.Services
     public class CaltexGrabber : IGrabberAPI<CaltexModel>
     {
         private ConnectClient _httpClient;
-        private SerializeFunction _serializeFunction;
+        private JSON _json;
         private IOptions<CaltexOptions> _options;
         private IMemoryCache _memoryCache;
         private ILogger<CaltexGrabber> _logger;
 
 
-        public CaltexGrabber(ConnectClient httpClient, SerializeFunction serializeFunction, IOptions<CaltexOptions> options, IMemoryCache memoryCache, ILogger<CaltexGrabber> logger)
+        public CaltexGrabber(ConnectClient httpClient, JSON json, IOptions<CaltexOptions> options, IMemoryCache memoryCache, ILogger<CaltexGrabber> logger)
         {
             _httpClient = httpClient;
-            _serializeFunction = serializeFunction;
+            _json = json;
             _options = options;
             _memoryCache = memoryCache;
             _logger = logger;
@@ -26,16 +26,16 @@ namespace iGeoComAPI.Services
         public async Task<List<IGeoComGrabModel>?> GetWebSiteItems()
         {
             _logger.LogInformation("start grabbing 7-11 rowdata");
-            var enConnectHttp = await _httpClient.SendAsync(_options.Value.EnUrl);
-            var enSerializedResult = await _serializeFunction.Diserialize<CaltexModel>(enConnectHttp);
-            var zhConnectHttp = await _httpClient.SendAsync(_options.Value.ZhUrl);
-            var zhSerializedResult = await _serializeFunction.Diserialize<CaltexModel>(zhConnectHttp);
+            var enConnectHttp = await _httpClient.GetAsync(_options.Value.EnUrl);
+            var enSerializedResult = await _json.Diserialize<CaltexModel>(enConnectHttp);
+            var zhConnectHttp = await _httpClient.GetAsync(_options.Value.ZhUrl);
+            var zhSerializedResult = await _json.Diserialize<CaltexModel>(zhConnectHttp);
             var mergeResult = MergeEnAndZh(enSerializedResult, zhSerializedResult);
             // _memoryCache.Set("iGeoCom", mergeResult, TimeSpan.FromHours(2));
             return mergeResult;
         }
 
-        public List<IGeoComGrabModel> MergeEnAndZh(List<CaltexModel> enResult, List<CaltexModel> zhResult)
+        public List<IGeoComGrabModel> MergeEnAndZh(List<CaltexModel>? enResult, List<CaltexModel>? zhResult)
         {
             List<IGeoComGrabModel> CaltexIGeoComList = new List<IGeoComGrabModel>();
             try
@@ -62,7 +62,7 @@ namespace iGeoComAPI.Services
                             {
                                 CaltexIGeoCom.ChineseName = $"加德士-{zh.Name!.Trim()}";
                                 CaltexIGeoCom.C_Address = zh.Street!.Trim().Replace(" ", "");
-                                break;
+                                continue;
                             }
                         }
                         CaltexIGeoComList.Add(CaltexIGeoCom);
