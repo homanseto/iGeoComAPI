@@ -20,6 +20,8 @@ namespace iGeoComAPI.Services
                                  }});
                                  }";
         private string waitSelector = ".framebottom";
+        private string _aeonLatRegex = @"LatLng(.*),";
+        private string _aeonLngRegex = @", (.*)(?=\);m)";
 
         public AeonGrabber(PuppeteerConnection puppeteerConnection, IOptions<AeonOptions> options, IMemoryCache memoryCache, ILogger<AeonGrabber> logger)
         {
@@ -43,8 +45,8 @@ namespace iGeoComAPI.Services
         public List<IGeoComGrabModel> MergeEnAndZh(List<AeonModel> enResult, List<AeonModel> zhResult)
         {
             _logger.LogInformation("Merge Aeon En and Zh");
-            var _rgxLat = Regexs.ExtractAeonLat();
-            var _rgxLng = Regexs.ExtractAeonLng();
+            var _rgxLat = Regexs.ExtractInfo(_aeonLatRegex);
+            var _rgxLng = Regexs.ExtractInfo(_aeonLngRegex);
             List<IGeoComGrabModel> AeonIGeoComList = new List<IGeoComGrabModel>();
             foreach (var shopEn in enResult)
             {

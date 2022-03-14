@@ -35,7 +35,7 @@ namespace iGeoComAPI.Services
                                  for (let i = 0; i < selectors.length; i++){ Array.from(selectors[i].querySelectorAll('ul > li')).
                                  map(v=>{return {Region: selectors[i].querySelector('h3').textContent.trim(),Name: v.querySelector('.gotomap').textContent.trim()}})} 
                                  }";
-
+        private string _wmoovIdRegex = @"(?<=details\/)(.*)(?=\?)";
 
 
         public WmoovGrabber(PuppeteerConnection puppeteerConnection, IOptions<WmoovOptions> options, IMemoryCache memoryCache)
@@ -49,7 +49,7 @@ namespace iGeoComAPI.Services
         {
             var shopResult = await _puppeteerConnection.PuppeteerGrabber<WmoovModel>(_options.Value.BaseUrl, shopCode, waitSelectorShop);
             var shopList = shopResult.ToList();
-            var _rgx = Regexs.ExtractWmoovId();
+            var _rgx = Regexs.ExtractInfo(_wmoovIdRegex);
             List<IGeoComGrabModel> WmoovIGeoComList = new List<IGeoComGrabModel>();
             foreach (var shop in shopList)
             {

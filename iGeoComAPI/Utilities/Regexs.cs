@@ -4,10 +4,10 @@ namespace iGeoComAPI.Utilities
 {
     public static class Regexs
     {
-        public static Regex ExtractLagLng()
+
+        public static Regex ExtractInfo(string info)
         {
-            string regMatch = "([^|]*)";
-            Regex reg = new Regex(regMatch);
+            Regex reg = new Regex(info);
 
             return reg;
         }
@@ -21,29 +21,5 @@ namespace iGeoComAPI.Utilities
 
             return reg;
         }
-
-        public static Regex ExtractWmoovId()
-        {
-            string wmoovId = @"(?<=details\/)(.*)(?=\?)";
-            Regex reg = new Regex(wmoovId);
-
-            return reg;
-        }
-
-        public static Regex ExtractAeonLat()
-        {
-            string aeonLat = @"LatLng(.*),";
-            Regex reg = new Regex(aeonLat);
-
-            return reg;
-        }
-        public static Regex ExtractAeonLng()
-        {
-            string aeonLng = @", (.*)(?=\);m)";
-            Regex reg = new Regex(aeonLng);
-
-            return reg;
-        }
-
     }
 }

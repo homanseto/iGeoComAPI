@@ -11,10 +11,11 @@ namespace iGeoComAPI.Services
         //private readonly HttpClient _httpcClient;
         //private readonly IOptions<SevenElevenOptions> _options;
         private ConnectClient _httpClient;
-        private JSON _json;
+        private JsonFunction _json;
         private IOptions<SevenElevenOptions> _options;
         private  IMemoryCache _memoryCache;
         private ILogger<SevenElevenGrabber> _logger;
+        private string _regLagLngRegex = "([^|]*)";
 
 
         /*
@@ -25,7 +26,7 @@ namespace iGeoComAPI.Services
         }
         */
 
-        public SevenElevenGrabber(ConnectClient httpClient, JSON json, IOptions<SevenElevenOptions> options, IMemoryCache memoryCache, ILogger<SevenElevenGrabber> logger)
+        public SevenElevenGrabber(ConnectClient httpClient, JsonFunction json, IOptions<SevenElevenOptions> options, IMemoryCache memoryCache, ILogger<SevenElevenGrabber> logger)
         {
             _httpClient = httpClient;
             _json = json;
@@ -41,9 +42,9 @@ namespace iGeoComAPI.Services
             {
                 _logger.LogInformation("start grabbing 7-11 rowdata");
                 var enConnectHttp = await _httpClient.GetAsync(_options.Value.EnUrl);
-                var enSerializedResult = await _json.Diserialize<SevenElevenModel>(enConnectHttp);
+                var enSerializedResult =  _json.Dserialize<SevenElevenModel>(enConnectHttp);
                 var zhConnectHttp = await _httpClient.GetAsync(_options.Value.ZhUrl);
-                var zhSerializedResult = await _json.Diserialize<SevenElevenModel>(zhConnectHttp);
+                var zhSerializedResult = _json.Dserialize<SevenElevenModel>(zhConnectHttp);
                 var mergeResult = MergeEnAndZh(enSerializedResult, zhSerializedResult);
                 // _memoryCache.Set("iGeoCom", mergeResult, TimeSpan.FromHours(2));
                 return mergeResult;
@@ -56,9 +57,9 @@ namespace iGeoComAPI.Services
 
         }
 
-        public List<IGeoComGrabModel> MergeEnAndZh(List<SevenElevenModel> enResult, List<SevenElevenModel> zhResult)
+        public List<IGeoComGrabModel> MergeEnAndZh(List<SevenElevenModel>? enResult, List<SevenElevenModel>? zhResult)
         {
-            var _rgx = Regexs.ExtractLagLng();
+            var _rgx = Regexs.ExtractInfo(_regLagLngRegex);
             List<IGeoComGrabModel> SevenElevenIGeoComList = new List<IGeoComGrabModel>();
             try
             {

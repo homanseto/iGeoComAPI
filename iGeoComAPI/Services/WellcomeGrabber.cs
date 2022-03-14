@@ -20,6 +20,7 @@ namespace iGeoComAPI.Services
                                  }});
                                  }";
         private string waitSelector = ".table-responsive";
+        private string _regLagLngRegex = "([^|]*)";
 
         public WellcomeGrabber(PuppeteerConnection puppeteerConnection, IOptions<WellcomeOptions> options, IMemoryCache memoryCache, ILogger<WellcomeGrabber> logger)
         {
@@ -31,7 +32,7 @@ namespace iGeoComAPI.Services
 
         public async Task<List<IGeoComGrabModel>?> GetWebSiteItems()
         {
-           var enResult = await _puppeteerConnection.PuppeteerGrabber<WellcomeModel>(_options.Value.EnUrl, infoCode, waitSelector );
+           var enResult = await _puppeteerConnection.PuppeteerGrabber<WellcomeModel>(_options.Value.EnUrl, infoCode, waitSelector);
            var zhResult = await _puppeteerConnection.PuppeteerGrabber<WellcomeModel>(_options.Value.ZhUrl, infoCode, waitSelector);
            var enResultList = enResult.ToList();
            var zhResultList = zhResult.ToList();
@@ -46,7 +47,7 @@ namespace iGeoComAPI.Services
             try
             {
                 _logger.LogInformation("Merge Wellcome En and Zh");
-                var _rgx = Regexs.ExtractLagLng();
+                var _rgx = Regexs.ExtractInfo(_regLagLngRegex);
                 List<IGeoComGrabModel> WellcomeIGeoComList = new List<IGeoComGrabModel>();
                 foreach (var shopEn in enResult)
                 {

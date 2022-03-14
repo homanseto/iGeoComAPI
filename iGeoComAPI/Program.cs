@@ -28,11 +28,12 @@ builder.Services.AddSingleton<IGrabberAPI<WellcomeModel>, WellcomeGrabber>();
 builder.Services.AddSingleton<IGrabberAPI<CaltexModel>, CaltexGrabber>();
 builder.Services.AddSingleton<IGrabberAPI<ParknShopModel>, ParknShopGrabber>();
 builder.Services.AddSingleton<IGrabberAPI<AeonModel>, AeonGrabber>();
+builder.Services.AddSingleton<CircleKGrabber>();
 builder.Services.AddSingleton<VangoGrabber>();
 builder.Services.AddSingleton<USelectGrabber>();
 builder.Services.AddSingleton<WmoovGrabber>();
 builder.Services.AddSingleton<ConnectClient>();
-builder.Services.AddSingleton<JSON>();
+builder.Services.AddSingleton<JsonFunction>();
 builder.Services.AddSingleton<DataAccess>();
 builder.Services.AddSingleton<PuppeteerConnection>();
 builder.Services.AddMemoryCache();
@@ -45,6 +46,7 @@ builder.Services.Configure<ParknShopOptions>(_configuration.GetSection(ParknShop
 builder.Services.Configure<AeonOptions>(_configuration.GetSection(AeonOptions.SectionName));
 builder.Services.Configure<VangoOptions>(_configuration.GetSection(VangoOptions.SectionName));
 builder.Services.Configure<USelectOptions>(_configuration.GetSection(USelectOptions.SectionName));
+builder.Services.Configure<CircleKOptions>(_configuration.GetSection(CircleKOptions.SectionName));
 builder.Services.Configure<WmoovOptions>(_configuration.GetSection(WmoovOptions.SectionName));
 builder.Services.AddOptions(); //IOptions<T>
 

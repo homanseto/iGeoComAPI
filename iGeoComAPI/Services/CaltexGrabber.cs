@@ -9,13 +9,13 @@ namespace iGeoComAPI.Services
     public class CaltexGrabber : IGrabberAPI<CaltexModel>
     {
         private ConnectClient _httpClient;
-        private JSON _json;
+        private JsonFunction _json;
         private IOptions<CaltexOptions> _options;
         private IMemoryCache _memoryCache;
         private ILogger<CaltexGrabber> _logger;
 
 
-        public CaltexGrabber(ConnectClient httpClient, JSON json, IOptions<CaltexOptions> options, IMemoryCache memoryCache, ILogger<CaltexGrabber> logger)
+        public CaltexGrabber(ConnectClient httpClient, JsonFunction json, IOptions<CaltexOptions> options, IMemoryCache memoryCache, ILogger<CaltexGrabber> logger)
         {
             _httpClient = httpClient;
             _json = json;
@@ -27,9 +27,9 @@ namespace iGeoComAPI.Services
         {
             _logger.LogInformation("start grabbing 7-11 rowdata");
             var enConnectHttp = await _httpClient.GetAsync(_options.Value.EnUrl);
-            var enSerializedResult = await _json.Diserialize<CaltexModel>(enConnectHttp);
+            var enSerializedResult =  _json.Dserialize<CaltexModel>(enConnectHttp);
             var zhConnectHttp = await _httpClient.GetAsync(_options.Value.ZhUrl);
-            var zhSerializedResult = await _json.Diserialize<CaltexModel>(zhConnectHttp);
+            var zhSerializedResult =  _json.Dserialize<CaltexModel>(zhConnectHttp);
             var mergeResult = MergeEnAndZh(enSerializedResult, zhSerializedResult);
             // _memoryCache.Set("iGeoCom", mergeResult, TimeSpan.FromHours(2));
             return mergeResult;

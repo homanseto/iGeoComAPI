@@ -8,7 +8,7 @@
             _logger = logger;
         }
         
-        public async Task<HttpResponseMessage> GetAsync(string? url, string? parameter = ""  )
+        public async Task<string> GetAsync(string? url, string? parameter = ""  )
         {
             try
             {
@@ -20,8 +20,9 @@
 
                     using (var client = new HttpClient())
                     {
-                        HttpResponseMessage result = await client.GetAsync(uriBuilder.Uri);
-                        result.EnsureSuccessStatusCode();
+                        HttpResponseMessage resultMessage = await client.GetAsync(uriBuilder.Uri);
+                        resultMessage.EnsureSuccessStatusCode();
+                        string result = await resultMessage.Content.ReadAsStringAsync();
                         return result;
                     }
                 }

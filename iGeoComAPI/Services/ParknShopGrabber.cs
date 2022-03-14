@@ -58,7 +58,7 @@ namespace iGeoComAPI.Services
                     ParknShopIGeoCom.Tel_No = shopEn.Phone;
                     ParknShopIGeoCom.Class = "CMF";
                     ParknShopIGeoCom.Type = "SMK";
-                    ParknShopIGeoCom.Grab_ID = $"parknshop_{shopEn.BrandName}{shopEn.Latitude}{shopEn.Longitude}".Replace(".", "");
+                    ParknShopIGeoCom.Grab_ID = $"parknshop_{shopEn.BrandName}{shopEn.Latitude}{shopEn.Longitude}{shopEn.Phone}".Replace(".", "").Replace(" ","");
                     ParknShopIGeoCom.Web_Site = _options.Value.BaseUrl;
                     foreach (var shopZh in zhResult)
                     {

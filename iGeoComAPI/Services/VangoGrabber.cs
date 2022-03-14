@@ -8,12 +8,12 @@ namespace iGeoComAPI.Services
     public class VangoGrabber
     {
         private ConnectClient _httpClient;
-        private JSON _json;
+        private JsonFunction _json;
         private IOptions<VangoOptions> _options;
         private IMemoryCache _memoryCache;
         private ILogger<VangoGrabber> _logger;
 
-        public VangoGrabber(ConnectClient httpClient, JSON json, IOptions<VangoOptions> options, IMemoryCache memoryCache, ILogger<VangoGrabber> logger)
+        public VangoGrabber(ConnectClient httpClient, JsonFunction json, IOptions<VangoOptions> options, IMemoryCache memoryCache, ILogger<VangoGrabber> logger)
         {
             _httpClient = httpClient;
             _json = json;
@@ -28,9 +28,9 @@ namespace iGeoComAPI.Services
             var hkConnectHttp = await _httpClient.GetAsync(_options.Value.ShopAPI, $"regionID={_options.Value.HKRegionID}");
             var klnConnectHttp = await _httpClient.GetAsync(_options.Value.ShopAPI, $"regionID={_options.Value.KLNRegionID}");
             var ntConnectHttp = await _httpClient.GetAsync(_options.Value.ShopAPI, $"regionID={_options.Value.NTRegionID}");
-            var vangoHkResult = await _json.Diserialize<VangoModel>(hkConnectHttp);
-            var vangoKlnResult = await _json.Diserialize<VangoModel>(klnConnectHttp);
-            var vangoNtResult = await _json.Diserialize<VangoModel>(ntConnectHttp);
+            var vangoHkResult =  _json.Dserialize<VangoModel>(hkConnectHttp);
+            var vangoKlnResult = _json.Dserialize<VangoModel>(klnConnectHttp);
+            var vangoNtResult =  _json.Dserialize<VangoModel>(ntConnectHttp);
             var hkResult = Parsing(vangoHkResult, "hk");
             var klnResult = Parsing(vangoKlnResult, "kln");
             var ntResult = Parsing(vangoNtResult, "nt");
@@ -39,7 +39,7 @@ namespace iGeoComAPI.Services
             // _memoryCache.Set("iGeoCom", mergeResult, TimeSpan.FromHours(2));
         }
 
-        public List<IGeoComGrabModel> Parsing(List<VangoModel> grabResult, string region)
+        public List<IGeoComGrabModel> Parsing(List<VangoModel>? grabResult, string region)
         {
             List<IGeoComGrabModel> VangoIGeoComList = new List<IGeoComGrabModel>();
             if (grabResult != null)
@@ -54,6 +54,7 @@ namespace iGeoComAPI.Services
                     VangoIGeoCom.Longitude = shop.address_geo_lng; ;
                     VangoIGeoCom.Class = "CMF";
                     VangoIGeoCom.Type = "CVS";
+                    VangoIGeoCom.Web_Site = _options.Value.BaseUrl;
                     VangoIGeoCom.Grab_ID = $"{shop.store_number}_{shop.storename}{shop.address_geo_lat}";
                     if (region != null & region == "hk")
                     {
