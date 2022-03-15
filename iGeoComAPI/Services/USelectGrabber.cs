@@ -34,8 +34,8 @@ namespace iGeoComAPI.Services
             var parsingSelectResult = Parsing(selectResult);
             var parsingSelectFoodResult = Parsing(selectFoodResult);
             var parsingSelectMiniResult = Parsing(selectMiniResult);
-            List<IGeoComGrabModel> VangoResult = parsingSelectResult.Concat(parsingSelectFoodResult).Concat(parsingSelectMiniResult).ToList();
-            return VangoResult;
+            List<IGeoComGrabModel> USelectResult = parsingSelectResult.Concat(parsingSelectFoodResult).Concat(parsingSelectMiniResult).ToList();
+            return USelectResult;
             // _memoryCache.Set("iGeoCom", mergeResult, TimeSpan.FromHours(2));
         }
 
@@ -51,12 +51,13 @@ namespace iGeoComAPI.Services
                         IGeoComGrabModel USelectIGeoCom = new IGeoComGrabModel();
                         USelectIGeoCom.ChineseName = $"{shop.store_number}-{shop.storename}";
                         USelectIGeoCom.EnglishName = $"{shop.store_number}-{shop.storename_en}";
-                        USelectIGeoCom.C_Address = shop.address_description;
-                        USelectIGeoCom.E_Address = shop.address_description_en;
+                        USelectIGeoCom.C_Address = shop.address_description?.Replace(",", ""); ;
+                        USelectIGeoCom.E_Address = shop.address_description_en?.Replace(",", ""); ;
                         USelectIGeoCom.Latitude = shop.address_geo_lat;
                         USelectIGeoCom.Longitude = shop.address_geo_lng; ;
                         USelectIGeoCom.Class = "CMF";
                         USelectIGeoCom.Type = "SMK";
+                        USelectIGeoCom.Source = "27";
                         USelectIGeoCom.Web_Site = _options.Value.BaseUrl;
                         USelectIGeoCom.Grab_ID = $"{shop.store_number}_{shop.storename}{shop.address_geo_lat}";
                         USelectIGeoCom.Tel_No = $"{shop.telephone} {shop.telephone2} {shop.telephone3}";

@@ -30,26 +30,7 @@ namespace iGeoComAPI.Controllers
         {
             var result = await _dataAccess.LoadData<IGeoComGrabModel>(SelectSevenEleven);
             List<String> lists  = new List<string> { "Latitude", "Longitude"};
-            foreach (var item in result)
-            {
-                foreach(var list in lists)
-                {
-                    var pi = item.GetType().GetProperty(list);
-                    if (pi != null)
-                    {
-                        var value = pi.GetValue(item, null);
-                       Console.WriteLine(value!.GetType());
-                       Console.WriteLine(value) ;
-                    }
-                }
-                for (int i = 0; i < 5; i++)
-                {
-                    Console.WriteLine(i);
-                }
-               
-                
-            }
-            CsvFile.DownloadCsv(result, "SevenEleven_Grabbed_Result");
+            CsvFile.DownloadCsv(result, "SevenEleven_grab_Result");
             return result;
         }
 

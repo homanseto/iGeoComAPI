@@ -29,6 +29,7 @@ namespace iGeoComAPI.Controllers
         public async Task<List<IGeoComGrabModel>?> Get()
         {
             var result = await _dataAccess.LoadData<IGeoComGrabModel>(SelectCaltex);
+            CsvFile.DownloadCsv(result, "Caltex_grab_result");
             return result;
         }
 

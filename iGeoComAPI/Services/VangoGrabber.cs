@@ -54,6 +54,7 @@ namespace iGeoComAPI.Services
                     VangoIGeoCom.Longitude = shop.address_geo_lng; ;
                     VangoIGeoCom.Class = "CMF";
                     VangoIGeoCom.Type = "CVS";
+                    VangoIGeoCom.Source = "27";
                     VangoIGeoCom.Web_Site = _options.Value.BaseUrl;
                     VangoIGeoCom.Grab_ID = $"{shop.store_number}_{shop.storename}{shop.address_geo_lat}";
                     if (region != null & region == "hk")

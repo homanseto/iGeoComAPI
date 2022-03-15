@@ -13,7 +13,7 @@ namespace iGeoComAPI.Controllers
     {
         private string InsertSql = "INSERT INTO igeocomtable VALUES (@GEONAMEID,@ENGLISHNAME,@CHINESENAME,@ClASS,@TYPE, @SUBCAT,@EASTING,@NORTHING,@SOURCE,@E_FLOOR,@C_FLOOR,@E_SITENAME,@C_SITENAME,@E_AREA,@C_AREA,@E_DISTRICT,@C_DISTRICT,@E_REGION,@C_REGION,@E_ADDRESS,@C_ADDRESS,@TEL_NO,@FAX_NO,@WEB_SITE,@REV_DATE,@GRAB_ID,@Latitude,@Longitude);";
         private string SelectWellcome = "SELECT * FROM igeocomtable WHERE GRAB_ID LIKE '%wellcome%'";
-        private string SelectWellcomeFromDataBase = "SELECT * FROM iGeoCom_Dec2021 WHERE ENGLISHNAME LIKE '%wellcome super%' ";
+        private string SelectWellcomeFromDataBase = "SELECT * FROM iGeoCom_Feb22 WHERE ENGLISHNAME LIKE '%wellcome super%' ";
         private readonly ILogger<WellcomeController> _logger;
         private readonly WellcomeGrabber _wellcomeGrabber;
         private readonly DataAccess _dataAccess;
@@ -28,6 +28,7 @@ namespace iGeoComAPI.Controllers
         public async Task<List<IGeoComGrabModel>?> Get()
         {
             var result  = await _dataAccess.LoadData<IGeoComGrabModel>(SelectWellcome);
+            CsvFile.DownloadCsv(result, "Wellcome_grab_result");
             return result;
         }
 
@@ -92,7 +93,7 @@ namespace iGeoComAPI.Controllers
             var orgModified = _wellcomeGrabber.orgModified(rightResult, leftResult);
             var newModified = _wellcomeGrabber.newModified(leftResult, rightResult);
             var finalResult = _wellcomeGrabber.MergeResults(addedResult, removedResult, newModified, orgModified);
-            CsvFile.DownloadCsv(finalResult, "Wellcome_Result");
+            CsvFile.DownloadCsv(finalResult, "Wellcome_complete_Result");
             return finalResult;
         }
 

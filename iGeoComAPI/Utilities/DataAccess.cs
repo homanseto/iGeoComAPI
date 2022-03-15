@@ -10,12 +10,12 @@ namespace iGeoComAPI.Utilities
 {
     public class DataAccess
     {
-        private readonly IOptions<ConnectionStringsHomeOptions> _options;
-        //private readonly IOptions<ConnectionStrings3DMOptions> _options;
+        //private readonly IOptions<ConnectionStringsHomeOptions> _options;
+        private readonly IOptions<ConnectionStrings3DMOptions> _options;
         private readonly IMemoryCache _memoryCache;
 
         //public DataAccess(IOptions<ConnectionStringsHomeOptions> options, IMemoryCache memoryCache)
-        public DataAccess(IOptions<ConnectionStringsHomeOptions> options, IMemoryCache memoryCache)
+        public DataAccess(IOptions<ConnectionStrings3DMOptions> options, IMemoryCache memoryCache)
         {
             _options = options;
             _memoryCache = memoryCache;
@@ -49,7 +49,7 @@ namespace iGeoComAPI.Utilities
 
         public void SaveGrabbedData<T>(string sql, List<T> parameters)
         {
-            using (SqlConnection connection = new SqlConnection(_options.Value.DefaultConnection))
+            using (SqlConnection connection = new SqlConnection(_options.Value.Default))
             {
                 foreach(var param in parameters)
                 {

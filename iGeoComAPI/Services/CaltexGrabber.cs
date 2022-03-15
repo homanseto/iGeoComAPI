@@ -25,10 +25,10 @@ namespace iGeoComAPI.Services
         }
         public async Task<List<IGeoComGrabModel>?> GetWebSiteItems()
         {
-            _logger.LogInformation("start grabbing 7-11 rowdata");
-            var enConnectHttp = await _httpClient.GetAsync(_options.Value.EnUrl);
+            _logger.LogInformation("start grabbing Caltex rowdata");
+            var enConnectHttp = await _httpClient.GetAsync(_options.Value.EnUrl, $"pagePath={_options.Value.PagePathEn}&siteType={_options.Value.SiteType}");
+            var zhConnectHttp = await _httpClient.GetAsync(_options.Value.ZhUrl, $"pagePath={_options.Value.PagePathZh}&siteType={_options.Value.SiteType}");
             var enSerializedResult =  _json.Dserialize<CaltexModel>(enConnectHttp);
-            var zhConnectHttp = await _httpClient.GetAsync(_options.Value.ZhUrl);
             var zhSerializedResult =  _json.Dserialize<CaltexModel>(zhConnectHttp);
             var mergeResult = MergeEnAndZh(enSerializedResult, zhSerializedResult);
             // _memoryCache.Set("iGeoCom", mergeResult, TimeSpan.FromHours(2));
@@ -48,7 +48,7 @@ namespace iGeoComAPI.Services
                         IGeoComGrabModel CaltexIGeoCom = new IGeoComGrabModel();
                         CaltexIGeoCom.Grab_ID = $"caltex_{en.Id}";
                         CaltexIGeoCom.EnglishName = $"Caltex-{en.Name!.Trim()}";
-                        CaltexIGeoCom.E_Address = en.Street!.Trim();
+                        CaltexIGeoCom.E_Address = en.Street!.Trim()?.Replace(",", ""); ;
                         CaltexIGeoCom.Tel_No = en.PhoneNumber!.Replace(" ", "");
                         CaltexIGeoCom.Latitude = en.Latitude!.Trim();
                         CaltexIGeoCom.Longitude = en.Longitude!.Trim();
@@ -58,7 +58,7 @@ namespace iGeoComAPI.Services
                         CaltexIGeoCom.Source = "27";
                         foreach (var zh in zhResult)
                         {
-                            if (en.Id == zh.Id)
+                            if (en.PhoneNumber == zh.PhoneNumber)
                             {
                                 CaltexIGeoCom.ChineseName = $"加德士-{zh.Name!.Trim()}";
                                 CaltexIGeoCom.C_Address = zh.Street!.Trim().Replace(" ", "");

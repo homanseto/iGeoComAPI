@@ -46,10 +46,12 @@ namespace iGeoComAPI.Services
             {
                 _logger.LogInformation("Merge ParknShop En and Zh");
                 List<IGeoComGrabModel> ParknShopIGeoComList = new List<IGeoComGrabModel>();
-                foreach (var shopEn in enResult)
+                foreach (var item in enResult.Select((value, i) => new { i, value }))
                 {
+                    var shopEn = item.value;
+                    var index = item.i;
                     IGeoComGrabModel ParknShopIGeoCom = new IGeoComGrabModel();
-                    ParknShopIGeoCom.E_Address = shopEn.Address;
+                    ParknShopIGeoCom.E_Address = shopEn.Address?.Replace(",", ""); ;
                     ParknShopIGeoCom.EnglishName = $"{shopEn.BrandName}-{shopEn.Name}";
                     ParknShopIGeoCom.E_Region = shopEn.Region;
                     ParknShopIGeoCom.E_District = shopEn.District;
@@ -58,22 +60,24 @@ namespace iGeoComAPI.Services
                     ParknShopIGeoCom.Tel_No = shopEn.Phone;
                     ParknShopIGeoCom.Class = "CMF";
                     ParknShopIGeoCom.Type = "SMK";
-                    ParknShopIGeoCom.Grab_ID = $"parknshop_{shopEn.BrandName}{shopEn.Latitude}{shopEn.Longitude}{shopEn.Phone}".Replace(".", "").Replace(" ","");
+                    ParknShopIGeoCom.Source = "27";
                     ParknShopIGeoCom.Web_Site = _options.Value.BaseUrl;
+                    ParknShopIGeoCom.Grab_ID = $"parknshop_{shopEn.BrandName}{shopEn.Latitude}{shopEn.Longitude}{shopEn.Phone}_{index}".Replace(".", "").Replace(" ", "");
                     foreach (var shopZh in zhResult)
                     {
                         if (shopEn.Latitude == shopZh.Latitude && shopEn.Longitude == shopZh.Longitude && shopEn.Phone == shopZh.Phone)
                         {
                             ParknShopIGeoCom.ChineseName = $"{shopZh.BrandName}-{shopZh.Name}";
                             ParknShopIGeoCom.C_Region = shopZh.Region;
-                            ParknShopIGeoCom.C_Address = shopZh.Address;
+                            ParknShopIGeoCom.C_Address = shopZh.Address?.Replace(",", ""); ;
                             ParknShopIGeoCom.C_District = shopZh.District;
-                            break;
+                            
+                            continue;
                         }
                     }
                     ParknShopIGeoComList.Add(ParknShopIGeoCom);
                 }
-                return ParknShopIGeoComList;
+                return ParknShopIGeoComList.Where(shop => shop.E_District != "MACAU").ToList();
             }catch (Exception ex)
             {
                 _logger.LogError(ex.Message, "fail to merge ParknShop En and Zh");

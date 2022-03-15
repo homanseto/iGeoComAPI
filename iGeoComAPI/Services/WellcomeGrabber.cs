@@ -52,7 +52,7 @@ namespace iGeoComAPI.Services
                 foreach (var shopEn in enResult)
                 {
                     IGeoComGrabModel WellcomeIGeoCom = new IGeoComGrabModel();
-                    WellcomeIGeoCom.E_Address = shopEn.Address;
+                    WellcomeIGeoCom.E_Address = shopEn.Address?.Replace(",", ""); ;
                     WellcomeIGeoCom.EnglishName = $"Wellcome Supermarket-{shopEn.Name}";
                     var matchesEn = _rgx.Matches(shopEn.LatLng!);
                     WellcomeIGeoCom.Latitude = matchesEn[0].Value;
@@ -61,6 +61,7 @@ namespace iGeoComAPI.Services
                     WellcomeIGeoCom.Web_Site = _options.Value.BaseUrl;
                     WellcomeIGeoCom.Class = "CMF";
                     WellcomeIGeoCom.Type = "SMK";
+                    WellcomeIGeoCom.Source = "27";
                     WellcomeIGeoCom.Grab_ID = $"wellcome_{shopEn.LatLng}{shopEn.Phone}{shopEn.Name}".Replace(" ", "").Replace("|", "").Replace(".", "");
                     foreach (var shopZh in zhResult)
                     {
