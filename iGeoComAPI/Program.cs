@@ -26,6 +26,7 @@ builder.Services.AddSingleton<IGrabberAPI<SevenElevenModel>,SevenElevenGrabber>(
 builder.Services.AddSingleton<IGrabberAPI<CaltexModel>, CaltexGrabber>();
 builder.Services.AddSingleton<IGrabberAPI<ParknShopModel>, ParknShopGrabber>();
 builder.Services.AddSingleton<IGrabberAPI<AeonModel>, AeonGrabber>();
+builder.Services.AddSingleton<AromeNMaximsCakesGrabber>();
 builder.Services.AddSingleton<WellcomeGrabber>();
 builder.Services.AddSingleton<CircleKGrabber>();
 builder.Services.AddSingleton<VangoGrabber>();
@@ -47,6 +48,7 @@ builder.Services.Configure<VangoOptions>(_configuration.GetSection(VangoOptions.
 builder.Services.Configure<USelectOptions>(_configuration.GetSection(USelectOptions.SectionName));
 builder.Services.Configure<CircleKOptions>(_configuration.GetSection(CircleKOptions.SectionName));
 builder.Services.Configure<WmoovOptions>(_configuration.GetSection(WmoovOptions.SectionName));
+builder.Services.Configure<AromeNMaximsCakesOptions>(_configuration.GetSection(AromeNMaximsCakesOptions.SectionName));
 builder.Services.AddOptions(); //IOptions<T>
 
 

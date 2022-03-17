@@ -37,7 +37,7 @@ namespace iGeoComAPI.Utilities
             }
         }
 
-        public async Task<T> PuppeteerSignalGrabber<T>(string? url, string? infoCode, string? waitSelector)
+        public async Task<T> PuppeteerSingleGrabber<T>(string? url, string? infoCode, string? waitSelector)
         {
             BrowserFetcher browserFetcher = new BrowserFetcher();
             await browserFetcher.DownloadAsync(BrowserFetcher.DefaultChromiumRevision);
