@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 
 namespace iGeoComAPI.Services
 {
-    public class AromeNMaximsCakesGrabber 
+    public class AromeNMaximsCakesGrabber : IGrabberAPI<AromeNMaximsCakesModel>
     {
         private PuppeteerConnection _puppeteerConnection;
         private IOptions<AromeNMaximsCakesOptions> _options;
