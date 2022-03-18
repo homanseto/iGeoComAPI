@@ -28,6 +28,8 @@ namespace iGeoComAPI.Controllers
         [HttpGet]
         public async Task<List<IGeoComGrabModel>?> Get()
         {
+           // var GrabbedResult = await _sevenElevenGrabber.GetWebSiteItems();
+           // _dataAccess.SaveGrabbedData(InsertSql, GrabbedResult);
             var result = await _dataAccess.LoadData<IGeoComGrabModel>(SelectSevenEleven);
             List<String> lists  = new List<string> { "Latitude", "Longitude"};
             CsvFile.DownloadCsv(result, "SevenEleven_grab_Result");

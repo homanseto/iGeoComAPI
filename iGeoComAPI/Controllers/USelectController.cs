@@ -26,6 +26,8 @@ namespace iGeoComAPI.Controllers
         [HttpGet]
         public async Task<List<IGeoComGrabModel>?> Get()
         {
+           // var GrabbedResult = await _uSelectGrabber.GetWebSiteItems();
+            //_dataAccess.SaveGrabbedData(InsertSql, GrabbedResult);
             var result = await _dataAccess.LoadData<IGeoComGrabModel>(SelectUSelect);
             CsvFile.DownloadCsv(result, "USelect_grab_result");
             return result;

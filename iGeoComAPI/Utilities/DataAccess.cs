@@ -22,7 +22,7 @@ namespace iGeoComAPI.Utilities
         }
         public async Task<List<T>> LoadData<T>(string sql)
         {
-            using (SqlConnection connection = new SqlConnection(_options.Value.DefaultConnection))
+            using (SqlConnection connection = new SqlConnection(_options.Value.Default))
             {
                 var rows = await connection.QueryAsync<T>(sql);
 
