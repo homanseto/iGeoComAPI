@@ -47,13 +47,13 @@ namespace iGeoComAPI.Services
 
         public async Task<List<IGeoComGrabModel?>> GetWebSiteItems()
         {
-            var shopResult = await _puppeteerConnection.PuppeteerGrabber<WmoovModel>(_options.Value.BaseUrl, shopCode, waitSelectorShop);
+            var shopResult = await _puppeteerConnection.PuppeteerGrabber<WmoovModel[]>(_options.Value.BaseUrl, shopCode, waitSelectorShop);
             var shopList = shopResult.ToList();
             var _rgx = Regexs.ExtractInfo(_wmoovIdRegex);
             List<IGeoComGrabModel> WmoovIGeoComList = new List<IGeoComGrabModel>();
             foreach (var shop in shopList)
             {
-                var infoResult = await _puppeteerConnection.PuppeteerSingleGrabber<IGeoComGrabModel>(@$"https://wmoov.com{shop.Website}", infoCode, waitSelectorInfo);
+                var infoResult = await _puppeteerConnection.PuppeteerGrabber<IGeoComGrabModel>(@$"https://wmoov.com{shop.Website}", infoCode, waitSelectorInfo);
         
                 infoResult.ChineseName = shop.Name;
                 infoResult.Latitude = shop.Latitude;

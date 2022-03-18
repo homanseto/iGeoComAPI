@@ -42,7 +42,7 @@ namespace iGeoComAPI.Services
 
         public async Task<List<IGeoComGrabModel>?> GetWebSiteItems()
         {
-            string enNumberOfShop = await _puppeteerConnection.PuppeteerSingleGrabber<string>($"{_options.Value.EnUrl}1", shopNumber, waitSelector1st);
+            string enNumberOfShop = await _puppeteerConnection.PuppeteerGrabber<string>($"{_options.Value.EnUrl}1", shopNumber, waitSelector1st);
             var testResult =await Extract1stLevelData(EachPageNumberOfShops(enNumberOfShop));
             var enGrabResult = await Extract2stLevelData(testResult, _options.Value.EnSearchpath);
             var zhGrabResult = await Extract2stLevelData(testResult, _options.Value.ZhSearchpath);
@@ -64,7 +64,7 @@ namespace iGeoComAPI.Services
             List<AromeNMaximsCakesModel> AromeNMaximsCakes1stList = new List<AromeNMaximsCakesModel>();
             for (int i =1; i<=page; i++)
             {
-                var en1stData = await _puppeteerConnection.PuppeteerGrabber<AromeNMaximsCakesModel>($"{_options.Value.EnUrl}{i}", infoCode1stLevel, waitSelector1st);
+                var en1stData = await _puppeteerConnection.PuppeteerGrabber<AromeNMaximsCakesModel[]>($"{_options.Value.EnUrl}{i}", infoCode1stLevel, waitSelector1st);
                 var en1stDataList = en1stData.ToList();
                 AromeNMaximsCakes1stList = AromeNMaximsCakes1stList.Concat(en1stDataList).ToList();
             }
@@ -78,7 +78,7 @@ namespace iGeoComAPI.Services
             List<AromeNMaximsCakesModel> AromeNMaximsCakesList = new List<AromeNMaximsCakesModel>();
             foreach (var path in pathList)
             {
-                var extract2ndData = await _puppeteerConnection.PuppeteerSingleGrabber<AromeNMaximsCakesModel>($"{searchPath}{_pathRgx.Match(path.Website!).Groups[1].Value}", infoCode2ndLevel, waitSelector2nd);
+                var extract2ndData = await _puppeteerConnection.PuppeteerGrabber<AromeNMaximsCakesModel>($"{searchPath}{_pathRgx.Match(path.Website!).Groups[1].Value}", infoCode2ndLevel, waitSelector2nd);
                 extract2ndData.Id = _idRgx.Match(path.Website!).Groups[1].Value;
                 AromeNMaximsCakesList.Add(extract2ndData);
             }

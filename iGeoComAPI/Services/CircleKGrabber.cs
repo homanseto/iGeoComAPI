@@ -35,8 +35,8 @@ namespace iGeoComAPI.Services
         }
         public async Task<List<IGeoComGrabModel>?> GetWebSiteItems()
         {
-            var rawDataEng = await _puppeteerConnection.PuppeteerSingleGrabber<string>(_options.Value.EnUrl, infoCode, waitSelector);
-            var rawDataZh = await _puppeteerConnection.PuppeteerSingleGrabber<string>(_options.Value.ZhUrl, infoCode, waitSelector);
+            var rawDataEng = await _puppeteerConnection.PuppeteerGrabber<string>(_options.Value.EnUrl, infoCode, waitSelector);
+            var rawDataZh = await _puppeteerConnection.PuppeteerGrabber<string>(_options.Value.ZhUrl, infoCode, waitSelector);
             var _rgxRegionList = Regexs.ExtractInfo(_regionListRegex);
             var _rgxStoreList = Regexs.ExtractInfo(_storeListRegex);
             string regionStringEng = _rgxRegionList.Match(rawDataEng).Groups[1].Value;

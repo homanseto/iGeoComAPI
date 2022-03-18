@@ -32,8 +32,8 @@ namespace iGeoComAPI.Services
 
         public async Task<List<IGeoComGrabModel>?> GetWebSiteItems()
         {
-           var enResult = await _puppeteerConnection.PuppeteerGrabber<WellcomeModel>(_options.Value.EnUrl, infoCode, waitSelector);
-           var zhResult = await _puppeteerConnection.PuppeteerGrabber<WellcomeModel>(_options.Value.ZhUrl, infoCode, waitSelector);
+           var enResult = await _puppeteerConnection.PuppeteerGrabber<WellcomeModel[]>(_options.Value.EnUrl, infoCode, waitSelector);
+           var zhResult = await _puppeteerConnection.PuppeteerGrabber<WellcomeModel[]>(_options.Value.ZhUrl, infoCode, waitSelector);
            var enResultList = enResult.ToList();
            var zhResultList = zhResult.ToList();
            var mergeResult = MergeEnAndZh(enResultList, zhResultList);

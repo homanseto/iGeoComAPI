@@ -28,6 +28,7 @@ builder.Services.AddSingleton<IGrabberAPI<ParknShopModel>, ParknShopGrabber>();
 builder.Services.AddSingleton<IGrabberAPI<AeonModel>, AeonGrabber>();
 builder.Services.AddSingleton<IGrabberAPI<AromeNMaximsCakesModel>,AromeNMaximsCakesGrabber>();
 builder.Services.AddSingleton<AmbulanceDepotGrabber>();
+builder.Services.AddSingleton<BloodDonorCentreGrabber>();
 builder.Services.AddSingleton<WellcomeGrabber>();
 builder.Services.AddSingleton<CircleKGrabber>();
 builder.Services.AddSingleton<VangoGrabber>();
@@ -51,6 +52,7 @@ builder.Services.Configure<CircleKOptions>(_configuration.GetSection(CircleKOpti
 builder.Services.Configure<WmoovOptions>(_configuration.GetSection(WmoovOptions.SectionName));
 builder.Services.Configure<AmbulanceDepotOptions>(_configuration.GetSection(AmbulanceDepotOptions.SectionName));
 builder.Services.Configure<AromeNMaximsCakesOptions>(_configuration.GetSection(AromeNMaximsCakesOptions.SectionName));
+builder.Services.Configure<BloodDonorCentreOptions>(_configuration.GetSection(BloodDonorCentreOptions.SectionName));
 builder.Services.AddOptions(); //IOptions<T>
 
 
