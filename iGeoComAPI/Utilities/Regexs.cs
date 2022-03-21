@@ -5,9 +5,9 @@ namespace iGeoComAPI.Utilities
     public static class Regexs
     {
 
-        public static Regex ExtractInfo(string info)
+        public static Regex ExtractInfo(string input)
         {
-            Regex reg = new Regex(info);
+            Regex reg = new Regex(input);
 
             return reg;
         }
@@ -20,6 +20,14 @@ namespace iGeoComAPI.Utilities
             Regex reg = new Regex(c_Floor);
 
             return reg;
+        }
+
+        public static string TrimAllAndAdjustSpace(string input)
+        {
+            // at least 2 whitespace
+            string spaceAndAdjust = "\\s\\s+";
+            var result = Regex.Replace(input, spaceAndAdjust, String.Empty);
+            return result;
         }
     }
 }
