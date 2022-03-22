@@ -49,8 +49,10 @@ namespace iGeoComAPI.Services
                 _logger.LogInformation("Merge Wellcome En and Zh");
                 var _rgx = Regexs.ExtractInfo(_regLagLngRegex);
                 List<IGeoComGrabModel> WellcomeIGeoComList = new List<IGeoComGrabModel>();
-                foreach (var shopEn in enResult)
+                foreach (var item in enResult.Select((value, i) => new { i, value }))
                 {
+                    var shopEn = item.value;
+                    var index = item.i;
                     IGeoComGrabModel WellcomeIGeoCom = new IGeoComGrabModel();
                     WellcomeIGeoCom.E_Address = shopEn.Address?.Replace(",", ""); ;
                     WellcomeIGeoCom.EnglishName = $"Wellcome Supermarket-{shopEn.Name}";
@@ -62,7 +64,7 @@ namespace iGeoComAPI.Services
                     WellcomeIGeoCom.Class = "CMF";
                     WellcomeIGeoCom.Type = "SMK";
                     WellcomeIGeoCom.Source = "27";
-                    WellcomeIGeoCom.Grab_ID = $"wellcome_{shopEn.LatLng}{shopEn.Phone}{shopEn.Name}".Replace(" ", "").Replace("|", "").Replace(".", "");
+                    WellcomeIGeoCom.Grab_ID = $"wellcome_{shopEn.LatLng}{shopEn.Phone}_{index}".Replace(" ", "").Replace("|", "").Replace(".", "");
                     foreach (var shopZh in zhResult)
                     {
                         var matchesZh = _rgx.Matches(shopZh.LatLng!);

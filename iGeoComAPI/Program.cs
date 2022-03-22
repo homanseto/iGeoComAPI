@@ -1,9 +1,11 @@
 using iGeoComAPI.Services;
 using iGeoComAPI.Options;
-using Microsoft.Extensions.DependencyInjection;
+//using Microsoft.Extensions.DependencyInjection;
 using iGeoComAPI.Utilities;
 using Serilog;
 using iGeoComAPI.Models;
+using iGeoComAPI;
+using Autofac.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +18,7 @@ var logger = new LoggerConfiguration()
     .CreateLogger();
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(logger);
+builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -54,10 +57,12 @@ builder.Services.Configure<AmbulanceDepotOptions>(_configuration.GetSection(Ambu
 builder.Services.Configure<AromeNMaximsCakesOptions>(_configuration.GetSection(AromeNMaximsCakesOptions.SectionName));
 builder.Services.Configure<BloodDonorCentreOptions>(_configuration.GetSection(BloodDonorCentreOptions.SectionName));
 builder.Services.AddOptions(); //IOptions<T>
+//builder.Services.AddHostedService<MyBackGroundService>();
 
 
 var app = builder.Build();
 app.Logger.LogInformation("Project start");
+Console.WriteLine( app.Environment.EnvironmentName);
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
