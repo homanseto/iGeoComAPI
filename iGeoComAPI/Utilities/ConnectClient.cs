@@ -25,8 +25,7 @@
                         string result = await resultMessage.Content.ReadAsStringAsync();
                         return result;
                     }
-                }
-                _logger.LogError("url cannot be empty or null");
+                }else
                 throw new Exception("url cannot be empty or null");
             }
             catch(Exception ex)

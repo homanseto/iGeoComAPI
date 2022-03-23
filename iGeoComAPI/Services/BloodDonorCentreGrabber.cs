@@ -18,11 +18,8 @@ namespace iGeoComAPI.Services
                                  return selectors[1].textContent.trim();
                                  }";
         private string waitSelector = ".loaded";
-        private string _extraList = @"\};var locations = \[(.*)];var map";
-        private string _replaceExtraInfoWithWorkingHour = @"(^.+LatLng\(|\),.*location_map_pop_title fs_20"">|<a class=""marker_detail_link fs_12"".*<div class=""location_addr"">|<\/div><div class=""location_openhour"">|<\/div><div class=""location_addtocalander"">.*)";
-        private string _replaceExtraInfo = @"(^.+LatLng\(|\),.*location_map_pop_title fs_20"">|<a class=""marker_detail_link fs_12"".*<div class=""location_addr"">|<\/div><div class=""location_openhour"">.*)";
-        private string _regLagLngRegex = "([^,]*)";
 
+        BloodDonorCentreModel bloodDonorCentreModel = new BloodDonorCentreModel();
 
         public BloodDonorCentreGrabber(PuppeteerConnection puppeteerConnection, IOptions<BloodDonorCentreOptions> options, IMemoryCache memoryCache, ILogger<BloodDonorCentreGrabber> logger)
         {
@@ -45,15 +42,15 @@ namespace iGeoComAPI.Services
         {
             try
             {
-                var _listRgx = Regexs.ExtractInfo(_extraList);
+                var _listRgx = Regexs.ExtractInfo(bloodDonorCentreModel.ExtraList);
                 var splitResult = _listRgx.Match(Regexs.TrimAllAndAdjustSpace(info!)).Groups[1].Value;
                 var resultList = splitResult.Split("'],").ToList();
-                var _lagLngRgx = Regexs.ExtractInfo(_regLagLngRegex);
+                var _lagLngRgx = Regexs.ExtractInfo(bloodDonorCentreModel.RegLagLngRegex);
                 List<BloodDonorCentreModel> BloodDonorCentreList = new List<BloodDonorCentreModel>();
                 foreach (var item in resultList)
                 {
                     BloodDonorCentreModel bloodDonorCentre = new BloodDonorCentreModel();
-                    List<string> replacedResult = Regex.Replace(item, _replaceExtraInfo, "/split/").Split("/split/").ToList();
+                    List<string> replacedResult = Regex.Replace(item, bloodDonorCentreModel.ReplaceExtraInfo, "/split/").Split("/split/").ToList();
                     if(ReferenceEquals != null)
                     {
                         bloodDonorCentre.Name = replacedResult[2];
@@ -80,24 +77,5 @@ namespace iGeoComAPI.Services
                 throw;
             }
         }
-
-        /*
-            public List<IGeoComGrabModel> MergeEnAndZh(List<BloodDonorCentreModel> enResult, List<BloodDonorCentreModel> zhResult)
-        {
-            try
-            {
-                _logger.LogInformation("Merge BloodDonorCentre En and Zh");
-                List<IGeoComGrabModel> BloodDonorCentreIGeoComList = new List<IGeoComGrabModel>();
-                foreach (var shopEn in enResult)
-                {
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                throw;
-            }
-        }
-        */
     }
 }

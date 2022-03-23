@@ -12,12 +12,13 @@ namespace iGeoComAPI.Controllers
     public class SevenElevenController : ControllerBase
 
     {
-        private string InsertSql = "INSERT INTO igeocomtable VALUES (@GEONAMEID,@ENGLISHNAME,@CHINESENAME,@ClASS,@TYPE, @SUBCAT,@EASTING,@NORTHING,@SOURCE,@E_FLOOR,@C_FLOOR,@E_SITENAME,@C_SITENAME,@E_AREA,@C_AREA,@E_DISTRICT,@C_DISTRICT,@E_REGION,@C_REGION,@E_ADDRESS,@C_ADDRESS,@TEL_NO,@FAX_NO,@WEB_SITE,@REV_DATE,@GRAB_ID,@Latitude,@Longitude);";
-        private string SelectSevenEleven = "SELECT * FROM igeocomtable WHERE GRAB_ID LIKE '%seveneleven%'";
-        private string SelectSevenElevenFromDataBase = "SELECT * FROM iGeoCom_Dec2021 WHERE ENGLISHNAME LIKE '%7-Eleven%' ";
         private readonly ILogger<SevenElevenController> _logger;
         private IGrabberAPI<SevenElevenModel> _sevenElevenGrabber;
         private readonly DataAccess _dataAccess;
+
+        SevenElevenModel sevenElevenModel = new SevenElevenModel();
+        IGeoComModel igeoComModel = new IGeoComModel();
+
         public SevenElevenController(IGrabberAPI<SevenElevenModel> sevenElevenGrabber, ILogger<SevenElevenController> logger, DataAccess dataAccess)
         {
             _sevenElevenGrabber = sevenElevenGrabber;
@@ -30,7 +31,7 @@ namespace iGeoComAPI.Controllers
         {
            // var GrabbedResult = await _sevenElevenGrabber.GetWebSiteItems();
            // _dataAccess.SaveGrabbedData(InsertSql, GrabbedResult);
-            var result = await _dataAccess.LoadData<IGeoComGrabModel>(SelectSevenEleven);
+            var result = await _dataAccess.LoadData<IGeoComGrabModel>(sevenElevenModel.SelectSevenEleven);
             List<String> lists  = new List<string> { "Latitude", "Longitude"};
             CsvFile.DownloadCsv(result, "SevenEleven_grab_Result");
             return result;
@@ -59,7 +60,7 @@ namespace iGeoComAPI.Controllers
         public async Task<List<IGeoComGrabModel?>> Create()
         {
             var GrabbedResult = await _sevenElevenGrabber.GetWebSiteItems();
-            _dataAccess.SaveGrabbedData(InsertSql, GrabbedResult);
+            _dataAccess.SaveGrabbedData(igeoComModel.InsertSql, GrabbedResult);
             return GrabbedResult;
         }
         

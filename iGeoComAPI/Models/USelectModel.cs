@@ -12,5 +12,13 @@
         public string? telephone { get; set; }
         public string? telephone2 { get; set; }
         public string? telephone3 { get; set; }
+        public string SelectUSelectFromDataBase
+        {
+            get { return "SELECT * FROM iGeoCom_Dec2021 WHERE ENGLISHNAME like '%u slect%'";}
+        } 
+        public string SelectUSelect
+        {
+            get { return "SELECT * FROM igeocomtable WHERE GRAB_ID LIKE '%u select%'"; }
+        } 
     }
 }

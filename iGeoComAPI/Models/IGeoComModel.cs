@@ -28,8 +28,14 @@
         public string? Fax_No { get; set; }
         public string? Web_Site { get; set; }
         public string? Rev_Date { get; set; }
-       //  public string? Grab_ID { get; set; }
-       // public string? Latitude { get; set; }
-       // public string? Longitude { get; set; }
+        public string InsertSql
+        {
+            get { 
+                return "INSERT INTO igeocomtable VALUES (@GEONAMEID,@ENGLISHNAME,@CHINESENAME,@ClASS,@TYPE, @SUBCAT,@EASTING,@NORTHING,@SOURCE,@E_FLOOR,@C_FLOOR,@E_SITENAME,@C_SITENAME,@E_AREA,@C_AREA,@E_DISTRICT,@C_DISTRICT,@E_REGION,@C_REGION,@E_ADDRESS,@C_ADDRESS,@TEL_NO,@FAX_NO,@WEB_SITE,@REV_DATE,@GRAB_ID,@Latitude,@Longitude);";
+            }
+        }
+        //  public string? Grab_ID { get; set; }
+        // public string? Latitude { get; set; }
+        // public string? Longitude { get; set; }
     }
 }

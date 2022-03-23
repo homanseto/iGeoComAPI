@@ -10,5 +10,13 @@
         public string? telephone { get; set; }
         public string? telephone2 { get; set; }
         public string? telephone3   { get; set; }
+        public string SelectVangoFromDataBase
+        {
+            get { return "SELECT * FROM iGeoCom_Dec2021 WHERE ENGLISHNAME like '%vango%'"; }
+        } 
+        public string SelectVango
+        {
+            get { return "SELECT * FROM igeocomtable WHERE GRAB_ID LIKE '%vango%'"; }
+        } 
     }
 }

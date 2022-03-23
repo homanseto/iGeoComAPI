@@ -22,11 +22,10 @@ namespace iGeoComAPI.Services
                                  }";
         private string infoCode2 = @"()=>{
                                  const selectors = Array.from(document.querySelectorAll('.navigation > .content > .table'));
-                                 const array = selectors.map(v1=>{ let shopInfo = Array.from(v1.querySelectorAll('.content > .row'));
+                                 return array = selectors.map(v1=>{ let shopInfo = Array.from(v1.querySelectorAll('.content > .row'));
                                  return shopInfo.map(v2 =>{return {Name: v2.querySelector('.name').textContent.trim(), Address: Array.from(v2.querySelectorAll('.col-md-8 > div'))[1].textContent.trim(), 
                                  Phone: Array.from(v2.querySelectorAll('div'))[1].textContent.trim(), Fax: Array.from(v2.querySelectorAll('div'))[2].textContent.trim(),
                                  Region: v1.querySelector('.col-md-12').textContent.trim(), Id: v1.getAttribute('.id')}});
-                                 return JsonConvert.DeserializeObject<List<AmbulanceDepotModel>>(array);
                                  })
                                  }";
         private string waitSelector = ".navigation";

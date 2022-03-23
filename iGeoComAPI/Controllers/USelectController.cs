@@ -10,9 +10,6 @@ namespace iGeoComAPI.Controllers
     [ApiController]
     public class USelectController : ControllerBase
     {
-        private string InsertSql = "INSERT INTO igeocomtable VALUES (@GEONAMEID,@ENGLISHNAME,@CHINESENAME,@ClASS,@TYPE, @SUBCAT,@EASTING,@NORTHING,@SOURCE,@E_FLOOR,@C_FLOOR,@E_SITENAME,@C_SITENAME,@E_AREA,@C_AREA,@E_DISTRICT,@C_DISTRICT,@E_REGION,@C_REGION,@E_ADDRESS,@C_ADDRESS,@TEL_NO,@FAX_NO,@WEB_SITE,@REV_DATE,@GRAB_ID,@Latitude,@Longitude);";
-        private string SelectUSelectFromDataBase = "SELECT * FROM iGeoCom_Dec2021 WHERE ENGLISHNAME like '%u slect%'";
-        private string SelectUSelect = "SELECT * FROM igeocomtable WHERE GRAB_ID LIKE '%u select%'";
         private readonly ILogger<USelectController> _logger;
         private readonly USelectGrabber _uSelectGrabber;
         private readonly DataAccess _dataAccess;
@@ -23,12 +20,15 @@ namespace iGeoComAPI.Controllers
             _dataAccess = dataAccess;
         }
 
+        USelectModel uSelectModel = new USelectModel();
+        IGeoComModel igeoComModel = new IGeoComModel();
+
         [HttpGet]
         public async Task<List<IGeoComGrabModel>?> Get()
         {
            // var GrabbedResult = await _uSelectGrabber.GetWebSiteItems();
             //_dataAccess.SaveGrabbedData(InsertSql, GrabbedResult);
-            var result = await _dataAccess.LoadData<IGeoComGrabModel>(SelectUSelect);
+            var result = await _dataAccess.LoadData<IGeoComGrabModel>(uSelectModel.SelectUSelect);
             CsvFile.DownloadCsv(result, "USelect_grab_result");
             return result;
         }
@@ -37,7 +37,7 @@ namespace iGeoComAPI.Controllers
         public async Task<List<IGeoComGrabModel?>> Create()
         {
             var GrabbedResult = await _uSelectGrabber.GetWebSiteItems();
-            _dataAccess.SaveGrabbedData(InsertSql, GrabbedResult);
+            _dataAccess.SaveGrabbedData(igeoComModel.InsertSql, GrabbedResult);
             return GrabbedResult;
         }
     }

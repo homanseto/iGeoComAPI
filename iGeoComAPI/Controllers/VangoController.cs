@@ -10,12 +10,12 @@ namespace iGeoComAPI.Controllers
     [ApiController]
     public class VangoController : ControllerBase
     {
-        private string InsertSql = "INSERT INTO igeocomtable VALUES (@GEONAMEID,@ENGLISHNAME,@CHINESENAME,@ClASS,@TYPE, @SUBCAT,@EASTING,@NORTHING,@SOURCE,@E_FLOOR,@C_FLOOR,@E_SITENAME,@C_SITENAME,@E_AREA,@C_AREA,@E_DISTRICT,@C_DISTRICT,@E_REGION,@C_REGION,@E_ADDRESS,@C_ADDRESS,@TEL_NO,@FAX_NO,@WEB_SITE,@REV_DATE,@GRAB_ID,@Latitude,@Longitude);";
-        private string SelectVangoFromDataBase = "SELECT * FROM iGeoCom_Dec2021 WHERE ENGLISHNAME like '%vango%'";
-        private string SelectVango = "SELECT * FROM igeocomtable WHERE GRAB_ID LIKE '%vango%'";
         private readonly ILogger<VangoController> _logger;
         private readonly VangoGrabber _vangoGrabber;
         private readonly DataAccess _dataAccess;
+        VangoModel vangoModel = new VangoModel();
+        IGeoComModel igeoComModel = new IGeoComModel();
+
         public VangoController(VangoGrabber vangoGrabber, ILogger<VangoController> logger, DataAccess dataAccess)
         {
             _vangoGrabber = vangoGrabber;
@@ -28,7 +28,7 @@ namespace iGeoComAPI.Controllers
         {
            // var GrabbedResult = await _vangoGrabber.GetWebSiteItems();
             //_dataAccess.SaveGrabbedData(InsertSql, GrabbedResult);
-            var result = await _dataAccess.LoadData<IGeoComGrabModel>(SelectVango);
+            var result = await _dataAccess.LoadData<IGeoComGrabModel>(vangoModel.SelectVango);
             CsvFile.DownloadCsv(result, "Vango_grab_result");
             return result;
         }
@@ -37,7 +37,7 @@ namespace iGeoComAPI.Controllers
         public async Task<List<IGeoComGrabModel?>> Create()
         {
             var GrabbedResult = await _vangoGrabber.GetWebSiteItems();
-            _dataAccess.SaveGrabbedData(InsertSql, GrabbedResult);
+            _dataAccess.SaveGrabbedData(igeoComModel.InsertSql, GrabbedResult);
             return GrabbedResult;
         }
     }

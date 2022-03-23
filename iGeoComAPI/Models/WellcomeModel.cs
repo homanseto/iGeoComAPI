@@ -6,5 +6,14 @@
         public string? Name { get; set; }
         public string? LatLng { get; set; }
         public string? Phone { get; set; }
+
+        public string SelectWellcome
+        {
+            get { return "SELECT * FROM igeocomtable WHERE GRAB_ID LIKE '%wellcome%'"; }
+        }
+        public string SelectWellcomeFromDataBase
+        {
+            get { return "SELECT * FROM iGeoCom_Dec2021 WHERE ENGLISHNAME LIKE '%wellcome super%' "; }
+        } 
     }
 }

@@ -9,5 +9,17 @@
         public string? Website { get; set; }
         public string? Latitude { get; set; }
         public string? Longitude { get; set; }
+        private string SelectCinemaFromDataBase
+        {
+            get { return "select * from iGeoCom_Dec2021 where  TYPE = 'TNC';";}
+        } 
+        public string SelectCinema
+        {
+            get { return "select * from igeocomtable where  TYPE = 'TNC';"; }
+        }
+        public string WmoovIdRegex
+        {
+            get { return @"(?<=details\/)(.*)(?=\?)"; }
+        } 
     }
 }
