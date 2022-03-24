@@ -9,7 +9,7 @@
         public string? Website { get; set; }
         public string? Latitude { get; set; }
         public string? Longitude { get; set; }
-        private string SelectCinemaFromDataBase
+        public string SelectCinemaFromDataBase
         {
             get { return "select * from iGeoCom_Dec2021 where  TYPE = 'TNC';";}
         } 

@@ -2,6 +2,7 @@
 {
     public class AbstractGrabber
     {
+        /*
         private ConnectClient _httpClient;
         private JsonFunction _json;
         private IOptions<SevenElevenOptions> _options;
@@ -38,5 +39,6 @@
             }
 
         }
+        */
     }
 }

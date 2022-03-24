@@ -28,7 +28,7 @@ namespace iGeoComAPI.Controllers
         {
             //var GrabbedResult = await _wmoovGrabber.GetWebSiteItems();
             //_dataAccess.SaveGrabbedData(InsertSql, GrabbedResult);
-            var result = await _dataAccess.LoadData<IGeoComGrabModel>(SelectCinema);
+            var result = await _dataAccess.LoadData<IGeoComGrabModel>(wmoovModel.SelectCinema);
             CsvFile.DownloadCsv(result, "Wmoov_grab_result");
             return result;
 

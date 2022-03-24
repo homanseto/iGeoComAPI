@@ -5,7 +5,6 @@ using iGeoComAPI.Utilities;
 using Serilog;
 using iGeoComAPI.Models;
 using iGeoComAPI;
-using Autofac.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,7 +17,6 @@ var logger = new LoggerConfiguration()
     .CreateLogger();
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(logger);
-builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -42,8 +40,7 @@ builder.Services.AddSingleton<JsonFunction>();
 builder.Services.AddSingleton<DataAccess>();
 builder.Services.AddSingleton<PuppeteerConnection>();
 builder.Services.AddMemoryCache();
-builder.Services.Configure<ConnectionStringsHomeOptions>(_configuration.GetSection(ConnectionStringsHomeOptions.SectionName));
-builder.Services.Configure<ConnectionStrings3DMOptions>(_configuration.GetSection(ConnectionStrings3DMOptions.SectionName));
+builder.Services.Configure<ConnectionStringsOptions>(_configuration.GetSection(ConnectionStringsOptions.SectionName));
 builder.Services.Configure<SevenElevenOptions>(_configuration.GetSection(SevenElevenOptions.SectionName));
 builder.Services.Configure<WellcomeOptions>(_configuration.GetSection(WellcomeOptions.SectionName));
 builder.Services.Configure<CaltexOptions>(_configuration.GetSection(CaltexOptions.SectionName));
@@ -56,13 +53,15 @@ builder.Services.Configure<WmoovOptions>(_configuration.GetSection(WmoovOptions.
 builder.Services.Configure<AmbulanceDepotOptions>(_configuration.GetSection(AmbulanceDepotOptions.SectionName));
 builder.Services.Configure<AromeNMaximsCakesOptions>(_configuration.GetSection(AromeNMaximsCakesOptions.SectionName));
 builder.Services.Configure<BloodDonorCentreOptions>(_configuration.GetSection(BloodDonorCentreOptions.SectionName));
+builder.Services.Configure<AppSettingOptions>(a => new AppSettingOptions { Environment = _environment.EnvironmentName });
 builder.Services.AddOptions(); //IOptions<T>
-//builder.Services.AddHostedService<MyBackGroundService>();
 
-
+if(_environment.EnvironmentName == "Production")
+{
+    builder.Services.AddHostedService<MyBackGroundService>();
+}
 var app = builder.Build();
 app.Logger.LogInformation("Project start");
-Console.WriteLine( app.Environment.EnvironmentName);
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

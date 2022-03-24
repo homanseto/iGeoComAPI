@@ -30,7 +30,7 @@ namespace iGeoComAPI.Controllers
         {
             //var GrabbedResult = await _wellcomeGrabber.GetWebSiteItems();
             //_dataAccess.SaveGrabbedData(InsertSql, GrabbedResult);
-            var result  = await _dataAccess.LoadData<IGeoComGrabModel>(SelectWellcome);
+            var result  = await _dataAccess.LoadData<IGeoComGrabModel>(wellcomeModel.SelectWellcome);
             CsvFile.DownloadCsv(result, "Wellcome_grab_result");
             return result;
         }

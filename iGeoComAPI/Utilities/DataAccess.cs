@@ -10,24 +10,39 @@ namespace iGeoComAPI.Utilities
 {
     public class DataAccess
     {
-        //private readonly IOptions<ConnectionStringsHomeOptions> _options;
-        private readonly IOptions<ConnectionStrings3DMOptions> _options;
+        private readonly IOptions<ConnectionStringsOptions> _options;
         private readonly IMemoryCache _memoryCache;
+        private IOptions<AppSettingOptions> _env;
 
         //public DataAccess(IOptions<ConnectionStringsHomeOptions> options, IMemoryCache memoryCache)
-        public DataAccess(IOptions<ConnectionStrings3DMOptions> options, IMemoryCache memoryCache)
+        public DataAccess(IOptions<ConnectionStringsOptions> options, IMemoryCache memoryCache, IOptions<AppSettingOptions> env)
         {
             _options = options;
             _memoryCache = memoryCache;
+            _env = env;
         }
+        
         public async Task<List<T>> LoadData<T>(string sql)
         {
-            using (SqlConnection connection = new SqlConnection(_options.Value.Default))
+            if(_env.Value.Environment == "Development_3DM"  || _env.Value.Environment == "Production")
             {
-                var rows = await connection.QueryAsync<T>(sql);
+                using (SqlConnection connection = new SqlConnection(_options.Value.Default_3DM))
+                {
+                    var rows = await connection.QueryAsync<T>(sql);
 
-                return rows.ToList();
+                    return rows.ToList();
+                }
             }
+            else
+            {
+                using (SqlConnection connection = new SqlConnection(_options.Value.DefaultConnection))
+                {
+                    var rows = await connection.QueryAsync<T>(sql);
+
+                    return rows.ToList();
+                }
+            }
+            
         }
 
         public List<T> LoadDataCache<T>()
@@ -49,11 +64,24 @@ namespace iGeoComAPI.Utilities
 
         public void SaveGrabbedData<T>(string sql, List<T> parameters)
         {
-            using (SqlConnection connection = new SqlConnection(_options.Value.Default))
+            if (_env.Value.Environment == "Development_3DM" || _env.Value.Environment == "Production")
             {
-                foreach(var param in parameters)
+                using (SqlConnection connection = new SqlConnection(_options.Value.Default_3DM))
                 {
-                    connection.Execute(sql, param);
+                    foreach (var param in parameters)
+                    {
+                        connection.Execute(sql, param);
+                    }
+                }
+            }
+            else
+            {
+                using (SqlConnection connection = new SqlConnection(_options.Value.DefaultConnection))
+                {
+                    foreach (var param in parameters)
+                    {
+                        connection.Execute(sql, param);
+                    }
                 }
             }
         }
