@@ -28,9 +28,9 @@ namespace iGeoComAPI.Services
             var hkConnectHttp = await _httpClient.GetAsync(_options.Value.ShopAPI, $"regionID={_options.Value.HKRegionID}");
             var klnConnectHttp = await _httpClient.GetAsync(_options.Value.ShopAPI, $"regionID={_options.Value.KLNRegionID}");
             var ntConnectHttp = await _httpClient.GetAsync(_options.Value.ShopAPI, $"regionID={_options.Value.NTRegionID}");
-            var vangoHkResult =  _json.Dserialize<VangoModel>(hkConnectHttp);
-            var vangoKlnResult = _json.Dserialize<VangoModel>(klnConnectHttp);
-            var vangoNtResult =  _json.Dserialize<VangoModel>(ntConnectHttp);
+            var vangoHkResult =  _json.Dserialize<List<VangoModel>>(hkConnectHttp);
+            var vangoKlnResult = _json.Dserialize<List<VangoModel>>(klnConnectHttp);
+            var vangoNtResult =  _json.Dserialize<List<VangoModel>>(ntConnectHttp);
             var hkResult = Parsing(vangoHkResult, "hk");
             var klnResult = Parsing(vangoKlnResult, "kln");
             var ntResult = Parsing(vangoNtResult, "nt");

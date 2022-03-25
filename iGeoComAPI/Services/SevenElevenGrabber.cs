@@ -42,9 +42,9 @@ namespace iGeoComAPI.Services
             {
                 _logger.LogInformation("start grabbing 7-11 rowdata");
                 var enConnectHttp = await _httpClient.GetAsync(_options.Value.EnUrl);
-                var enSerializedResult =  _json.Dserialize<SevenElevenModel>(enConnectHttp);
+                var enSerializedResult =  _json.Dserialize<List<SevenElevenModel>>(enConnectHttp);
                 var zhConnectHttp = await _httpClient.GetAsync(_options.Value.ZhUrl);
-                var zhSerializedResult = _json.Dserialize<SevenElevenModel>(zhConnectHttp);
+                var zhSerializedResult = _json.Dserialize<List<SevenElevenModel>>(zhConnectHttp);
                 var mergeResult = MergeEnAndZh(enSerializedResult, zhSerializedResult);
                 // _memoryCache.Set("iGeoCom", mergeResult, TimeSpan.FromHours(2));
                 return mergeResult;

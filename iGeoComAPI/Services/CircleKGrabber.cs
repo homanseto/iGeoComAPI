@@ -43,9 +43,9 @@ namespace iGeoComAPI.Services
             string storeStringEng = _rgxStoreList.Match(rawDataEng).Groups[1].Value;
             string regionStringZh = _rgxRegionList.Match(rawDataZh).Groups[1].Value;
             string storeStringZh = _rgxStoreList.Match(rawDataZh).Groups[1].Value;
-            var enSerializedRegionResult = _json.DserializeSingle<CircleKRegionFilter>(regionStringEng);
-            var zhSerializedRegionResult = _json.DserializeSingle<CircleKRegionFilter>(regionStringZh);
-            var enSerializedDistrictResult = _json.DserializeSingle<CircleKDistrictFilter>(storeStringEng);
+            var enSerializedRegionResult = _json.Dserialize<CircleKRegionFilter>(regionStringEng);
+            var zhSerializedRegionResult = _json.Dserialize<CircleKRegionFilter>(regionStringZh);
+            var enSerializedDistrictResult = _json.Dserialize<CircleKDistrictFilter>(storeStringEng);
             
             var result = Parsing(enSerializedDistrictResult);
 

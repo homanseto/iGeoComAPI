@@ -28,9 +28,9 @@ namespace iGeoComAPI.Services
             var selectConnectHttp = await _httpClient.GetAsync(_options.Value.ShopAPI, $"regionID={_options.Value.select}");
             var selectFoodConnectHttp = await _httpClient.GetAsync(_options.Value.ShopAPI, $"regionID={_options.Value.selectFood}");
             var selectMiniConnectHttp = await _httpClient.GetAsync(_options.Value.ShopAPI, $"regionID={_options.Value.selectMini}");
-            var selectResult = _json.Dserialize<USelectModel>(selectConnectHttp);
-            var selectFoodResult = _json.Dserialize<USelectModel>(selectFoodConnectHttp);
-            var selectMiniResult = _json.Dserialize<USelectModel>(selectMiniConnectHttp);
+            var selectResult = _json.Dserialize<List<USelectModel>>(selectConnectHttp);
+            var selectFoodResult = _json.Dserialize<List<USelectModel>>(selectFoodConnectHttp);
+            var selectMiniResult = _json.Dserialize<List<USelectModel>>(selectMiniConnectHttp);
             var parsingSelectResult = Parsing(selectResult);
             var parsingSelectFoodResult = Parsing(selectFoodResult);
             var parsingSelectMiniResult = Parsing(selectMiniResult);
