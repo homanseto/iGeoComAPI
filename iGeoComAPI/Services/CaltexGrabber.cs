@@ -26,8 +26,8 @@ namespace iGeoComAPI.Services
         public async Task<List<IGeoComGrabModel>?> GetWebSiteItems()
         {
             _logger.LogInformation("start grabbing Caltex rowdata");
-            var enConnectHttp = await _httpClient.GetAsync(_options.Value.EnUrl, $"pagePath={_options.Value.PagePathEn}&siteType={_options.Value.SiteType}");
-            var zhConnectHttp = await _httpClient.GetAsync(_options.Value.ZhUrl, $"pagePath={_options.Value.PagePathZh}&siteType={_options.Value.SiteType}");
+            var enConnectHttp = await _httpClient.GetAsync(_options.Value.Url, $"pagePath={_options.Value.PagePathEn}&siteType={_options.Value.SiteType}");
+            var zhConnectHttp = await _httpClient.GetAsync(_options.Value.Url, $"pagePath={_options.Value.PagePathZh}&siteType={_options.Value.SiteType}");
             var enSerializedResult =  _json.Dserialize<List<CaltexModel>>(enConnectHttp);
             var zhSerializedResult =  _json.Dserialize<List<CaltexModel>>(zhConnectHttp);
             var mergeResult = MergeEnAndZh(enSerializedResult, zhSerializedResult);

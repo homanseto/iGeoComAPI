@@ -35,6 +35,8 @@ builder.Services.AddSingleton<CircleKGrabber>();
 builder.Services.AddSingleton<VangoGrabber>();
 builder.Services.AddSingleton<USelectGrabber>();
 builder.Services.AddSingleton<WmoovGrabber>();
+builder.Services.AddSingleton<BmcpcGrabber>();
+builder.Services.AddSingleton<CSLGrabber>();
 builder.Services.AddSingleton<ConnectClient>();
 builder.Services.AddSingleton<JsonFunction>();
 builder.Services.AddSingleton<DataAccess>();
@@ -53,6 +55,8 @@ builder.Services.Configure<WmoovOptions>(_configuration.GetSection(WmoovOptions.
 builder.Services.Configure<AmbulanceDepotOptions>(_configuration.GetSection(AmbulanceDepotOptions.SectionName));
 builder.Services.Configure<AromeNMaximsCakesOptions>(_configuration.GetSection(AromeNMaximsCakesOptions.SectionName));
 builder.Services.Configure<BloodDonorCentreOptions>(_configuration.GetSection(BloodDonorCentreOptions.SectionName));
+builder.Services.Configure<BmcpcOptions>(_configuration.GetSection(BmcpcOptions.SectionName));
+builder.Services.Configure<CSLOptions>(_configuration.GetSection(CSLOptions.SectionName));
 builder.Services.Configure<AppSettingOptions>(a => new AppSettingOptions { Environment = _environment.EnvironmentName });
 builder.Services.AddOptions(); //IOptions<T>
 

@@ -24,7 +24,7 @@ namespace iGeoComAPI.Utilities
         
         public async Task<List<T>> LoadData<T>(string sql)
         {
-            if(_env.Value.Environment == "Development_3DM"  || _env.Value.Environment == "Production")
+            if(_env.Value.Environment == "Development"  || _env.Value.Environment == "Production")
             {
                 using (SqlConnection connection = new SqlConnection(_options.Value.Default_3DM))
                 {
@@ -64,7 +64,7 @@ namespace iGeoComAPI.Utilities
 
         public void SaveGrabbedData<T>(string sql, List<T> parameters)
         {
-            if (_env.Value.Environment == "Development_3DM" || _env.Value.Environment == "Production")
+            if (_env.Value.Environment == "Development" || _env.Value.Environment == "Production")
             {
                 using (SqlConnection connection = new SqlConnection(_options.Value.Default_3DM))
                 {

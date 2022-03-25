@@ -25,9 +25,9 @@ namespace iGeoComAPI.Services
         public async Task<List<IGeoComGrabModel>?> GetWebSiteItems()
         {
             _logger.LogInformation("start grabbing Vango rowdata");
-            var hkConnectHttp = await _httpClient.GetAsync(_options.Value.ShopAPI, $"regionID={_options.Value.HKRegionID}");
-            var klnConnectHttp = await _httpClient.GetAsync(_options.Value.ShopAPI, $"regionID={_options.Value.KLNRegionID}");
-            var ntConnectHttp = await _httpClient.GetAsync(_options.Value.ShopAPI, $"regionID={_options.Value.NTRegionID}");
+            var hkConnectHttp = await _httpClient.GetAsync(_options.Value.Url, $"regionID={_options.Value.HKRegionID}");
+            var klnConnectHttp = await _httpClient.GetAsync(_options.Value.Url, $"regionID={_options.Value.KLNRegionID}");
+            var ntConnectHttp = await _httpClient.GetAsync(_options.Value.Url, $"regionID={_options.Value.NTRegionID}");
             var vangoHkResult =  _json.Dserialize<List<VangoModel>>(hkConnectHttp);
             var vangoKlnResult = _json.Dserialize<List<VangoModel>>(klnConnectHttp);
             var vangoNtResult =  _json.Dserialize<List<VangoModel>>(ntConnectHttp);

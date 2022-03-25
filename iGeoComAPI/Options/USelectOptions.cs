@@ -5,7 +5,7 @@
         public const string SectionName = "USelect";
 
         public string? BaseUrl { get; set; }
-        public string? ShopAPI { get; set; }
+        public string? Url { get; set; }
         public int? select { get; set; }
         public int? selectFood { get; set; }
         public int? selectMini { get; set; }
