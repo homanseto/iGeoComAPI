@@ -37,6 +37,9 @@ builder.Services.AddSingleton<USelectGrabber>();
 builder.Services.AddSingleton<WmoovGrabber>();
 builder.Services.AddSingleton<BmcpcGrabber>();
 builder.Services.AddSingleton<CSLGrabber>();
+builder.Services.AddSingleton<CheungKongGrabber>();
+builder.Services.AddSingleton<CatholicOrgGrabber>();
+builder.Services.AddSingleton<ChinaMobileGrabber>();
 builder.Services.AddSingleton<ConnectClient>();
 builder.Services.AddSingleton<JsonFunction>();
 builder.Services.AddSingleton<DataAccess>();
@@ -57,6 +60,9 @@ builder.Services.Configure<AromeNMaximsCakesOptions>(_configuration.GetSection(A
 builder.Services.Configure<BloodDonorCentreOptions>(_configuration.GetSection(BloodDonorCentreOptions.SectionName));
 builder.Services.Configure<BmcpcOptions>(_configuration.GetSection(BmcpcOptions.SectionName));
 builder.Services.Configure<CSLOptions>(_configuration.GetSection(CSLOptions.SectionName));
+builder.Services.Configure<CatholicOrgOptions>(_configuration.GetSection(CatholicOrgOptions.SectionName));
+builder.Services.Configure<CheungKongOptions>(_configuration.GetSection(CheungKongOptions.SectionName));
+builder.Services.Configure<ChinaMobileOptions>(_configuration.GetSection(ChinaMobileOptions.SectionName));
 builder.Services.Configure<AppSettingOptions>(a => new AppSettingOptions { Environment = _environment.EnvironmentName });
 builder.Services.AddOptions(); //IOptions<T>
 
