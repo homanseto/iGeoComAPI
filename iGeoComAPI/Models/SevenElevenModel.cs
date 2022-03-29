@@ -16,7 +16,7 @@
         {
             get { return "SELECT * FROM iGeoCom_Dec2021 WHERE ENGLISHNAME LIKE '%7-Eleven%' "; }
         }
-        public string RegLagLngRegex
+        public string RegLatLngRegex
         {
             get { return "([^|]*)"; }
         } 

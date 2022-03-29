@@ -16,7 +16,7 @@ namespace iGeoComAPI.Services
                                  const klnList = Array.from(selectors[1].querySelectorAll('.map-icon'));
                                  const ntList = Array.from(selectors[2].querySelectorAll('.map-icon'));
                                  const hkArray = hkList.map(v =>{return {Region: 'HK', Id: v.querySelector('a').getAttribute('href')}});
-                                 const klnArray = hkList.map(v =>{return {Region: 'KLN', Id: v.querySelector('a').getAttribute('href')}});
+                                 const klnArray = klnList.map(v =>{return {Region: 'KLN', Id: v.querySelector('a').getAttribute('href')}});
                                  const ntArray = ntList.map(v =>{return {Region: 'NT', Id: v.querySelector('a').getAttribute('href')}});
                                  return hkArray.concat(klnArray, ntArray);
                                  }";
@@ -24,7 +24,7 @@ namespace iGeoComAPI.Services
                                  const selectors = Array.from(document.querySelectorAll('script'));
                                  return selectors[1].textContent.trim();
                                  }";
-        private string waitSelectorId = ".toggle-list-content";
+        private string waitSelectorId = ".innerpage-content";
         private string waitSelectorInfo = "head";
         ChinaMobileModel chinaMobileModel = new ChinaMobileModel();
 
@@ -35,26 +35,76 @@ namespace iGeoComAPI.Services
             _logger = logger;
         }
 
-        public async Task GetWebSiteItems()
+        public async Task<List<IGeoComGrabModel>?> GetWebSiteItems()
         {
-            var idLink = await _puppeteerConnection.PuppeteerGrabber<ChinaMobileModel[]>(_options.Value.EnUrl, idCode, waitSelectorId);
-            await grabResultByID(idLink);
+            var enIdLink = await _puppeteerConnection.PuppeteerGrabber<ChinaMobileModel[]>(_options.Value.EnUrl, idCode, waitSelectorId);
+            var zhIdLink = await _puppeteerConnection.PuppeteerGrabber<ChinaMobileModel[]>(_options.Value.ZhUrl, idCode, waitSelectorId);
+            var enResult = await grabResultByID(enIdLink);
+            var zhResult = await grabResultByID(zhIdLink);
+            var result = MergeEnAndZh(enResult, zhResult);
+            return result;
         }
 
-        public async Task grabResultByID(ChinaMobileModel[] idResult)
+        public async Task<List<ChinaMobileModel>?> grabResultByID(ChinaMobileModel[] idResult)
         {
             var _linkRgx = Regexs.ExtractInfo(chinaMobileModel.ExtractLink);
+            var _addressAndHourRgx = Regexs.ExtractInfo(chinaMobileModel.ExtractAddressAndOpeningHour);
+            var _latLngRgx = Regexs.ExtractInfo(chinaMobileModel.ExtractLatLng);
+            var _IdRgx = Regexs.ExtractInfo(chinaMobileModel.ExtractId);
             List<ChinaMobileModel> ChinaMobileList = new List<ChinaMobileModel>();
             foreach (ChinaMobileModel id in idResult)
             {
+                ChinaMobileModel ChinaMobile = new ChinaMobileModel();
                 var extractLink = _linkRgx.Match(id.Id!).Groups[1].Value;
                 var link = $"{_options.Value.BaseUrl}{extractLink}";
                 var shopScript = await _puppeteerConnection.PuppeteerGrabber<string>(link, infoCode, waitSelectorInfo);
                 var trimed = Regexs.TrimAllAndAdjustSpace(shopScript).Replace("\n", "").Replace("\t", "");
-                Console.WriteLine(trimed);
-
+                ChinaMobile.Address = _addressAndHourRgx.Match(trimed).Groups[1].Value;
+                ChinaMobile.LatLng = _latLngRgx.Match(trimed).Groups[1].Value;
+                ChinaMobile.Id = _IdRgx.Match(link).Groups[1].Value;
+                ChinaMobile.Region = id.Region;
+                ChinaMobileList.Add(ChinaMobile);
             }
+            return ChinaMobileList;
+        }
 
+        public List<IGeoComGrabModel> MergeEnAndZh(List<ChinaMobileModel>? enResult, List<ChinaMobileModel>? zhResult)
+        {
+            try
+            {
+                _logger.LogInformation("Start merging ChinaMobile eng and Zh");
+                var _LatLngrgx = Regexs.ExtractInfo(chinaMobileModel.RegLatLngRegex);
+                List<IGeoComGrabModel> ChinaMobileIGeoComList = new List<IGeoComGrabModel>();
+                if (enResult != null && zhResult != null)
+                {
+                    foreach (ChinaMobileModel shopEn in enResult)
+                    {
+                        IGeoComGrabModel ChinaMobileIGeoCom = new IGeoComGrabModel();
+                        ChinaMobileIGeoCom.E_Address = shopEn.Address;
+                        ChinaMobileIGeoCom.E_Region = shopEn.Region;
+                        var matchesEn = _LatLngrgx.Matches(shopEn.LatLng!);
+                        ChinaMobileIGeoCom.Latitude = matchesEn[0].Value;
+                        ChinaMobileIGeoCom.Longitude = matchesEn[2].Value;
+                        ChinaMobileIGeoCom.GeoNameId = $"chinamobile_{shopEn.Id}";
+                        foreach (ChinaMobileModel shopZh in zhResult)
+                        {
+                            if (shopEn.Id == shopZh.Id)
+                            {
+                                ChinaMobileIGeoCom.C_Address = shopZh.Address;
+                            }
+                            continue;
+                        }
+                        ChinaMobileIGeoComList.Add(ChinaMobileIGeoCom);
+                    }
+                }
+                return ChinaMobileIGeoComList;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, "fail to merge ChinaMobile Eng and Zh RawData");
+                throw;
+            }
         }
     }
+
 }

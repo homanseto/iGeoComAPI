@@ -59,7 +59,7 @@ namespace iGeoComAPI.Services
 
         public List<IGeoComGrabModel> MergeEnAndZh(List<SevenElevenModel>? enResult, List<SevenElevenModel>? zhResult)
         {
-            var _rgx = Regexs.ExtractInfo(sevenElevenModel.RegLagLngRegex);
+            var _rgx = Regexs.ExtractInfo(sevenElevenModel.RegLatLngRegex);
             List<IGeoComGrabModel> SevenElevenIGeoComList = new List<IGeoComGrabModel>();
             try
             {

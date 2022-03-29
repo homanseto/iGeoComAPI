@@ -25,10 +25,10 @@ namespace iGeoComAPI.Controllers
         }
 
         [HttpGet]
-        public async Task Get()
+        public async Task<List<IGeoComGrabModel>?> Get()
         {
-             await _chinaMobileGrabber.GetWebSiteItems();
-
+             var result = await _chinaMobileGrabber.GetWebSiteItems();
+            return result;
         }
     }
 }
