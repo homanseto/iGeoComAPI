@@ -54,7 +54,7 @@ namespace iGeoComAPI.Services
                     var shopEn = item.value;
                     var index = item.i;
                     IGeoComGrabModel WellcomeIGeoCom = new IGeoComGrabModel();
-                    WellcomeIGeoCom.E_Address = shopEn.Address?.Replace(",", ""); ;
+                    WellcomeIGeoCom.E_Address = shopEn.Address;
                     WellcomeIGeoCom.EnglishName = $"Wellcome Supermarket-{shopEn.Name}";
                     var matchesEn = _rgx.Matches(shopEn.LatLng!);
                     WellcomeIGeoCom.Latitude = matchesEn[0].Value;
@@ -72,7 +72,7 @@ namespace iGeoComAPI.Services
                         {
                             if (WellcomeIGeoCom.Latitude == matchesZh[0].Value && WellcomeIGeoCom.Longitude == matchesZh[2].Value && WellcomeIGeoCom.Tel_No == shopZh.Phone)
                             {
-                                WellcomeIGeoCom.C_Address = shopZh.Address?.Replace(",", "");
+                                WellcomeIGeoCom.C_Address = shopZh.Address;
                                 WellcomeIGeoCom.ChineseName = $"惠康超級市場-{shopZh.Name}";
                                 continue;
                             }

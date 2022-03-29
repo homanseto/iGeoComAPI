@@ -48,7 +48,7 @@ namespace iGeoComAPI.Services
                         IGeoComGrabModel CaltexIGeoCom = new IGeoComGrabModel();
                         CaltexIGeoCom.Grab_ID = $"caltex_{en.Id}";
                         CaltexIGeoCom.EnglishName = $"Caltex-{en.Name!.Trim()}";
-                        CaltexIGeoCom.E_Address = en.Street!.Trim()?.Replace(",", ""); ;
+                        CaltexIGeoCom.E_Address = en.Street!.Trim();
                         CaltexIGeoCom.Tel_No = en.PhoneNumber!.Replace(" ", "");
                         CaltexIGeoCom.Latitude = en.Latitude!.Trim();
                         CaltexIGeoCom.Longitude = en.Longitude!.Trim();

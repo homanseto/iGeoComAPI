@@ -1,5 +1,7 @@
 ﻿using System.Text;
 using System.IO;
+using CsvHelper;
+using System.Globalization;
 
 namespace iGeoComAPI.Utilities
 {
@@ -7,7 +9,17 @@ namespace iGeoComAPI.Utilities
     {
         public static void DownloadCsv<T>(List<T> shopList, string fileName)
         {
+            DateTime now = DateTime.Now;
+            string nowName = now.ToString().Replace(@"/", "").Replace(@":", "_").Replace(" ", "");
+            var basePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            var finalPath = Path.Combine(basePath, $"Downloads\\{fileName}{nowName}.csv");
+            using (var writer = new StreamWriter(finalPath, true, Encoding.UTF8))
+            using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+            {
+                csv.WriteRecords(shopList);
+            }
             
+            /*
             DateTime now = DateTime.Now;
             string nowName = now.ToString().Replace(@"/", "").Replace(@":","_").Replace(" ","");
             var sb = new StringBuilder();
@@ -15,26 +27,6 @@ namespace iGeoComAPI.Utilities
             var finalPath = Path.Combine(basePath, $"Downloads\\{fileName}{nowName}.csv");
             string header = "";
             var info = typeof(T).GetProperties();
-
-
-            /*
-            if (!File.Exists(finalPath))
-            {
-                var file = File.Create(finalPath);
-                file.Close();
-                header = string.Join(",", info.Select(p => p.Name));
-                var dataLines = from shop in shopList
-                                let shopLine = string.Join(",", shop.GetType().GetProperties().
-                                Select(p => p.GetValue(shop)))
-                                select shopLine;
-                var csvData = new List<string>();
-                csvData.Add(header);
-                csvData.AddRange(dataLines);
-
-                File.WriteAllLines(finalPath, csvData);
-            }
-            */
-
             
                 if (!File.Exists(finalPath))
             {
@@ -65,6 +57,7 @@ namespace iGeoComAPI.Utilities
                 sw.Write(sb.ToString());
                 sw.Close();
             }
+            */
             
         }
     }

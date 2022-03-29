@@ -51,8 +51,8 @@ namespace iGeoComAPI.Services
                         IGeoComGrabModel USelectIGeoCom = new IGeoComGrabModel();
                         USelectIGeoCom.ChineseName = $"{shop.store_number}-{shop.storename}";
                         USelectIGeoCom.EnglishName = $"{shop.store_number}-{shop.storename_en}";
-                        USelectIGeoCom.C_Address = shop.address_description?.Replace(",", ""); ;
-                        USelectIGeoCom.E_Address = shop.address_description_en?.Replace(",", ""); ;
+                        USelectIGeoCom.C_Address = shop.address_description;
+                        USelectIGeoCom.E_Address = shop.address_description_en;
                         USelectIGeoCom.Latitude = shop.address_geo_lat;
                         USelectIGeoCom.Longitude = shop.address_geo_lng; ;
                         USelectIGeoCom.Class = "CMF";

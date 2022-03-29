@@ -51,7 +51,7 @@ namespace iGeoComAPI.Services
                     var shopEn = item.value;
                     var index = item.i;
                     IGeoComGrabModel ParknShopIGeoCom = new IGeoComGrabModel();
-                    ParknShopIGeoCom.E_Address = shopEn.Address?.Replace(",", ""); ;
+                    ParknShopIGeoCom.E_Address = shopEn.Address;
                     ParknShopIGeoCom.EnglishName = $"{shopEn.BrandName}-{shopEn.Name}";
                     ParknShopIGeoCom.E_Region = shopEn.Region;
                     ParknShopIGeoCom.E_District = shopEn.District;
@@ -69,7 +69,7 @@ namespace iGeoComAPI.Services
                         {
                             ParknShopIGeoCom.ChineseName = $"{shopZh.BrandName}-{shopZh.Name}";
                             ParknShopIGeoCom.C_Region = shopZh.Region;
-                            ParknShopIGeoCom.C_Address = shopZh.Address?.Replace(",", ""); ;
+                            ParknShopIGeoCom.C_Address = shopZh.Address;
                             ParknShopIGeoCom.C_District = shopZh.District;
                             
                             continue;

@@ -69,7 +69,7 @@ namespace iGeoComAPI.Services
                     foreach (SevenElevenModel shopEn in enResult)
                     {
                         IGeoComGrabModel sevenElevenIGeoCom = new IGeoComGrabModel();
-                        sevenElevenIGeoCom.E_Address = shopEn.Address?.Replace(",", "");
+                        sevenElevenIGeoCom.E_Address = shopEn.Address;
                         if (shopEn.Region == "Kowloon")
                         {
                             sevenElevenIGeoCom.E_Region = "KLN";
@@ -106,7 +106,7 @@ namespace iGeoComAPI.Services
                             {
                                 if (sevenElevenIGeoCom.Latitude == matchesZh[0].Value && sevenElevenIGeoCom.Longitude == matchesZh[2].Value)
                                 {
-                                    sevenElevenIGeoCom.C_Address = shopZh.Address?.Replace(",", "");
+                                    sevenElevenIGeoCom.C_Address = shopZh.Address;
                                     if (shopZh.Region == "Kowloon")
                                     {
                                         sevenElevenIGeoCom.C_Region = "九龍";

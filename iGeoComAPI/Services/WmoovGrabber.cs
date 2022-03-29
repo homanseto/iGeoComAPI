@@ -83,7 +83,7 @@ namespace iGeoComAPI.Services
             {
                 int j;
                 for (j = 0; j < previousDataLength; j++) 
-                    if (newData[i].C_Address?.Replace(",", "").Replace(" ","") == previousData[j].C_Address?.Replace(",", "").Replace(" ", "") &&
+                    if (newData[i].C_Address?.Replace(" ","") == previousData[j].C_Address?.Replace(" ", "") &&
                        newData[i].Tel_No?.Replace(" ", "").Replace("-", "") == previousData[j].Tel_No?.Replace(" ", "").Replace("-", "") &&
                        newData[i].Web_Site == previousData[j].Web_Site
                         )

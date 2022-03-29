@@ -51,13 +51,13 @@ namespace iGeoComAPI.Services
             {
                 IGeoComGrabModel AeonIGeoCom = new IGeoComGrabModel();
                 AeonIGeoCom.EnglishName = shopEn.Name;
-                AeonIGeoCom.E_Address = shopEn.Address?.Replace(",", ""); ;
+                AeonIGeoCom.E_Address = shopEn.Address;
                 AeonIGeoCom.Grab_ID = $"Aeon_{shopEn.Id}";
                 AeonIGeoCom.Tel_No = shopEn.Phone!.Replace("Tel No.","").Replace(" ","");
                 var matchLat = _rgxLat.Matches(shopEn.LatLng!);
                 if (matchLat.Count > 0 && matchLat != null)
                 {
-                    AeonIGeoCom.Latitude = matchLat[0].Value.Replace("LatLng(","").Replace(",", ""); ;
+                    AeonIGeoCom.Latitude = matchLat[0].Value.Replace("LatLng(","").Replace(",", "");
                 }
                 var matchLng = _rgxLng.Matches(shopEn.LatLng!);
                 if (matchLng.Count > 0 && matchLng != null)
@@ -69,7 +69,7 @@ namespace iGeoComAPI.Services
                     if (shopEn.Id == shopZh.Id)
                     {
                         AeonIGeoCom.ChineseName = shopZh.Name;
-                        AeonIGeoCom.C_Address = shopZh.Address?.Replace(",", ""); ;
+                        AeonIGeoCom.C_Address = shopZh.Address;
                     }
                 }
                 AeonIGeoComList.Add(AeonIGeoCom);
