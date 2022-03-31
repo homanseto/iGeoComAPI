@@ -24,7 +24,7 @@ namespace iGeoComAPI.Utilities
         
         public async Task<List<T>> LoadData<T>(string sql)
         {
-            /*
+            
             if(_env.Value.Environment == "Development"  || _env.Value.Environment == "Production")
             {
                 using (SqlConnection connection = new SqlConnection(_options.Value.Default_3DM))
@@ -36,14 +36,14 @@ namespace iGeoComAPI.Utilities
             }
             else
             {
-            */
+            
                 using (SqlConnection connection = new SqlConnection(_options.Value.DefaultConnection))
                 {
                     var rows = await connection.QueryAsync<T>(sql);
 
                     return rows.ToList();
                 }
-            //}
+            }
             
         }
 
@@ -66,7 +66,7 @@ namespace iGeoComAPI.Utilities
 
         public void SaveGrabbedData<T>(string sql, List<T> parameters)
         {
-            /*
+            
             if (_env.Value.Environment == "Development" || _env.Value.Environment == "Production")
             {
                 using (SqlConnection connection = new SqlConnection(_options.Value.Default_3DM))
@@ -79,7 +79,6 @@ namespace iGeoComAPI.Utilities
             }
             else
             {
-             */
                 using (SqlConnection connection = new SqlConnection(_options.Value.DefaultConnection))
                 {
                     foreach (var param in parameters)
@@ -87,7 +86,15 @@ namespace iGeoComAPI.Utilities
                         connection.Execute(sql, param);
                     }
                 }
-            //}
+            }
+        }
+
+        public async Task DeleteDataFromDataBase<T>(string sql)
+        {
+            using (SqlConnection connection = new SqlConnection(_options.Value.DefaultConnection))
+            {
+                await connection.QueryAsync<T>(sql);
+            }
         }
 
         /*

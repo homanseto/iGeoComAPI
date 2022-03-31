@@ -14,6 +14,7 @@ IWebHostEnvironment _environment = builder.Environment;
 var logger = new LoggerConfiguration()
     .ReadFrom.Configuration(_configuration)
     .Enrich.WithThreadId()
+    .Enrich.FromLogContext()
     .CreateLogger();
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(logger);
@@ -44,25 +45,9 @@ builder.Services.AddSingleton<ConnectClient>();
 builder.Services.AddSingleton<JsonFunction>();
 builder.Services.AddSingleton<DataAccess>();
 builder.Services.AddSingleton<PuppeteerConnection>();
+builder.Services.AddSingleton<MyLogger>();
 builder.Services.AddMemoryCache();
-builder.Services.Configure<ConnectionStringsOptions>(_configuration.GetSection(ConnectionStringsOptions.SectionName));
-builder.Services.Configure<SevenElevenOptions>(_configuration.GetSection(SevenElevenOptions.SectionName));
-builder.Services.Configure<WellcomeOptions>(_configuration.GetSection(WellcomeOptions.SectionName));
-builder.Services.Configure<CaltexOptions>(_configuration.GetSection(CaltexOptions.SectionName));
-builder.Services.Configure<ParknShopOptions>(_configuration.GetSection(ParknShopOptions.SectionName));
-builder.Services.Configure<AeonOptions>(_configuration.GetSection(AeonOptions.SectionName));
-builder.Services.Configure<VangoOptions>(_configuration.GetSection(VangoOptions.SectionName));
-builder.Services.Configure<USelectOptions>(_configuration.GetSection(USelectOptions.SectionName));
-builder.Services.Configure<CircleKOptions>(_configuration.GetSection(CircleKOptions.SectionName));
-builder.Services.Configure<WmoovOptions>(_configuration.GetSection(WmoovOptions.SectionName));
-builder.Services.Configure<AmbulanceDepotOptions>(_configuration.GetSection(AmbulanceDepotOptions.SectionName));
-builder.Services.Configure<AromeNMaximsCakesOptions>(_configuration.GetSection(AromeNMaximsCakesOptions.SectionName));
-builder.Services.Configure<BloodDonorCentreOptions>(_configuration.GetSection(BloodDonorCentreOptions.SectionName));
-builder.Services.Configure<BmcpcOptions>(_configuration.GetSection(BmcpcOptions.SectionName));
-builder.Services.Configure<CSLOptions>(_configuration.GetSection(CSLOptions.SectionName));
-builder.Services.Configure<CatholicOrgOptions>(_configuration.GetSection(CatholicOrgOptions.SectionName));
-builder.Services.Configure<CheungKongOptions>(_configuration.GetSection(CheungKongOptions.SectionName));
-builder.Services.Configure<ChinaMobileOptions>(_configuration.GetSection(ChinaMobileOptions.SectionName));
+MyConfigServiceCollection.AddConfig(builder.Services, _configuration);
 builder.Services.Configure<AppSettingOptions>(a => new AppSettingOptions { Environment = _environment.EnvironmentName });
 builder.Services.AddOptions(); //IOptions<T>
 
@@ -73,7 +58,7 @@ if(_environment.EnvironmentName == "Production")
 var app = builder.Build();
 app.Logger.LogInformation("Project start");
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (_environment.EnvironmentName == "Development_3DM" | _environment.EnvironmentName == "Development_Home")
 {
     app.UseSwagger();
     app.UseSwaggerUI();

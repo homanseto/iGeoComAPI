@@ -8,9 +8,13 @@
         public string? District { get; set; } = null;
         public string? Address { get; set; } = null;
         public string? Opening_24 { get; set; } = null;
-        public string SelectSevenEleven 
+        public string SelectSevenElevenFromGrabbedCache 
         { 
             get { return "SELECT * FROM igeocomtable WHERE GRAB_ID LIKE '%seveneleven%'";}
+        }
+        public string DeleteSevenElevenFromGrabbedCache
+        {
+            get { return "DELETE FROM igeocomTable WHERE GRAB_ID LIKE '%seveneleven%';";  }
         }
         public string SelectSevenElevenFromDataBase
         {

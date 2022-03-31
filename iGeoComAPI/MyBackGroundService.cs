@@ -1,18 +1,20 @@
 ﻿using iGeoComAPI.Models;
 using iGeoComAPI.Services;
 using iGeoComAPI.Utilities;
+using System.Diagnostics;
 
 namespace iGeoComAPI
 {
     public class MyBackGroundService : BackgroundService
     {
-        private string InsertSql = "INSERT INTO igeocomtable VALUES (@GEONAMEID,@ENGLISHNAME,@CHINESENAME,@ClASS,@TYPE, @SUBCAT,@EASTING,@NORTHING,@SOURCE,@E_FLOOR,@C_FLOOR,@E_SITENAME,@C_SITENAME,@E_AREA,@C_AREA,@E_DISTRICT,@C_DISTRICT,@E_REGION,@C_REGION,@E_ADDRESS,@C_ADDRESS,@TEL_NO,@FAX_NO,@WEB_SITE,@REV_DATE,@GRAB_ID,@Latitude,@Longitude);";
         private readonly ILogger<MyBackGroundService> _logger;
         private readonly DataAccess _dataAccess;
         private IGrabberAPI<SevenElevenModel> _sevenElevenGrabber;
         private readonly WellcomeGrabber _wellcomeGrabber;
         private readonly USelectGrabber _uSelectGrabber;
         private IGrabberAPI<ParknShopModel> _parknShopGrabber;
+
+        IGeoComModel igeoComModel = new IGeoComModel();
 
         public MyBackGroundService(ILogger<MyBackGroundService> logger, DataAccess dataAccess, IGrabberAPI<SevenElevenModel> sevenElevenGrabber, WellcomeGrabber wellcomeGrabber, USelectGrabber uSelectGrabber, IGrabberAPI<ParknShopModel> parknShopGrabber)
         {
@@ -28,16 +30,20 @@ namespace iGeoComAPI
         {
             while (!stoppingToken.IsCancellationRequested)
             {
+             Stopwatch timer = new Stopwatch();
+                timer.Start();
              _logger.LogInformation("From MyBackGroundService: ExecuteGrabbingAsync {dateTime}", DateTime.Now);
              var sevenElevenResult = await _sevenElevenGrabber.GetWebSiteItems();
-             _dataAccess.SaveGrabbedData(InsertSql, sevenElevenResult);
+             _dataAccess.SaveGrabbedData(igeoComModel.InsertSql, sevenElevenResult);
              var wellcomeResult = await _wellcomeGrabber.GetWebSiteItems();
-             _dataAccess.SaveGrabbedData(InsertSql, wellcomeResult);
+             _dataAccess.SaveGrabbedData(igeoComModel.InsertSql, wellcomeResult);
              var uSelectResult = await _uSelectGrabber.GetWebSiteItems();
-             _dataAccess.SaveGrabbedData(InsertSql, uSelectResult);
+             _dataAccess.SaveGrabbedData(igeoComModel.InsertSql, uSelectResult);
              var parkNShopResult = await _parknShopGrabber.GetWebSiteItems();
-              _dataAccess.SaveGrabbedData(InsertSql, parkNShopResult);
-             await Task.Delay(TimeSpan.FromHours(10), stoppingToken);
+              _dataAccess.SaveGrabbedData(igeoComModel.InsertSql, parkNShopResult);
+                timer.Stop();
+             var timeTaken = timer.Elapsed.TotalHours;
+             await Task.Delay(TimeSpan.FromHours(timeTaken +24), stoppingToken);
             }
         }
 

@@ -9,17 +9,16 @@ namespace iGeoComAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class SevenElevenController : ControllerBase
-
+    public class SevenElevenController : ControllerBase, IController
     {
-        private readonly ILogger<SevenElevenController> _logger;
+        private readonly MyLogger _logger;
         private IGrabberAPI<SevenElevenModel> _sevenElevenGrabber;
         private readonly DataAccess _dataAccess;
 
         SevenElevenModel sevenElevenModel = new SevenElevenModel();
         IGeoComModel igeoComModel = new IGeoComModel();
 
-        public SevenElevenController(IGrabberAPI<SevenElevenModel> sevenElevenGrabber, ILogger<SevenElevenController> logger, DataAccess dataAccess)
+        public SevenElevenController(IGrabberAPI<SevenElevenModel> sevenElevenGrabber, MyLogger logger, DataAccess dataAccess)
         {
             _sevenElevenGrabber = sevenElevenGrabber;
             _logger = logger;
@@ -29,11 +28,12 @@ namespace iGeoComAPI.Controllers
         [HttpGet]
         public async Task<List<IGeoComGrabModel>?> Get()
         {
-           // var GrabbedResult = await _sevenElevenGrabber.GetWebSiteItems();
-           // _dataAccess.SaveGrabbedData(InsertSql, GrabbedResult);
-            var result = await _dataAccess.LoadData<IGeoComGrabModel>(sevenElevenModel.SelectSevenEleven);
-            List<String> lists  = new List<string> { "Latitude", "Longitude"};
+            _logger.LogControllerRequest(nameof(SevenElevenController), nameof(Get));
+            // var GrabbedResult = await _sevenElevenGrabber.GetWebSiteItems();
+            // _dataAccess.SaveGrabbedData(InsertSql, GrabbedResult);
+            var result = await _dataAccess.LoadData<IGeoComGrabModel>(sevenElevenModel.SelectSevenElevenFromDataBase);
             CsvFile.DownloadCsv(result, "SevenEleven_grab_Result");
+
             return result;
         }
 
@@ -55,15 +55,23 @@ namespace iGeoComAPI.Controllers
             return finalResult;
         }
         */
-        
+
         [HttpPost]
-        public async Task<List<IGeoComGrabModel?>> Create()
+        public async Task<List<IGeoComGrabModel>?> Post()
         {
+            _logger.LogControllerRequest(nameof(SevenElevenController), nameof(Post));
             var GrabbedResult = await _sevenElevenGrabber.GetWebSiteItems();
             _dataAccess.SaveGrabbedData(igeoComModel.InsertSql, GrabbedResult);
             return GrabbedResult;
         }
-        
+
+        [HttpDelete]
+        public async Task DeleteAllFromCache()
+        {
+            await _dataAccess.DeleteDataFromDataBase<IGeoComGrabModel>(sevenElevenModel.DeleteSevenElevenFromGrabbedCache);
+        }
+
+
 
     }
 

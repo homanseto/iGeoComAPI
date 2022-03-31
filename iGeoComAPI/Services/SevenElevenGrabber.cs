@@ -14,7 +14,7 @@ namespace iGeoComAPI.Services
         private JsonFunction _json;
         private IOptions<SevenElevenOptions> _options;
         private  IMemoryCache _memoryCache;
-        private ILogger<SevenElevenGrabber> _logger;
+        private MyLogger _logger;
         
         SevenElevenModel sevenElevenModel = new SevenElevenModel();
 
@@ -26,7 +26,7 @@ namespace iGeoComAPI.Services
         }
         */
 
-        public SevenElevenGrabber(ConnectClient httpClient, JsonFunction json, IOptions<SevenElevenOptions> options, IMemoryCache memoryCache, ILogger<SevenElevenGrabber> logger)
+        public SevenElevenGrabber(ConnectClient httpClient, JsonFunction json, IOptions<SevenElevenOptions> options, IMemoryCache memoryCache, MyLogger logger)
         {
             _httpClient = httpClient;
             _json = json;
@@ -40,7 +40,7 @@ namespace iGeoComAPI.Services
         {
             try
             {
-                _logger.LogInformation("start grabbing 7-11 rowdata");
+                _logger.LogStartGrabbing(nameof(SevenElevenGrabber));
                 var enConnectHttp = await _httpClient.GetAsync(_options.Value.EnUrl);
                 var enSerializedResult =  _json.Dserialize<List<SevenElevenModel>>(enConnectHttp);
                 var zhConnectHttp = await _httpClient.GetAsync(_options.Value.ZhUrl);
@@ -51,7 +51,6 @@ namespace iGeoComAPI.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message, "fail to grab  7-11");
                 throw;
             }
 
@@ -63,7 +62,7 @@ namespace iGeoComAPI.Services
             List<IGeoComGrabModel> SevenElevenIGeoComList = new List<IGeoComGrabModel>();
             try
             {
-                _logger.LogInformation("Start merging 7-11 eng and Zh");
+                _logger.LogMergeEngAndZh(nameof(SevenElevenModel));
                 if (enResult != null && zhResult != null)
                 {
                     foreach (SevenElevenModel shopEn in enResult)
@@ -132,7 +131,6 @@ namespace iGeoComAPI.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message, "fail to merge  7-11 Eng and Zh RawData");
                 throw;
             }
 
