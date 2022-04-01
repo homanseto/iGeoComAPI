@@ -10,6 +10,9 @@ namespace iGeoComAPI.Controllers
     [ApiController]
     public class AeonController : ControllerBase
     {
+        private static Serilog.ILogger _log2 = Util.CreateLog("Aeon");
+        _log2.Iner
+            //new Serilog.ILogger(typeof(AeonController));
         private ILogger<AeonController> _logger;
         private IGrabberAPI<AeonModel> _aeonGrabber;
         private DataAccess _dataAccess;
@@ -38,6 +41,7 @@ namespace iGeoComAPI.Controllers
         public async Task<List<IGeoComGrabModel?>> Create()
         {
             var GrabbedResult = await _aeonGrabber.GetWebSiteItems();
+            iGeoComModel.Insert(GrabbedResult);
             _dataAccess.SaveGrabbedData(iGeoComModel.InsertSql, GrabbedResult);
             return GrabbedResult;
         }

@@ -28,6 +28,18 @@ namespace iGeoComAPI
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            //Grab IGeoCom class
+            List<IGrabberAPI> geoComModels = new List<Services.IGrabberAPI>();
+            while (true)
+            {
+                Parallel.ForEach(geoComModels, new ParallelOptions() { MaxDegreeOfParallelism = 3 }, async (g) =>
+                   {
+                       var result = await g.GetWebSiteItems();
+                       _dataAccess.SaveGrabbedData(igeoComModel.InsertSql, result);
+                   });
+
+                //sleep
+            }
             while (!stoppingToken.IsCancellationRequested)
             {
              Stopwatch timer = new Stopwatch();
@@ -43,7 +55,7 @@ namespace iGeoComAPI
               _dataAccess.SaveGrabbedData(igeoComModel.InsertSql, parkNShopResult);
                 timer.Stop();
              var timeTaken = timer.Elapsed.TotalHours;
-             await Task.Delay(TimeSpan.FromHours(timeTaken +24), stoppingToken);
+             await Task.Delay(TimeSpan.FromHours(24- timeTaken), stoppingToken);
             }
         }
 
