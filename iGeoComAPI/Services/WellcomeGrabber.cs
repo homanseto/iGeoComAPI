@@ -57,10 +57,10 @@ namespace iGeoComAPI.Services
                     WellcomeIGeoCom.E_Address = shopEn.Address;
                     WellcomeIGeoCom.EnglishName = $"Wellcome Supermarket-{shopEn.Name}";
                     var matchesEn = _rgx.Matches(shopEn.LatLng!);
-                    WellcomeIGeoCom.Latitude = matchesEn[0].Value;
-                    WellcomeIGeoCom.Longitude = matchesEn[2].Value;
-                    WellcomeIGeoCom.Tel_No = shopEn.Phone;
-                    WellcomeIGeoCom.Web_Site = _options.Value.BaseUrl;
+                    WellcomeIGeoCom.Latitude = Convert.ToDouble(matchesEn[0].Value);
+                    WellcomeIGeoCom.Longitude = Convert.ToDouble(matchesEn[2].Value);
+                    WellcomeIGeoCom.Tel_No = shopEn.Phone!;
+                    WellcomeIGeoCom.Web_Site = _options.Value.BaseUrl!;
                     WellcomeIGeoCom.Class = "CMF";
                     WellcomeIGeoCom.Type = "SMK";
                     WellcomeIGeoCom.Source = "27";
@@ -70,7 +70,7 @@ namespace iGeoComAPI.Services
                         var matchesZh = _rgx.Matches(shopZh.LatLng!);
                         if (matchesZh.Count > 0 && matchesZh != null)
                         {
-                            if (WellcomeIGeoCom.Latitude == matchesZh[0].Value && WellcomeIGeoCom.Longitude == matchesZh[2].Value && WellcomeIGeoCom.Tel_No == shopZh.Phone)
+                            if (matchesEn[0].Value == matchesZh[0].Value && matchesEn[2].Value == matchesZh[2].Value && WellcomeIGeoCom.Tel_No == shopZh.Phone)
                             {
                                 WellcomeIGeoCom.C_Address = shopZh.Address;
                                 WellcomeIGeoCom.ChineseName = $"惠康超級市場-{shopZh.Name}";

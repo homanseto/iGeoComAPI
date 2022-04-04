@@ -11,8 +11,8 @@ namespace iGeoComAPI.Models
         public string Class { get; set; } = String.Empty;
         public string Type { get; set; } = String.Empty;
         public string Subcat { get; set; } = String.Empty;
-        public string Easting { get; set; } = String.Empty;
-        public string Northing { get; set; } = String.Empty;
+        public double Easting { get; set; } 
+        public double Northing { get; set; } 
         public string Source { get; set; } = String.Empty;
         public string E_floor { get; set; } = String.Empty;
         public string C_floor { get; set; } = String.Empty;
@@ -30,12 +30,6 @@ namespace iGeoComAPI.Models
         public string Fax_No { get; set; } = String.Empty;
         public string Web_Site { get; set; } = String.Empty;
         public string Rev_Date { get; set; } = String.Empty;
-        public string InsertSql
-        {
-            get {
-                return "INSERT INTO igeocomtable VALUES (@GEONAMEID,@ENGLISHNAME,@CHINESENAME,@ClASS,@TYPE, @SUBCAT,@EASTING,@NORTHING,@SOURCE,@E_FLOOR,@C_FLOOR,@E_SITENAME,@C_SITENAME,@E_AREA,@C_AREA,@E_DISTRICT,@C_DISTRICT,@E_REGION,@C_REGION,@E_ADDRESS,@C_ADDRESS,@TEL_NO,@FAX_NO,@WEB_SITE,@REV_DATE,@GRAB_ID,@Latitude,@Longitude);";
-            }
-        }
         //  public string? Grab_ID { get; set; }
         // public string? Latitude { get; set; }
         // public string? Longitude { get; set; }
@@ -43,8 +37,8 @@ namespace iGeoComAPI.Models
         public bool Insert()
         {
             return this.SaveGrabbedData<T>("INSERT INTO igeocomtable" +
-                "(GEONAMEID,ENGLISHNAME,CHINESENAME,ClASS,TYPE,SUBCAT,EASTING,NORTHING,SOURCE,E_FLOOR,C_FLOOR,E_SITENAME,C_SITENAME,E_AREA,C_AREA,E_DISTRICT,C_DISTRICT,E_REGION,C_REGION,E_ADDRESS,C_ADDRESS,TEL_NO,FAX_NO,WEB_SITE,REV_DATE,GRAB_ID,Latitude,Longitude)" +
-                " VALUES (@GEONAMEID,@ENGLISHNAME,@CHINESENAME,@ClASS,@TYPE, @SUBCAT,@EASTING,@NORTHING,@SOURCE,@E_FLOOR,@C_FLOOR,@E_SITENAME,@C_SITENAME,@E_AREA,@C_AREA,@E_DISTRICT,@C_DISTRICT,@E_REGION,@C_REGION,@E_ADDRESS,@C_ADDRESS,@TEL_NO,@FAX_NO,@WEB_SITE,@REV_DATE,@GRAB_ID,@Latitude,@Longitude);", this);
+                "(GEONAMEID,ENGLISHNAME,CHINESENAME,ClASS,TYPE,SUBCAT,EASTING,NORTHING,SOURCE,E_FLOOR,C_FLOOR,E_SITENAME,C_SITENAME,E_AREA,C_AREA,E_DISTRICT,C_DISTRICT,E_REGION,C_REGION,E_ADDRESS,C_ADDRESS,TEL_NO,FAX_NO,WEB_SITE,REV_DATE,GRAB_ID)" +
+                " VALUES (@GEONAMEID,@ENGLISHNAME,@CHINESENAME,@ClASS,@TYPE, @SUBCAT,@EASTING,@NORTHING,@SOURCE,@E_FLOOR,@C_FLOOR,@E_SITENAME,@C_SITENAME,@E_AREA,@C_AREA,@E_DISTRICT,@C_DISTRICT,@E_REGION,@C_REGION,@E_ADDRESS,@C_ADDRESS,@TEL_NO,@FAX_NO,@WEB_SITE,@REV_DATE,@GRAB_ID);", this);
         }
         public static List<IGeoComModel>(string p1, string p2){
             return _dataAccess.Get("SELECT * FROM IGeoComModel WHERE p1 = @p1 AND p2 LIKE @p2", new { p1 = p1, p2 = p2 })?.ToList();
