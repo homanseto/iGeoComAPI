@@ -29,6 +29,7 @@ namespace iGeoComAPI
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             //Grab IGeoCom class
+            /*
             List<IGrabberAPI> geoComModels = new List<Services.IGrabberAPI>();
             while (true)
             {
@@ -40,6 +41,7 @@ namespace iGeoComAPI
 
                 //sleep
             }
+            */
             while (!stoppingToken.IsCancellationRequested)
             {
              Stopwatch timer = new Stopwatch();

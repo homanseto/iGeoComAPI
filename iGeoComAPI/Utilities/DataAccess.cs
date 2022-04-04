@@ -8,14 +8,14 @@ using System.Data.SqlClient;
 
 namespace iGeoComAPI.Utilities
 {
-    public static class DataAccess
+    public abstract class DataAccess
     {
         private readonly IOptions<ConnectionStringsOptions> _options;
         private readonly IMemoryCache _memoryCache;
         private IOptions<AppSettingOptions> _env;
 
         //public DataAccess(IOptions<ConnectionStringsHomeOptions> options, IMemoryCache memoryCache)
-        public static DataAccess(IOptions<ConnectionStringsOptions> options, IMemoryCache memoryCache, IOptions<AppSettingOptions> env)
+        public DataAccess(IOptions<ConnectionStringsOptions> options, IMemoryCache memoryCache, IOptions<AppSettingOptions> env)
         {
             _options = options;
             _memoryCache = memoryCache;
