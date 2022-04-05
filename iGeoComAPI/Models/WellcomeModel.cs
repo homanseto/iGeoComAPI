@@ -9,7 +9,7 @@
 
         public string SelectWellcome
         {
-            get { return "SELECT * FROM igeocomtable WHERE GRAB_ID LIKE '%wellcome%'"; }
+            get { return "SELECT * FROM igeocomTable WHERE GRAB_ID LIKE '%wellcome%'"; }
         }
         public string SelectWellcomeFromDataBase
         {

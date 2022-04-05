@@ -50,8 +50,8 @@ namespace iGeoComAPI.Services
                     VangoIGeoCom.ChineseName = $"{shop.store_number}-{shop.storename}";
                     VangoIGeoCom.EnglishName = $"{shop.store_number}-{shop.storename}";
                     VangoIGeoCom.C_Address = shop.address_description;
-                    VangoIGeoCom.Latitude = shop.address_geo_lat;
-                    VangoIGeoCom.Longitude = shop.address_geo_lng; ;
+                    VangoIGeoCom.Latitude = Convert.ToDouble(shop.address_geo_lat);
+                    VangoIGeoCom.Longitude = Convert.ToDouble(shop.address_geo_lng);
                     VangoIGeoCom.Class = "CMF";
                     VangoIGeoCom.Type = "CVS";
                     VangoIGeoCom.Source = "27";

@@ -57,8 +57,8 @@ namespace iGeoComAPI.Services
                 var infoResult = await _puppeteerConnection.PuppeteerGrabber<IGeoComGrabModel>(@$"https://wmoov.com{shop.Website}", infoCode, waitSelectorInfo);
         
                 infoResult.ChineseName = shop.Name;
-                infoResult.Latitude = shop.Latitude;
-                infoResult.Longitude = shop.Longitude;
+                infoResult.Latitude = Convert.ToDouble(shop.Latitude);
+                infoResult.Longitude = Convert.ToDouble(shop.Longitude);
                 infoResult.Class = "CUF";
                 infoResult.Type = "TNC";
                 var matchId = _rgx.Matches(shop.Website!);

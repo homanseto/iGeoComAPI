@@ -55,8 +55,8 @@ namespace iGeoComAPI.Services
                     ParknShopIGeoCom.EnglishName = $"{shopEn.BrandName}-{shopEn.Name}";
                     ParknShopIGeoCom.E_Region = shopEn.Region;
                     ParknShopIGeoCom.E_District = shopEn.District;
-                    ParknShopIGeoCom.Latitude = shopEn.Latitude;
-                    ParknShopIGeoCom.Longitude = shopEn.Longitude;
+                    ParknShopIGeoCom.Latitude = Convert.ToDouble(shopEn.Latitude);
+                    ParknShopIGeoCom.Longitude = Convert.ToDouble(shopEn.Longitude);
                     ParknShopIGeoCom.Tel_No = shopEn.Phone;
                     ParknShopIGeoCom.Class = "CMF";
                     ParknShopIGeoCom.Type = "SMK";

@@ -53,8 +53,8 @@ namespace iGeoComAPI.Services
                         USelectIGeoCom.EnglishName = $"{shop.store_number}-{shop.storename_en}";
                         USelectIGeoCom.C_Address = shop.address_description;
                         USelectIGeoCom.E_Address = shop.address_description_en;
-                        USelectIGeoCom.Latitude = shop.address_geo_lat;
-                        USelectIGeoCom.Longitude = shop.address_geo_lng; ;
+                        USelectIGeoCom.Latitude = Convert.ToDouble(shop.address_geo_lat);
+                        USelectIGeoCom.Longitude = Convert.ToDouble(shop.address_geo_lng);
                         USelectIGeoCom.Class = "CMF";
                         USelectIGeoCom.Type = "SMK";
                         USelectIGeoCom.Source = "27";

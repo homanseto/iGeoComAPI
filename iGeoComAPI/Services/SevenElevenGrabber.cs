@@ -83,8 +83,8 @@ namespace iGeoComAPI.Services
                         }
                         sevenElevenIGeoCom.E_District = shopEn.District;
                         var matchesEn = _rgx.Matches(shopEn.LatLng!);
-                        sevenElevenIGeoCom.Latitude = matchesEn[0].Value;
-                        sevenElevenIGeoCom.Longitude = matchesEn[2].Value;
+                        sevenElevenIGeoCom.Latitude = Convert.ToDouble(matchesEn[0].Value);
+                        sevenElevenIGeoCom.Longitude = Convert.ToDouble(matchesEn[2].Value);
                         sevenElevenIGeoCom.Class = "CMF";
                         sevenElevenIGeoCom.Type = "CVS";
                         if (shopEn.Opening_24 == "1")
@@ -103,7 +103,7 @@ namespace iGeoComAPI.Services
                             var matchesZh = _rgx.Matches(shopZh.LatLng!);
                             if (matchesZh.Count > 0 && matchesZh != null)
                             {
-                                if (sevenElevenIGeoCom.Latitude == matchesZh[0].Value && sevenElevenIGeoCom.Longitude == matchesZh[2].Value)
+                                if (matchesEn[0].Value == matchesZh[0].Value && matchesEn[2].Value == matchesZh[2].Value)
                                 {
                                     sevenElevenIGeoCom.C_Address = shopZh.Address;
                                     if (shopZh.Region == "Kowloon")

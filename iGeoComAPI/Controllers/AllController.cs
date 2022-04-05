@@ -24,6 +24,7 @@ namespace iGeoComAPI.Controllers
             CsvFile.DownloadCsv(result, "SMK_grab_result");
             return result;
         }
+        /*
         [Route("api/@ID/@action")]
         public async bool DO(string ID, string action)
         {
@@ -31,5 +32,6 @@ namespace iGeoComAPI.Controllers
                 
             }
         }
+        */
     }
 }

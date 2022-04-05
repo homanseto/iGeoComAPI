@@ -50,8 +50,8 @@ namespace iGeoComAPI.Services
                         CaltexIGeoCom.EnglishName = $"Caltex-{en.Name!.Trim()}";
                         CaltexIGeoCom.E_Address = en.Street!.Trim();
                         CaltexIGeoCom.Tel_No = en.PhoneNumber!.Replace(" ", "");
-                        CaltexIGeoCom.Latitude = en.Latitude!.Trim();
-                        CaltexIGeoCom.Longitude = en.Longitude!.Trim();
+                        CaltexIGeoCom.Latitude = Convert.ToDouble(en.Latitude!.Trim());
+                        CaltexIGeoCom.Longitude = Convert.ToDouble(en.Longitude!.Trim());
                         CaltexIGeoCom.Web_Site = _options.Value.BaseUrl;
                         CaltexIGeoCom.Class = "UTI";
                         CaltexIGeoCom.Type = "PFS";

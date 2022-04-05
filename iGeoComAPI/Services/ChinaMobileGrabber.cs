@@ -83,8 +83,8 @@ namespace iGeoComAPI.Services
                         ChinaMobileIGeoCom.E_Address = shopEn.Address;
                         ChinaMobileIGeoCom.E_Region = shopEn.Region;
                         var matchesEn = _LatLngrgx.Matches(shopEn.LatLng!);
-                        ChinaMobileIGeoCom.Latitude = matchesEn[0].Value;
-                        ChinaMobileIGeoCom.Longitude = matchesEn[2].Value;
+                        ChinaMobileIGeoCom.Latitude = Convert.ToDouble(matchesEn[0].Value);
+                        ChinaMobileIGeoCom.Longitude = Convert.ToDouble(matchesEn[2].Value);
                         ChinaMobileIGeoCom.GeoNameId = $"chinamobile_{shopEn.Id}";
                         foreach (ChinaMobileModel shopZh in zhResult)
                         {

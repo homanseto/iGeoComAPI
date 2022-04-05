@@ -57,12 +57,12 @@ namespace iGeoComAPI.Services
                 var matchLat = _rgxLat.Matches(shopEn.LatLng!);
                 if (matchLat.Count > 0 && matchLat != null)
                 {
-                    AeonIGeoCom.Latitude = matchLat[0].Value.Replace("LatLng(","").Replace(",", "");
+                    AeonIGeoCom.Latitude = Convert.ToDouble(matchLat[0].Value.Replace("LatLng(","").Replace(",", ""));
                 }
                 var matchLng = _rgxLng.Matches(shopEn.LatLng!);
                 if (matchLng.Count > 0 && matchLng != null)
                 {
-                    AeonIGeoCom.Longitude = matchLng[0].Value.Replace(", ","").Replace(")","");
+                    AeonIGeoCom.Longitude = Convert.ToDouble(matchLng[0].Value.Replace(", ","").Replace(")",""));
                 }
                 foreach (var shopZh in zhResult)
                 {

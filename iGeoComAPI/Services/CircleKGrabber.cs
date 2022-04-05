@@ -81,8 +81,8 @@ namespace iGeoComAPI.Services
                         {
                             circleKIGeoCom.E_Region = "NT";
                         }
-                        circleKIGeoCom.Latitude = v.latitude;
-                        circleKIGeoCom.Longitude = v.longitude;
+                        circleKIGeoCom.Latitude = Convert.ToDouble(v.latitude);
+                        circleKIGeoCom.Longitude = Convert.ToDouble(v.longitude);
                         CircleKIGeoComList.Add(circleKIGeoCom);
 
                     }
