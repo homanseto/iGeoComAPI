@@ -58,7 +58,7 @@ if(_environment.EnvironmentName == "Production")
 var app = builder.Build();
 app.Logger.LogInformation("Project start");
 // Configure the HTTP request pipeline.
-if (_environment.EnvironmentName == "Development_3DM" | _environment.EnvironmentName == "Development_Home")
+if (_environment.EnvironmentName == "Development" | _environment.EnvironmentName == "Development_Home")
 {
     app.UseSwagger();
     app.UseSwaggerUI();

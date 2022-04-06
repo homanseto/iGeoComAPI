@@ -10,7 +10,7 @@
         public string? Opening_24 { get; set; } = null;
         public string SelectSevenElevenFromGrabbedCache 
         { 
-            get { return "SELECT * FROM igeocomtable WHERE GRAB_ID LIKE '%seveneleven%'";}
+            get { return "SELECT * FROM igeocomTable WHERE GRAB_ID LIKE '%seveneleven%'";}
         }
         public string DeleteSevenElevenFromGrabbedCache
         {

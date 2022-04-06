@@ -16,7 +16,7 @@
       "launchUrl": "swagger",
       "applicationUrl": "https://localhost:7001;http://localhost:5001",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development_3DM"
+        "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
     "iGeoComAPI_Production": {
