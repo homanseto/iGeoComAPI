@@ -18,6 +18,7 @@ namespace iGeoComAPI.Controllers
             _dataAccess = dataAccess;
         }
 
+        [HttpGet("market")]
         public async Task<List<IGeoComGrabModel>?> Get()
         {
             var result = await _dataAccess.LoadData<IGeoComGrabModel>(SelectSMK);
