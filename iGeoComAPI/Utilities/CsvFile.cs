@@ -2,11 +2,28 @@
 using System.IO;
 using CsvHelper;
 using System.Globalization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace iGeoComAPI.Utilities
 {
     public static class CsvFile
     {
+        public static FileStreamResult Download<T>(List<T> shopList, string fileName)
+        {
+            string now = DateTime.Now.ToString().Replace(@"/", "").Replace(@":", "").Replace(" ", "");
+            MemoryStream ms;
+            using (var memoryStream = new MemoryStream())
+            using (var streamWriter = new StreamWriter(memoryStream, Encoding.UTF8))
+            using (var csvWriter = new CsvWriter(streamWriter, CultureInfo.InvariantCulture))
+            {
+                csvWriter.WriteRecords<T>(shopList);
+                streamWriter.Flush();
+                var result = memoryStream.ToArray();
+                ms = new MemoryStream(result);
+            }
+            return new FileStreamResult(ms, "text/csv") { FileDownloadName = $"{fileName}_{now}.csv" };
+        }
+
         public static void DownloadCsv<T>(List<T> shopList, string fileName)
         {
             DateTime now = DateTime.Now;

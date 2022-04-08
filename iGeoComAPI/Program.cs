@@ -47,8 +47,8 @@ builder.Services.AddSingleton<DataAccess>();
 builder.Services.AddSingleton<PuppeteerConnection>();
 builder.Services.AddSingleton<MyLogger>();
 builder.Services.AddMemoryCache();
-MyConfigServiceCollection.AddConfig(builder.Services, _configuration);
 builder.Services.Configure<AppSettingOptions>(a => new AppSettingOptions { Environment = _environment.EnvironmentName });
+MyConfigServiceCollection.AddConfig(builder.Services, _configuration);
 builder.Services.AddOptions(); //IOptions<T>
 
 if(_environment.EnvironmentName == "Production")

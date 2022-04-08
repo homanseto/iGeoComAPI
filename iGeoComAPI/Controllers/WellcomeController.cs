@@ -35,13 +35,11 @@ namespace iGeoComAPI.Controllers
             return result;
         }
 
-        [HttpGet("testing")]
-        public async Task GetTesting()
+        [HttpGet("download")]
+        public async Task<FileStreamResult> GetDownload()
         {
-            List<String> lists = new List<string> { "E_Address", "Tel_No" };
-            var previousResult = await _dataAccess.LoadData<IGeoComModel>(wellcomeModel.SelectWellcomeFromDataBase);
-            var newResult = await _dataAccess.LoadData<IGeoComGrabModel>(wellcomeModel.SelectWellcome);
-            Comparator.FindDiffernet(previousResult, newResult, "added", lists);
+            var result = await _dataAccess.LoadData<IGeoComGrabModel>(wellcomeModel.SelectWellcome);
+            return CsvFile.Download(result, "wellcome");
         }
 
         /*
