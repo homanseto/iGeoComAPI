@@ -28,7 +28,6 @@ namespace iGeoComAPI
             services.Configure<CatholicOrgOptions>(config.GetSection(CatholicOrgOptions.SectionName));
             services.Configure<CheungKongOptions>(config.GetSection(CheungKongOptions.SectionName));
             services.Configure<ChinaMobileOptions>(config.GetSection(ChinaMobileOptions.SectionName));
-
             return services;
         }
     }

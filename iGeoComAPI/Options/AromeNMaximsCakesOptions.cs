@@ -4,11 +4,11 @@
     {
         public const string SectionName = "AromeNMaximsCakes";
 
-        public string? BaseUrl { get; set; }
-        public string? EnUrl { get; set; }
-        public string? ZhUrl { get; set; }
-        public int? EachPageNumber { get; set; }
-        public string? EnSearchpath { get; set; }
-        public string? ZhSearchpath { get; set; }
+        public string BaseUrl { get; set; } = String.Empty;
+        public string EnUrl { get; set; } = String.Empty;
+        public string ZhUrl { get; set; } = String.Empty;
+        public int EachPageNumber { get; set; } 
+        public string EnSearchpath { get; set; } = String.Empty;
+        public string ZhSearchpath { get; set; } = String.Empty;
     }
 }

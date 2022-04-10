@@ -1,31 +1,27 @@
 ﻿using Dapper;
 using iGeoComAPI.Models;
 using iGeoComAPI.Options;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using System.Data.SqlClient;
-
 
 namespace iGeoComAPI.Utilities
 {
     public class DataAccess
     {
         private readonly IOptions<ConnectionStringsOptions> _options;
-        private readonly IMemoryCache _memoryCache;
-        private readonly AppSettingOptions _env;
+        private readonly IOptions<AppSettingOptions> _env;
 
         //public DataAccess(IOptions<ConnectionStringsHomeOptions> options, IMemoryCache memoryCache)
-        public DataAccess(IOptions<ConnectionStringsOptions> options, IMemoryCache memoryCache, IOptions<AppSettingOptions> env)
+        public DataAccess(IOptions<ConnectionStringsOptions> options, IOptions<AppSettingOptions> env)
         {
             _options = options;
-            _memoryCache = memoryCache;
-            _env = env.Value;
+            _env = env;
         }
         
         public async Task<List<T>> LoadData<T>(string sql)
         {
             
-            if(_env.Environment == "Development" || _env.Environment == "Production")
+            if(_env.Value.Environment == "Development" || _env.Value.Environment == "Production")
             {
                 using (SqlConnection connection = new SqlConnection(_options.Value.Default_3DM))
                 {
@@ -47,11 +43,11 @@ namespace iGeoComAPI.Utilities
             
         }
 
-        public List<T> LoadDataCache<T>()
-        {
+
+            /*
             List<T> output;
             output = _memoryCache.Get<List<T>>("iGeoCom");
-            /*
+            
             if(output is null)
             {
                 // get result fro memory
@@ -60,14 +56,15 @@ namespace iGeoComAPI.Utilities
                 _memoryCache.Set("iGeoCom", output, TimeSpan.FromMinutes(1));
 
             }
-            */
             return output;
-        }
+            */
+
+        
 
         public void SaveGrabbedData<T>(string sql, List<T> parameters)
         {
             
-            if (_env.Environment == "Development" || _env.Environment == "Production")
+            if (_env.Value.Environment == "Development" || _env.Value.Environment == "Production")
             {
                 using (SqlConnection connection = new SqlConnection(_options.Value.Default_3DM))
                 {

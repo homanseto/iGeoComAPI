@@ -82,7 +82,7 @@ namespace iGeoComAPI.Controllers
             return finalResult;
         }
 
-        [HttpGet("completeresult")]
+        [HttpGet("deltaresult")]
         public async Task<List<IGeoComDeltaModel>?> GetRight()
         {
             var previousResult = await _dataAccess.LoadData<IGeoComModel>(wellcomeModel.SelectWellcomeFromDataBase);

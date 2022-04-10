@@ -23,6 +23,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddLazyCache();
 //builder.Services.AddHttpClient();
 builder.Services.AddSingleton<IGrabberAPI<SevenElevenModel>,SevenElevenGrabber>();
 builder.Services.AddSingleton<IGrabberAPI<CaltexModel>, CaltexGrabber>();
@@ -47,7 +48,7 @@ builder.Services.AddSingleton<DataAccess>();
 builder.Services.AddSingleton<PuppeteerConnection>();
 builder.Services.AddSingleton<MyLogger>();
 builder.Services.AddMemoryCache();
-builder.Services.Configure<AppSettingOptions>(a => new AppSettingOptions { Environment = _environment.EnvironmentName });
+builder.Services.Configure<AppSettingOptions>( a => new AppSettingOptions { Environment = _environment.EnvironmentName });
 MyConfigServiceCollection.AddConfig(builder.Services, _configuration);
 builder.Services.AddOptions(); //IOptions<T>
 
