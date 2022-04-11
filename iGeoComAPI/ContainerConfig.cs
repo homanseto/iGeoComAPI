@@ -5,6 +5,7 @@ namespace iGeoComAPI
 {
     public static class ContainerConfig
     {
+        /*
         public static IContainer Configure()
         {
             var builder = new ContainerBuilder();
@@ -13,5 +14,6 @@ namespace iGeoComAPI
                 .As(t => t.GetInterfaces().FirstOrDefault(i => i.Name == "I" + t.Name));
             return builder.Build();
         }
+        */
     }
 }

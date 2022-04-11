@@ -47,15 +47,17 @@ builder.Services.AddSingleton<JsonFunction>();
 builder.Services.AddSingleton<DataAccess>();
 builder.Services.AddSingleton<PuppeteerConnection>();
 builder.Services.AddSingleton<MyLogger>();
+builder.Services.AddSingleton<IIGeoComModel, IGeoComModel>();
 builder.Services.AddMemoryCache();
 builder.Services.Configure<AppSettingOptions>( a => new AppSettingOptions { Environment = _environment.EnvironmentName });
 MyConfigServiceCollection.AddConfig(builder.Services, _configuration);
 builder.Services.AddOptions(); //IOptions<T>
-
+/*
 if(_environment.EnvironmentName == "Production")
 {
     builder.Services.AddHostedService<MyBackGroundService>();
 }
+*/
 var app = builder.Build();
 app.Logger.LogInformation("Project start");
 // Configure the HTTP request pipeline.

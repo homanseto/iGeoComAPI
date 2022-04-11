@@ -8,22 +8,30 @@ namespace iGeoComAPI.Controllers
     [ApiController]
     public class AllController : ControllerBase
     {
-        private ILogger<AllController> _logger;
-        private DataAccess _dataAccess;
-        private string SelectSMK = "SELECT * FROM igeocomtable WHERE TYPE = 'SMK'";
+        private readonly ILogger<AllController> _logger;
+        private readonly IIGeoComModel _iGeoComModel;
 
-        public AllController( ILogger<AllController> logger, DataAccess dataAccess)
+        public AllController(ILogger<AllController> logger, IIGeoComModel iGeoComModel)
         {
             _logger = logger;
-            _dataAccess = dataAccess;
+            _iGeoComModel = iGeoComModel;
+
         }
 
-        [HttpGet("market")]
-        public async Task<List<IGeoComGrabModel>?> Get()
+        [HttpGet("{type}")]
+        public async Task<IActionResult> GetShopsByType(string type)
         {
-            var result = await _dataAccess.LoadData<IGeoComGrabModel>(SelectSMK);
-            CsvFile.DownloadCsv(result, "SMK_grab_result");
-            return result;
+            try
+            {
+                var result = await _iGeoComModel.GetShopsByType(type);
+                if (result == null)
+                    return NotFound();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
         /*
         [Route("api/@ID/@action")]

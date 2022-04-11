@@ -15,7 +15,7 @@ namespace iGeoComAPI.Controllers
         private IGrabberAPI<CaltexModel> _caltexGrabber;
         private  DataAccess _dataAccess;
 
-        IGeoComModel igeoComModel = new IGeoComModel();
+        IGeoComGrabModel igeoComGrabModel = new IGeoComGrabModel();
         CaltexModel caltexModel = new CaltexModel();
 
         public CaltexController(IGrabberAPI<CaltexModel> caltexGrabber, ILogger<CaltexController> logger, DataAccess dataAccess)
@@ -24,6 +24,7 @@ namespace iGeoComAPI.Controllers
             _logger = logger;
             _dataAccess = dataAccess;
         }
+        /*
         [HttpGet]
         public async Task<List<IGeoComGrabModel>?> Get()
         {
@@ -38,8 +39,9 @@ namespace iGeoComAPI.Controllers
         public async Task<List<IGeoComGrabModel?>> Create()
         {
             var GrabbedResult = await _caltexGrabber.GetWebSiteItems();
-            _dataAccess.SaveGrabbedData(igeoComModel.InsertSql, GrabbedResult);
+            _dataAccess.SaveGrabbedData(igeoComGrabModel.InsertSql, GrabbedResult);
             return GrabbedResult;
         }
+        */
     }
 }

@@ -15,7 +15,7 @@ namespace iGeoComAPI.Controllers
         private DataAccess _dataAccess;
 
         ChinaMobileModel ChinaMobileModel = new ChinaMobileModel();
-        IGeoComModel igeoComModel = new IGeoComModel();
+        //IGeoComModel igeoComModel = new IGeoComModel();
 
         public ChinaMobileController(ChinaMobileGrabber chinaMobileGrabber, ILogger<ChinaMobileController> logger, DataAccess dataAccess)
         {

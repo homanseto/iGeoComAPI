@@ -14,7 +14,7 @@ namespace iGeoComAPI.Controllers
         private BloodDonorCentreGrabber _bloodDonorCentreGrabber;
         private DataAccess _dataAccess;
 
-        IGeoComModel igeoComModel = new IGeoComModel();
+        //IGeoComModel igeoComModel = new IGeoComModel();
         BloodDonorCentreModel bloodDonorCentreModel = new BloodDonorCentreModel();
 
         public BloodDonorCentreController(BloodDonorCentreGrabber bloodDonorCentreGrabber, ILogger<BloodDonorCentreController> logger, DataAccess dataAccess)

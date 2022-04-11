@@ -21,7 +21,7 @@ namespace iGeoComAPI.Controllers
         }
 
         USelectModel uSelectModel = new USelectModel();
-        IGeoComModel igeoComModel = new IGeoComModel();
+        IGeoComGrabModel igeoComGrabModel = new IGeoComGrabModel();
 
         [HttpGet]
         public async Task<List<IGeoComGrabModel>?> Get()
@@ -37,7 +37,7 @@ namespace iGeoComAPI.Controllers
         public async Task<List<IGeoComGrabModel?>> Create()
         {
             var GrabbedResult = await _uSelectGrabber.GetWebSiteItems();
-            _dataAccess.SaveGrabbedData(igeoComModel.InsertSql, GrabbedResult);
+            _dataAccess.SaveGrabbedData(igeoComGrabModel.InsertSql, GrabbedResult);
             return GrabbedResult;
         }
     }

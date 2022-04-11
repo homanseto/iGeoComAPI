@@ -13,7 +13,7 @@ namespace iGeoComAPI.Models
         private IGrabberAPI<AromeNMaximsCakesModel> _aromeNMaximsCakesGrabber;
         private DataAccess _dataAccess;
 
-        IGeoComModel igeoComModel = new IGeoComModel();
+        //IGeoComModel igeoComModel = new IGeoComModel();
         AromeNMaximsCakesModel aromeNMaximsCakesModel = new AromeNMaximsCakesModel();
 
 

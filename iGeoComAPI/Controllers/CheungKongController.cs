@@ -15,7 +15,7 @@ namespace iGeoComAPI.Controllers
         private DataAccess _dataAccess;
 
         CheungKongModel cheungKongModel = new CheungKongModel();
-        IGeoComModel igeoComModel = new IGeoComModel();
+        //IGeoComModel igeoComModel = new IGeoComModel();
 
         public CheungKongController(CheungKongGrabber cheungKongGrabber, ILogger<CheungKongController> logger, DataAccess dataAccess)
         {

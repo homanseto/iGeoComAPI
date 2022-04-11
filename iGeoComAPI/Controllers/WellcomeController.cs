@@ -16,7 +16,7 @@ namespace iGeoComAPI.Controllers
         private readonly DataAccess _dataAccess;
 
         WellcomeModel wellcomeModel = new WellcomeModel();
-        IGeoComModel igeoComModel = new IGeoComModel();
+        IGeoComGrabModel igeoComGrabModel = new IGeoComGrabModel();
 
         public WellcomeController(WellcomeGrabber wellcomeGrabber, ILogger<WellcomeController> logger, DataAccess dataAccess)
         {
@@ -35,7 +35,7 @@ namespace iGeoComAPI.Controllers
             return result;
         }
 
-        [HttpGet("download")]
+        [HttpGet("download/grabresult")]
         public async Task<FileStreamResult> GetDownload()
         {
             var result = await _dataAccess.LoadData<IGeoComGrabModel>(wellcomeModel.SelectWellcome);
@@ -82,8 +82,8 @@ namespace iGeoComAPI.Controllers
             return finalResult;
         }
 
-        [HttpGet("deltaresult")]
-        public async Task<List<IGeoComDeltaModel>?> GetRight()
+        [HttpGet("download/deltaresult")]
+        public async Task<FileStreamResult> GetRight()
         {
             var previousResult = await _dataAccess.LoadData<IGeoComModel>(wellcomeModel.SelectWellcomeFromDataBase);
             var newResult = await _dataAccess.LoadData<IGeoComGrabModel>(wellcomeModel.SelectWellcome);
@@ -94,15 +94,14 @@ namespace iGeoComAPI.Controllers
             var orgModified = _wellcomeGrabber.orgModified(rightResult, leftResult);
             var newModified = _wellcomeGrabber.newModified(leftResult, rightResult);
             var finalResult = _wellcomeGrabber.MergeResults(addedResult, removedResult, newModified, orgModified);
-            CsvFile.DownloadCsv(finalResult, "Wellcome_complete_Result");
-            return finalResult;
+            return CsvFile.Download(finalResult, "wellcomeDelta");
         }
 
         [HttpPost]
         public async Task<List<IGeoComGrabModel?>> Create()
         {
             var GrabbedResult =await _wellcomeGrabber.GetWebSiteItems();
-            _dataAccess.SaveGrabbedData(igeoComModel.InsertSql, GrabbedResult);
+            _dataAccess.SaveGrabbedData(igeoComGrabModel.InsertSql, GrabbedResult);
             return GrabbedResult;
         }
     }

@@ -14,7 +14,7 @@ namespace iGeoComAPI.Controllers
         private readonly VangoGrabber _vangoGrabber;
         private readonly DataAccess _dataAccess;
         VangoModel vangoModel = new VangoModel();
-        IGeoComModel igeoComModel = new IGeoComModel();
+        IGeoComGrabModel igeoComGrabModel = new IGeoComGrabModel();
 
         public VangoController(VangoGrabber vangoGrabber, ILogger<VangoController> logger, DataAccess dataAccess)
         {
@@ -37,7 +37,7 @@ namespace iGeoComAPI.Controllers
         public async Task<List<IGeoComGrabModel?>> Create()
         {
             var GrabbedResult = await _vangoGrabber.GetWebSiteItems();
-            _dataAccess.SaveGrabbedData(igeoComModel.InsertSql, GrabbedResult);
+            _dataAccess.SaveGrabbedData(igeoComGrabModel.InsertSql, GrabbedResult);
             return GrabbedResult;
         }
     }

@@ -4,6 +4,7 @@ using iGeoComAPI.Utilities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
+
 namespace iGeoComAPI.Controllers
 {
     [Route("api/[controller]")]
@@ -18,25 +19,33 @@ namespace iGeoComAPI.Controllers
         private ILogger<AeonController> _logger;
         private IGrabberAPI<AeonModel> _aeonGrabber;
         private DataAccess _dataAccess;
+        private readonly IIGeoComModel _iGeoComModel;
 
         AeonModel aeonModel = new AeonModel();
-        IGeoComModel iGeoComModel = new IGeoComModel();
 
-        public AeonController(IGrabberAPI<AeonModel> aeonGrabber, ILogger<AeonController> logger, DataAccess dataAccess)
+
+        public AeonController(IGrabberAPI<AeonModel> aeonGrabber, ILogger<AeonController> logger, DataAccess dataAccess, IIGeoComModel iGeoComModel)
         {
             _aeonGrabber = aeonGrabber;
             _logger = logger;
             _dataAccess = dataAccess;
+            _iGeoComModel = iGeoComModel;
         }
 
         [HttpGet]
-        public async Task<List<IGeoComGrabModel>?> Get()
+        public async Task<IActionResult> Get(string keyword)
         {
-            //var GrabbedResult = await _aeonGrabber.GetWebSiteItems();
-            //_dataAccess.SaveGrabbedData(InsertSql, GrabbedResult);
-            var result = await _dataAccess.LoadData<IGeoComGrabModel>(aeonModel.SelectAeon);
-            CsvFile.DownloadCsv(result, "Aeon_grab_result");
-            return result;
+            try
+            {
+                var result = await _iGeoComModel.GetShops(keyword);
+                if (result == null)
+                    return NotFound();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         [HttpPost]

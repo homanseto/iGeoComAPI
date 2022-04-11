@@ -15,7 +15,6 @@ namespace iGeoComAPI.Controllers
         private DataAccess _dataAccess;
 
         AmbulanceDepotModel ambulanceDepotModel = new AmbulanceDepotModel();
-        IGeoComModel igeoComModel = new IGeoComModel();
 
         public AmbulanceDepotController(AmbulanceDepotGrabber aromeNMaximsCakesGrabber, ILogger<AmbulanceDepotController> logger, DataAccess dataAccess)
         {
