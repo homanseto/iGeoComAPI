@@ -37,6 +37,12 @@ namespace iGeoComAPI.Controllers
             return result;
         }
 
+        [HttpGet("download")]
+        public async Task<FileStreamResult> GetDownload()
+        {
+            var result = await _dataAccess.LoadData<IGeoComGrabModel>(sevenElevenModel.SelectSevenElevenFromGrabbedCache);
+            return CsvFile.Download(result, "seveneleven");
+        }
 
         /*
         [HttpGet("cache")]

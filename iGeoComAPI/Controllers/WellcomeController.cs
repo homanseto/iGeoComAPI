@@ -82,8 +82,8 @@ namespace iGeoComAPI.Controllers
             return finalResult;
         }
 
-        [HttpGet("deltaresult")]
-        public async Task<List<IGeoComDeltaModel>?> GetRight()
+        [HttpGet("download/deltaresult")]
+        public async Task<FileStreamResult> GetRight()
         {
             var previousResult = await _dataAccess.LoadData<IGeoComModel>(wellcomeModel.SelectWellcomeFromDataBase);
             var newResult = await _dataAccess.LoadData<IGeoComGrabModel>(wellcomeModel.SelectWellcome);
@@ -94,8 +94,7 @@ namespace iGeoComAPI.Controllers
             var orgModified = _wellcomeGrabber.orgModified(rightResult, leftResult);
             var newModified = _wellcomeGrabber.newModified(leftResult, rightResult);
             var finalResult = _wellcomeGrabber.MergeResults(addedResult, removedResult, newModified, orgModified);
-            CsvFile.DownloadCsv(finalResult, "Wellcome_complete_Result");
-            return finalResult;
+            return CsvFile.Download(finalResult, "Wellcome_complete_Result");
         }
 
         [HttpPost]
