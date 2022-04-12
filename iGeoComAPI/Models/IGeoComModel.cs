@@ -1,28 +1,40 @@
-﻿using iGeoComAPI.Entities;
+﻿using iGeoComAPI.Options;
 using iGeoComAPI.Utilities;
+using Microsoft.Extensions.Options;
 
 namespace iGeoComAPI.Models
 {
-    public class IGeoComModel : IIGeoComModel
+    public class IGeoComModel : DataAccess
     {
+        
         private readonly DataAccess _dataAccess;
+        private IGeoComModel() { }
         public IGeoComModel(DataAccess dataAccess)
         {
             _dataAccess = dataAccess;
         }
-        public async Task<List<IGeoComEntity>> GetShops( string keyword)
+        public async Task<List<IGeoComModel>> GetShops(string type)
         {
-            string query = $"SELECT * FROM iGeoCom_Dec2021 WHERE ENGLISHNAME like {keyword}";
-            var result = await _dataAccess.LoadData<IGeoComEntity>(query);
+            /*
+            string query = $"SELECT * FROM iGeoCom_Dec2021 WHERE '' = '' ";
+            if (!string.IsNullOrEmpty(keyword))
+                query += "AND ENGLISHNAME like @keyword ";
+            if (!string.IsNullOrEmpty(type))
+                query += "AND TYPE like @type ";
+            */
+            string query = "SELECT * FROM iGeoCom_Dec2021 WHERE TYPE = @TYPE ";
+            var result = await _dataAccess.LoadData<IGeoComModel>(query, new { TYPE = type } );
             return result;
         }
 
-        public async Task<List<IGeoComEntity>> GetShopsByType(string type)
+        /*
+        public async Task<List<IGeoComModel>> GetShopsByType(string type)
         {
             string query = $"SELECT * FROM iGeoCom_Dec2021 WHERE TYPE = '{type}'";
-            var result = await _dataAccess.LoadData<IGeoComEntity>(query);
+            var result = await _dataAccess.LoadData<IGeoComModel>(query);
             return result;
         }
+        */
         public string GeoNameId { get; set; } = String.Empty;
         public string EnglishName { get; set; } = String.Empty;
         public string ChineseName { get; set; } = String.Empty;

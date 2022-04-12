@@ -24,7 +24,7 @@ namespace iGeoComAPI.Controllers
             _logger = logger;
             _dataAccess = dataAccess;
         }
-
+        /*
         [HttpGet]
         public async Task<List<IGeoComGrabModel>?> Get()
         {
@@ -49,7 +49,7 @@ namespace iGeoComAPI.Controllers
             var result = _dataAccess.LoadDataCache<IGeoComGrabModel>();
             return result.Where(r => r.Grab_ID.Contains("wellcome")).ToList();
         }
-        */
+        
 
         [HttpGet("added")]
         public async Task<List<IGeoComDeltaModel>?> GetAdded()
@@ -104,5 +104,6 @@ namespace iGeoComAPI.Controllers
             _dataAccess.SaveGrabbedData(igeoComGrabModel.InsertSql, GrabbedResult);
             return GrabbedResult;
         }
+        */
     }
 }

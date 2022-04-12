@@ -23,6 +23,7 @@ namespace iGeoComAPI.Controllers
             _dataAccess = dataAccess;
         }
 
+        /*
         [HttpGet]
         public async Task<List<IGeoComGrabModel>?> Get()
         {
@@ -40,5 +41,6 @@ namespace iGeoComAPI.Controllers
             _dataAccess.SaveGrabbedData(igeoComGrabModel.InsertSql, GrabbedResult);
             return GrabbedResult;
         }
+        */
     }
 }

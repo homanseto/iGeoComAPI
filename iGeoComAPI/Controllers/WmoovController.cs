@@ -23,6 +23,7 @@ namespace iGeoComAPI.Controllers
         WmoovModel wmoovModel = new WmoovModel();
         IGeoComGrabModel igeoComGrabModel = new IGeoComGrabModel();
 
+        /*
         [HttpGet]
         public async Task<List<IGeoComGrabModel>> Get()
         {
@@ -50,5 +51,6 @@ namespace iGeoComAPI.Controllers
             _dataAccess.SaveGrabbedData(igeoComGrabModel.InsertSql, GrabbedResult);
             return GrabbedResult;
         }
+        */
     }
 }

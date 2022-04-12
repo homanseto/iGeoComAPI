@@ -19,12 +19,12 @@ namespace iGeoComAPI.Controllers
         private ILogger<AeonController> _logger;
         private IGrabberAPI<AeonModel> _aeonGrabber;
         private DataAccess _dataAccess;
-        private readonly IIGeoComModel _iGeoComModel;
+        private readonly IGeoComModel _iGeoComModel;
 
         AeonModel aeonModel = new AeonModel();
 
 
-        public AeonController(IGrabberAPI<AeonModel> aeonGrabber, ILogger<AeonController> logger, DataAccess dataAccess, IIGeoComModel iGeoComModel)
+        public AeonController(IGrabberAPI<AeonModel> aeonGrabber, ILogger<AeonController> logger, DataAccess dataAccess, IGeoComModel iGeoComModel)
         {
             _aeonGrabber = aeonGrabber;
             _logger = logger;

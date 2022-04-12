@@ -22,7 +22,7 @@ namespace iGeoComAPI.Controllers
 
         USelectModel uSelectModel = new USelectModel();
         IGeoComGrabModel igeoComGrabModel = new IGeoComGrabModel();
-
+        /*
         [HttpGet]
         public async Task<List<IGeoComGrabModel>?> Get()
         {
@@ -40,5 +40,6 @@ namespace iGeoComAPI.Controllers
             _dataAccess.SaveGrabbedData(igeoComGrabModel.InsertSql, GrabbedResult);
             return GrabbedResult;
         }
+        */
     }
 }

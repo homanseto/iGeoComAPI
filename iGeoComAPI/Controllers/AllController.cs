@@ -9,9 +9,9 @@ namespace iGeoComAPI.Controllers
     public class AllController : ControllerBase
     {
         private readonly ILogger<AllController> _logger;
-        private readonly IIGeoComModel _iGeoComModel;
+        private readonly IGeoComModel _iGeoComModel;
 
-        public AllController(ILogger<AllController> logger, IIGeoComModel iGeoComModel)
+        public AllController(ILogger<AllController> logger, IGeoComModel iGeoComModel)
         {
             _logger = logger;
             _iGeoComModel = iGeoComModel;
@@ -19,11 +19,11 @@ namespace iGeoComAPI.Controllers
         }
 
         [HttpGet("{type}")]
-        public async Task<IActionResult> GetShopsByType(string type)
+        public async Task<IActionResult> GetShops(string type)
         {
             try
             {
-                var result = await _iGeoComModel.GetShopsByType(type);
+                var result = await _iGeoComModel.GetShops(type);
                 if (result == null)
                     return NotFound();
                 return Ok(result);

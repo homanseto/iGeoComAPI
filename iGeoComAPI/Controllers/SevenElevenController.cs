@@ -20,6 +20,7 @@ namespace iGeoComAPI.Controllers
 
         public SevenElevenController(IGrabberAPI<SevenElevenModel> sevenElevenGrabber, MyLogger logger, DataAccess dataAccess)
         {
+            IGeoComModel a = new IGeoComModel();
             _sevenElevenGrabber = sevenElevenGrabber;
             _logger = logger;
             _dataAccess = dataAccess;
