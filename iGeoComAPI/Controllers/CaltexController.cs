@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using iGeoComAPI.Options;
 using Microsoft.Extensions.Options;
 using iGeoComAPI.Utilities;
+using iGeoComAPI.Repository;
 
 namespace iGeoComAPI.Controllers
 {
@@ -14,15 +15,32 @@ namespace iGeoComAPI.Controllers
         private  ILogger<CaltexController> _logger;
         private IGrabberAPI<CaltexModel> _caltexGrabber;
         private  DataAccess _dataAccess;
+        private IGeoComGrabRepository _iGeoComGrabRepository;
 
         IGeoComGrabModel igeoComGrabModel = new IGeoComGrabModel();
         CaltexModel caltexModel = new CaltexModel();
 
-        public CaltexController(IGrabberAPI<CaltexModel> caltexGrabber, ILogger<CaltexController> logger, DataAccess dataAccess)
+        public CaltexController(IGrabberAPI<CaltexModel> caltexGrabber, ILogger<CaltexController> logger, IGeoComGrabRepository iGeoComGrabRepository)
         {
             _caltexGrabber = caltexGrabber;
             _logger = logger;
-            _dataAccess = dataAccess;
+            _iGeoComGrabRepository = iGeoComGrabRepository;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Get()
+        {
+            try
+            {
+                var result = await _iGeoComGrabRepository.GetShopsByName("caltex");
+                if (result == null)
+                    return NotFound();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
         /*
         [HttpGet]

@@ -73,27 +73,27 @@ namespace iGeoComAPI.Services
 
         }
 
-        public List<IGeoComGrabModel> FindAdded(List<IGeoComGrabModel> newData, List<IGeoComModel> previousData)
-        {
-            int newDataLength = newData.Count;
-            int previousDataLength = previousData.Count;
-            List<IGeoComGrabModel> AddedWellcomeIGeoComList = new List<IGeoComGrabModel>();
+        //public List<IGeoComGrabModel> FindAdded(List<IGeoComGrabModel> newData, List<IGeoComRepository> previousData)
+        //{
+        //    int newDataLength = newData.Count;
+        //    int previousDataLength = previousData.Count;
+        //    List<IGeoComGrabModel> AddedWellcomeIGeoComList = new List<IGeoComGrabModel>();
 
-            for (int i = 0; i < newDataLength; i++)
-            {
-                int j;
-                for (j = 0; j < previousDataLength; j++) 
-                    if (newData[i].C_Address?.Replace(" ","") == previousData[j].C_Address?.Replace(" ", "") &&
-                       newData[i].Tel_No?.Replace(" ", "").Replace("-", "") == previousData[j].Tel_No?.Replace(" ", "").Replace("-", "") &&
-                       newData[i].Web_Site == previousData[j].Web_Site
-                        )
-                        break;
-                    if (j == previousDataLength)
-                    {
-                        AddedWellcomeIGeoComList.Add(newData[i]);
-                    }
-            }
-            return AddedWellcomeIGeoComList;
-        }
+        //    for (int i = 0; i < newDataLength; i++)
+        //    {
+        //        int j;
+        //        for (j = 0; j < previousDataLength; j++) 
+        //            if (newData[i].C_Address?.Replace(" ","") == previousData[j].C_Address?.Replace(" ", "") &&
+        //               newData[i].Tel_No?.Replace(" ", "").Replace("-", "") == previousData[j].Tel_No?.Replace(" ", "").Replace("-", "") &&
+        //               newData[i].Web_Site == previousData[j].Web_Site
+        //                )
+        //                break;
+        //            if (j == previousDataLength)
+        //            {
+        //                AddedWellcomeIGeoComList.Add(newData[i]);
+        //            }
+        //    }
+        //    return AddedWellcomeIGeoComList;
+        //}
     }
 }

@@ -4,37 +4,8 @@ using Microsoft.Extensions.Options;
 
 namespace iGeoComAPI.Models
 {
-    public class IGeoComModel : DataAccess
+    public class IGeoComModel
     {
-        
-        private readonly DataAccess _dataAccess;
-        private IGeoComModel() { }
-        public IGeoComModel(DataAccess dataAccess)
-        {
-            _dataAccess = dataAccess;
-        }
-        public async Task<List<IGeoComModel>> GetShops(string type)
-        {
-            /*
-            string query = $"SELECT * FROM iGeoCom_Dec2021 WHERE '' = '' ";
-            if (!string.IsNullOrEmpty(keyword))
-                query += "AND ENGLISHNAME like @keyword ";
-            if (!string.IsNullOrEmpty(type))
-                query += "AND TYPE like @type ";
-            */
-            string query = "SELECT * FROM iGeoCom_Dec2021 WHERE TYPE = @TYPE ";
-            var result = await _dataAccess.LoadData<IGeoComModel>(query, new { TYPE = type } );
-            return result;
-        }
-
-        /*
-        public async Task<List<IGeoComModel>> GetShopsByType(string type)
-        {
-            string query = $"SELECT * FROM iGeoCom_Dec2021 WHERE TYPE = '{type}'";
-            var result = await _dataAccess.LoadData<IGeoComModel>(query);
-            return result;
-        }
-        */
         public string GeoNameId { get; set; } = String.Empty;
         public string EnglishName { get; set; } = String.Empty;
         public string ChineseName { get; set; } = String.Empty;

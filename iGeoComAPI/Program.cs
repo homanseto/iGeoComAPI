@@ -5,6 +5,7 @@ using iGeoComAPI.Utilities;
 using Serilog;
 using iGeoComAPI.Models;
 using iGeoComAPI;
+using iGeoComAPI.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +25,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddLazyCache();
+builder.Services.Configure<AppSettingOptions>( a => new AppSettingOptions { Environment = _environment.EnvironmentName });
 //builder.Services.AddHttpClient();
 builder.Services.AddSingleton<IGrabberAPI<SevenElevenModel>,SevenElevenGrabber>();
 builder.Services.AddSingleton<IGrabberAPI<CaltexModel>, CaltexGrabber>();
@@ -44,12 +46,12 @@ builder.Services.AddSingleton<CatholicOrgGrabber>();
 builder.Services.AddSingleton<ChinaMobileGrabber>();
 builder.Services.AddSingleton<ConnectClient>();
 builder.Services.AddSingleton<JsonFunction>();
-builder.Services.AddSingleton< DataAccess>();
+builder.Services.AddSingleton<IDataAccess, DataAccess>();
 builder.Services.AddSingleton<PuppeteerConnection>();
 builder.Services.AddSingleton<MyLogger>();
-builder.Services.AddSingleton<IGeoComModel>();
+builder.Services.AddSingleton<IGeoComRepository>();
+builder.Services.AddSingleton<IGeoComGrabRepository>();
 builder.Services.AddMemoryCache();
-builder.Services.Configure<AppSettingOptions>( a => new AppSettingOptions { Environment = _environment.EnvironmentName });
 MyConfigServiceCollection.AddConfig(builder.Services, _configuration);
 builder.Services.AddOptions(); //IOptions<T>
 /*

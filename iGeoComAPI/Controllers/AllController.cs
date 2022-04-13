@@ -1,4 +1,5 @@
 ﻿using iGeoComAPI.Models;
+using iGeoComAPI.Repository;
 using iGeoComAPI.Utilities;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,12 +10,12 @@ namespace iGeoComAPI.Controllers
     public class AllController : ControllerBase
     {
         private readonly ILogger<AllController> _logger;
-        private readonly IGeoComModel _iGeoComModel;
+        private readonly IGeoComRepository _iGeoComRepository;
 
-        public AllController(ILogger<AllController> logger, IGeoComModel iGeoComModel)
+        public AllController(ILogger<AllController> logger, IGeoComRepository iGeoComRepository)
         {
             _logger = logger;
-            _iGeoComModel = iGeoComModel;
+            _iGeoComRepository = iGeoComRepository;
 
         }
 
@@ -23,7 +24,7 @@ namespace iGeoComAPI.Controllers
         {
             try
             {
-                var result = await _iGeoComModel.GetShops(type);
+                var result = await _iGeoComRepository.GetShops(type);
                 if (result == null)
                     return NotFound();
                 return Ok(result);

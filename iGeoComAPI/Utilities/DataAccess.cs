@@ -11,7 +11,6 @@ namespace iGeoComAPI.Utilities
         private readonly IOptions<ConnectionStringsOptions> _options;
         private readonly IOptions<AppSettingOptions> _env;
 
-        //public DataAccess(IOptions<ConnectionStringsHomeOptions> options, IMemoryCache memoryCache)
         public DataAccess(IOptions<ConnectionStringsOptions> options, IOptions<AppSettingOptions> env)
         {
             _options = options;

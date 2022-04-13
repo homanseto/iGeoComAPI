@@ -1,4 +1,5 @@
 ﻿using iGeoComAPI.Models;
+using iGeoComAPI.Repository;
 using iGeoComAPI.Services;
 using iGeoComAPI.Utilities;
 using Microsoft.AspNetCore.Http;
@@ -19,25 +20,26 @@ namespace iGeoComAPI.Controllers
         private ILogger<AeonController> _logger;
         private IGrabberAPI<AeonModel> _aeonGrabber;
         private DataAccess _dataAccess;
-        private readonly IGeoComModel _iGeoComModel;
+        private readonly IGeoComRepository _iGeoComRepository;
+        private readonly IGeoComGrabRepository _iGeoComGrabRepository;
 
         AeonModel aeonModel = new AeonModel();
 
 
-        public AeonController(IGrabberAPI<AeonModel> aeonGrabber, ILogger<AeonController> logger, DataAccess dataAccess, IGeoComModel iGeoComModel)
+        public AeonController(IGrabberAPI<AeonModel> aeonGrabber, ILogger<AeonController> logger, IGeoComRepository iGeoComRepository, IGeoComGrabRepository iGeoComGrabRepository)
         {
             _aeonGrabber = aeonGrabber;
             _logger = logger;
-            _dataAccess = dataAccess;
-            _iGeoComModel = iGeoComModel;
+            _iGeoComRepository = iGeoComRepository;
+            _iGeoComGrabRepository = iGeoComGrabRepository;
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get(string keyword)
+        public async Task<IActionResult> Get()
         {
             try
             {
-                var result = await _iGeoComModel.GetShops(keyword);
+                var result = await _iGeoComGrabRepository.GetShopsByName("aeon");
                 if (result == null)
                     return NotFound();
                 return Ok(result);
