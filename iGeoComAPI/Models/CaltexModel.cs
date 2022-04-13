@@ -8,15 +8,6 @@
         public string? PhoneNumber { get; set; }
         public string? Latitude { get; set; }
         public string? Longitude { get; set; }
-        public string SelectCaltexFromDataBase
-        {
-            get { return "SELECT * FROM iGeoCom_Dec2021 WHERE ENGLISHNAME like '%Caltex%';"; }
-        } 
-        public string SelectCaltex
-        {
-            get { return "SELECT * FROM igeocomtable WHERE GRAB_ID LIKE '%caltex%'"; }
-        } 
-
 
     }
 }

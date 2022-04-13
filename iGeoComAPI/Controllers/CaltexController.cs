@@ -32,7 +32,7 @@ namespace iGeoComAPI.Controllers
         {
             try
             {
-                var result = await _iGeoComGrabRepository.GetShopsByName("caltex");
+                var result = await _iGeoComGrabRepository.GetShopsByName("%caltex_%");
                 if (result == null)
                     return NotFound();
                 return Ok(result);

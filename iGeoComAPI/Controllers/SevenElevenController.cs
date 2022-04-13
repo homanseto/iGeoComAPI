@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using iGeoComAPI.Options;
 using Microsoft.Extensions.Options;
 using iGeoComAPI.Utilities;
+using iGeoComAPI.Repository;
 
 namespace iGeoComAPI.Controllers
 {
@@ -13,16 +14,41 @@ namespace iGeoComAPI.Controllers
     {
         private readonly MyLogger _logger;
         private IGrabberAPI<SevenElevenModel> _sevenElevenGrabber;
-        private readonly DataAccess _dataAccess;
+        private IGeoComGrabRepository _iGeoComGrabRepository;
 
         SevenElevenModel sevenElevenModel = new SevenElevenModel();
         //IGeoComGrabModel igeoComGrabModel = new IGeoComGrabModel();
 
-        public SevenElevenController(IGrabberAPI<SevenElevenModel> sevenElevenGrabber, MyLogger logger, DataAccess dataAccess)
+        public SevenElevenController(IGrabberAPI<SevenElevenModel> sevenElevenGrabber, MyLogger logger, IGeoComGrabRepository iGeoComGrabRepository)
         {
             _sevenElevenGrabber = sevenElevenGrabber;
             _logger = logger;
-            _dataAccess = dataAccess;
+            _iGeoComGrabRepository = iGeoComGrabRepository;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Get()
+        {
+            try
+            {
+                var result = await _iGeoComGrabRepository.GetShopsByName("seveneleven");
+                if (result == null)
+                    return NotFound();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPost]
+        public async Task<List<IGeoComGrabModel>?> Post()
+        {
+            _logger.LogControllerRequest(nameof(SevenElevenController), nameof(Post));
+            var GrabbedResult = await _sevenElevenGrabber.GetWebSiteItems();
+            _iGeoComGrabRepository.CreateShops(GrabbedResult);
+            return GrabbedResult;
         }
         /*
         [HttpGet]

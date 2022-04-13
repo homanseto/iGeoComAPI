@@ -20,7 +20,7 @@ namespace iGeoComAPI.Repository
             if (!string.IsNullOrEmpty(type))
                 query += "AND TYPE like @type ";
             */
-            name = $"'%{name}_%'";
+            name = $"%{name}_%";
             string query = "SELECT * FROM igeocomTable  WHERE GRAB_ID LIKE @name ";
             var result = await _dataAccess.LoadData<IGeoComGrabModel>(query, new {  name });
             return result;

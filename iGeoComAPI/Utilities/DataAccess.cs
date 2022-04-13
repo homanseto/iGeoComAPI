@@ -34,7 +34,7 @@ namespace iGeoComAPI.Utilities
 
                 using (SqlConnection connection = new SqlConnection(_options.Value.DefaultConnection))
                 {
-                    var rows = await connection.QueryAsync<T>(sql);
+                    var rows = await connection.QueryAsync<T>(sql, param);
 
                     return rows.ToList();
                 }

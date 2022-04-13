@@ -15,8 +15,6 @@ namespace iGeoComAPI.Services
         private IOptions<SevenElevenOptions> _options;
         private  IMemoryCache _memoryCache;
         private MyLogger _logger;
-        
-        SevenElevenModel sevenElevenModel = new SevenElevenModel();
 
         /*
         public SevenElevenGrabber(HttpClient client, IOptions<SevenElevenOptions> options)
@@ -58,7 +56,7 @@ namespace iGeoComAPI.Services
 
         public List<IGeoComGrabModel> MergeEnAndZh(List<SevenElevenModel>? enResult, List<SevenElevenModel>? zhResult)
         {
-            var _rgx = Regexs.ExtractInfo(sevenElevenModel.RegLatLngRegex);
+            var _rgx = Regexs.ExtractInfo(SevenElevenModel.RegLatLngRegex);
             List<IGeoComGrabModel> SevenElevenIGeoComList = new List<IGeoComGrabModel>();
             try
             {
