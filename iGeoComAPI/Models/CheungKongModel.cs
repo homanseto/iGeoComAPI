@@ -2,27 +2,27 @@
 {
     public class CheungKongModel
     {
-        public string? Name { get; set; }
-        public string? Id { get; set; }
-        public string? Address { get; set; }
-        public string? LatLng { get; set; }
-        public string ExtractLatLng
+        public string Name { get; set; } = String.Empty;
+        public string Id { get; set; } = String.Empty;
+        public string Address { get; set; } = String.Empty;
+        public string LatLng { get; set; } = String.Empty;
+        public static string ExtractLatLng
         {
             get { return @"LatLng\((.*)\);var marker"; }
         }
-        public string RegLagLngRegex
+        public static string RegLagLngRegex
         {
             get { return "([^,]*)"; }
         }
-        public string ExtractName
+        public static string ExtractName
         {
             get { return @"small;\"">(.*)<br \/>"; }
         }
-        public string ExtractAdrress
+        public static string ExtractAdrress
         {
             get { return @"<\/span><\/strong>(.*)';var"; }
         }
-        public string ExtractId
+        public static string ExtractId
         {
             get { return @"\?id=(.*)"; }
         }

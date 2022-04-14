@@ -2,6 +2,6 @@
 {
     public class AppSettingOptions
     {
-        public string Environment { get; set; } = String.Empty;
+        public string Environment { get; set; } = "Development";
     }
 }

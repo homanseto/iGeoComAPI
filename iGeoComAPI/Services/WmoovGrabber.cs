@@ -36,7 +36,6 @@ namespace iGeoComAPI.Services
                                  map(v=>{return {Region: selectors[i].querySelector('h3').textContent.trim(),Name: v.querySelector('.gotomap').textContent.trim()}})} 
                                  }";
 
-        WmoovModel wmoovModel = new WmoovModel();
 
 
         public WmoovGrabber(PuppeteerConnection puppeteerConnection, IOptions<WmoovOptions> options, IMemoryCache memoryCache)
@@ -50,7 +49,7 @@ namespace iGeoComAPI.Services
         {
             var shopResult = await _puppeteerConnection.PuppeteerGrabber<WmoovModel[]>(_options.Value.BaseUrl, shopCode, waitSelectorShop);
             var shopList = shopResult.ToList();
-            var _rgx = Regexs.ExtractInfo(wmoovModel.WmoovIdRegex);
+            var _rgx = Regexs.ExtractInfo(WmoovModel.WmoovIdRegex);
             List<IGeoComGrabModel> WmoovIGeoComList = new List<IGeoComGrabModel>();
             foreach (var shop in shopList)
             {

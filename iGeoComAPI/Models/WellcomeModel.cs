@@ -2,18 +2,11 @@
 {
     public class WellcomeModel
     {
-        public string? Address { get; set; }
-        public string? Name { get; set; }
-        public string? LatLng { get; set; }
-        public string? Phone { get; set; }
+        public string Address { get; set; } = String.Empty;
+        public string Name { get; set; } = String.Empty;
+        public string LatLng { get; set; } = String.Empty;
+        public string Phone { get; set; } = String.Empty;
 
-        public string SelectWellcome
-        {
-            get { return "SELECT * FROM igeocomtable WHERE GRAB_ID LIKE '%wellcome%'"; }
-        }
-        public string SelectWellcomeFromDataBase
-        {
-            get { return "SELECT * FROM iGeoCom_Dec2021 WHERE ENGLISHNAME LIKE '%wellcome super%' "; }
-        } 
+
     }
 }

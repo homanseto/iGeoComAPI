@@ -7,18 +7,12 @@
         {
             EnglishName,
             ChineseName,
-            E_area,
-            C_area,
-            E_district,
-            C_district,
-            E_Region,
-            C_Region,
             E_Address,
             C_Address,
             Tel_No,
             Fax_No,
-            Latitude,
-            Longtitude
+            Easting,
+            Northing
         }
     }
 }

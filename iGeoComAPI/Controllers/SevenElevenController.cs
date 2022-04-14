@@ -31,7 +31,8 @@ namespace iGeoComAPI.Controllers
         {
             try
             {
-                var result = await _iGeoComGrabRepository.GetShopsByName("seveneleven");
+                string name = this.GetType().Name.Replace("Controller", "").ToLower();
+                var result = await _iGeoComGrabRepository.GetShopsByName(name);
                 if (result == null)
                     return NotFound();
                 return Ok(result);

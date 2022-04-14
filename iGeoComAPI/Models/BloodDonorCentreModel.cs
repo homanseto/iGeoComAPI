@@ -2,31 +2,23 @@
 {
     public class BloodDonorCentreModel
     {
-        public string? Id { get; set; }
-        public string? Name { get; set; }
-        public string? Address  { get; set; }
-        public string? LatLng { get; set; }
-        public string SelectCaltexFromDataBase
-        {
-            get { return "SELECT * FROM iGeoCom_Dec2021 WHERE ENGLISHNAME like '%Caltex%';"; }
-        } 
-        public string SelectCaltex
-        {
-            get { return "SELECT * FROM igeocomtable WHERE GRAB_ID LIKE '%caltex%'"; }
-        }
-        public string ReplaceExtraInfo 
+        public string Id { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public string Address  { get; set; } = string.Empty;
+        public string LatLng { get; set; } = string.Empty;
+        public static string ReplaceExtraInfo 
         {
             get {return @"(^.+LatLng\(|\),.*location_map_pop_title fs_20"">|<a class=""marker_detail_link fs_12"".*<div class=""location_addr"">|<\/div><div class=""location_openhour"">.*)"; }
         }  
-        public string RegLagLngRegex
+        public static string RegLagLngRegex
         {
             get { return "([^,]*)"; }
         }
-        public string ExtraList
+        public static string ExtraList
         {
             get { return @"\};var locations = \[(.*)];var map"; }
         } 
-        public string ReplaceExtraInfoWithWorkingHour { 
+        public static string ReplaceExtraInfoWithWorkingHour { 
         get { return @"(^.+LatLng\(|\),.*location_map_pop_title fs_20"">|<a class=""marker_detail_link fs_12"".*<div class=""location_addr"">|<\/div><div class=""location_openhour"">|<\/div><div class=""location_addtocalander"">.*)";
             }
         } 

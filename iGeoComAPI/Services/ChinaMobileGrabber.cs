@@ -26,7 +26,6 @@ namespace iGeoComAPI.Services
                                  }";
         private string waitSelectorId = ".innerpage-content";
         private string waitSelectorInfo = "head";
-        ChinaMobileModel chinaMobileModel = new ChinaMobileModel();
 
         public ChinaMobileGrabber(PuppeteerConnection puppeteerConnection, IOptions<ChinaMobileOptions> options, ILogger<ChinaMobileGrabber> logger)
         {
@@ -47,10 +46,10 @@ namespace iGeoComAPI.Services
 
         public async Task<List<ChinaMobileModel>?> grabResultByID(ChinaMobileModel[] idResult)
         {
-            var _linkRgx = Regexs.ExtractInfo(chinaMobileModel.ExtractLink);
-            var _addressAndHourRgx = Regexs.ExtractInfo(chinaMobileModel.ExtractAddressAndOpeningHour);
-            var _latLngRgx = Regexs.ExtractInfo(chinaMobileModel.ExtractLatLng);
-            var _IdRgx = Regexs.ExtractInfo(chinaMobileModel.ExtractId);
+            var _linkRgx = Regexs.ExtractInfo(ChinaMobileModel.ExtractLink);
+            var _addressAndHourRgx = Regexs.ExtractInfo(ChinaMobileModel.ExtractAddressAndOpeningHour);
+            var _latLngRgx = Regexs.ExtractInfo(ChinaMobileModel.ExtractLatLng);
+            var _IdRgx = Regexs.ExtractInfo(ChinaMobileModel.ExtractId);
             List<ChinaMobileModel> ChinaMobileList = new List<ChinaMobileModel>();
             foreach (ChinaMobileModel id in idResult)
             {
@@ -73,7 +72,7 @@ namespace iGeoComAPI.Services
             try
             {
                 _logger.LogInformation("Start merging ChinaMobile eng and Zh");
-                var _LatLngrgx = Regexs.ExtractInfo(chinaMobileModel.RegLatLngRegex);
+                var _LatLngrgx = Regexs.ExtractInfo(ChinaMobileModel.RegLatLngRegex);
                 List<IGeoComGrabModel> ChinaMobileIGeoComList = new List<IGeoComGrabModel>();
                 if (enResult != null && zhResult != null)
                 {

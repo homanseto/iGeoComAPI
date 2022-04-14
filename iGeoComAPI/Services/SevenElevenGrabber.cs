@@ -10,11 +10,11 @@ namespace iGeoComAPI.Services
     {
         //private readonly HttpClient _httpcClient;
         //private readonly IOptions<SevenElevenOptions> _options;
-        private ConnectClient _httpClient;
-        private JsonFunction _json;
-        private IOptions<SevenElevenOptions> _options;
-        private  IMemoryCache _memoryCache;
-        private MyLogger _logger;
+        private readonly ConnectClient _httpClient;
+        private readonly JsonFunction _json;
+        private readonly IOptions<SevenElevenOptions> _options;
+        private readonly IMemoryCache _memoryCache;
+        private readonly MyLogger _logger;
 
         /*
         public SevenElevenGrabber(HttpClient client, IOptions<SevenElevenOptions> options)

@@ -18,7 +18,6 @@ namespace iGeoComAPI.Services
                                  return selectorName.map((v,i)=>{ return {Info: selectorInfo[i+3].textContent.trim(), Name: v.textContent.trim() }});
                                  }";
         private string waitSelector = "#mainContent";
-        BmcpcModel bmcpcModel = new BmcpcModel();
         
 
         public BmcpcGrabber(PuppeteerConnection puppeteerConnection, IOptions<BmcpcOptions> options, IMemoryCache memoryCache, ILogger<BmcpcGrabber> logger)
@@ -39,8 +38,8 @@ namespace iGeoComAPI.Services
         
         public List<IGeoComGrabModel> Parsing(List<BmcpcModel> input)
         {
-            var addressRgx = Regexs.ExtractInfo(bmcpcModel.AddressRegex);
-            var phoneRgx = Regexs.ExtractInfo(bmcpcModel.PhoneRegex);
+            var addressRgx = Regexs.ExtractInfo(BmcpcModel.AddressRegex);
+            var phoneRgx = Regexs.ExtractInfo(BmcpcModel.PhoneRegex);
             List<IGeoComGrabModel> BmcpcIGeoComList = new List<IGeoComGrabModel>();
             foreach(var shop in input)
             {

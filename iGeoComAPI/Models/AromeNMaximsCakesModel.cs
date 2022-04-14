@@ -2,30 +2,22 @@
 {
     public class AromeNMaximsCakesModel
     {
-        public string? Id { get; set; }
-        public string? Name { get; set; }
-        public string? Region { get; set; }
-        public string? Address { get; set; }
-        public string? Phone { get; set; }
-        public string? Fax { get; set; }
-        public string? Website { get; set; }
-        public string SelectCaltexFromDataBase
-        {
-            get { return "SELECT * FROM iGeoCom_Dec2021 WHERE ENGLISHNAME like '%Caltex%';"; }
-        } 
-        public string SelectCaltex
-        {
-            get { return "SELECT * FROM igeocomtable WHERE GRAB_ID LIKE '%caltex%'"; }
-        }
-        public string NumberofShopRegex
+        public string Id { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public string Region { get; set; } = string.Empty;
+        public string Address { get; set; } = string.Empty;
+        public string Phone { get; set; } = string.Empty;
+        public string Fax { get; set; } = string.Empty;
+        public string Website { get; set; } = string.Empty;
+        public static string NumberofShopRegex
         {
             get { return "^.*Total (.*) results"; }
         } 
-        public string RestaurantPathRegex
+        public static string RestaurantPathRegex
         {
             get { return "^.*href='(.*)';"; }
         }
-        public string IdRegex
+        public static string IdRegex
         {
             get { return "^.*id=(.*)&m"; }
         } 

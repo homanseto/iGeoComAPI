@@ -2,19 +2,11 @@
 {
     public class AmbulanceDepotModel
     {
-        public string? Name { get; set; }
-        public string? Id   { get; set; }
-        public string? Address { get; set; }
-        public string? Phone { get; set; }
-        public string? Fax { get; set; }
-        public string? Region { get; set; }
-        public string SelectCaltexFromDataBase
-        {
-            get { return "SELECT * FROM iGeoCom_Dec2021 WHERE ENGLISHNAME like '%Caltex%';"; }
-        }
-        public string SelectCaltex
-        {
-            get { return "SELECT * FROM igeocomtable WHERE GRAB_ID LIKE '%caltex%'"; }
-        } 
+        public string Name { get; set; } = String.Empty;
+        public string Id   { get; set; } = String.Empty;
+        public string Address { get; set; } = String.Empty;
+        public string Phone { get; set; } = String.Empty;
+        public string Fax { get; set; } = String.Empty;
+        public string Region { get; set; } = String.Empty;
     }
 }

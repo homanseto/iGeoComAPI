@@ -4,10 +4,10 @@
     {
         public const string SectionName = "Caltex";
 
-        public string? BaseUrl { get; set; }
-        public string? Url { get; set; }
-        public string? PagePathEn { get; set; }
-        public string? PagePathZh { get; set; }
-        public string? SiteType { get; set; }
+        public string BaseUrl { get; set; } = String.Empty;
+        public string Url { get; set; } = String.Empty;
+        public string PagePathEn { get; set; } = String.Empty;
+        public string PagePathZh { get; set; } = String.Empty;
+        public string SiteType { get; set; } = String.Empty;
     }
 }

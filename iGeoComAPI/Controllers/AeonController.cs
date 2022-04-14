@@ -19,7 +19,6 @@ namespace iGeoComAPI.Controllers
             //new Serilog.ILogger(typeof(AeonController));
         private ILogger<AeonController> _logger;
         private IGrabberAPI<AeonModel> _aeonGrabber;
-        private DataAccess _dataAccess;
         private readonly IGeoComRepository _iGeoComRepository;
         private readonly IGeoComGrabRepository _iGeoComGrabRepository;
 
@@ -39,7 +38,8 @@ namespace iGeoComAPI.Controllers
         {
             try
             {
-                var result = await _iGeoComGrabRepository.GetShopsByName("aeon");
+                string name = this.GetType().Name.Replace("Controller","").ToLower();
+                var result = await _iGeoComGrabRepository.GetShopsByName(name);
                 if (result == null)
                     return NotFound();
                 return Ok(result);

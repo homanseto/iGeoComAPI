@@ -2,27 +2,27 @@
 {
     public class ChinaMobileModel
     {
-        public string? Id { get; set; }
-        public string? Region { get; set; }
-        public string? Address { get; set; }
-        public string?  LatLng { get; set; }
-        public string ExtractLink
+        public string Id { get; set; } = String.Empty;
+        public string Region { get; set; } = String.Empty;
+        public string Address { get; set; } = String.Empty;
+        public string  LatLng { get; set; } = String.Empty;
+        public static string ExtractLink
         {
             get { return @"open\('(.*)','map_district'";  }
         }
-        public string ExtractAddressAndOpeningHour
+        public static string ExtractAddressAndOpeningHour
         {
             get { return @"<\/b><br\/>(.*)<br><br\/>"; }
         }
-        public string ExtractLatLng
+        public static string ExtractLatLng
         {
             get { return @"LatLng\((.*)\),mapTypeId"; }
         }
-        public string ExtractId
+        public static string ExtractId
         {
             get { return @"outletIdIQ=(.*)&lang";  }
         }
-        public string RegLatLngRegex
+        public static string RegLatLngRegex
         {
             get { return "([^,]*)"; }
         }

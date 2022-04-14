@@ -4,9 +4,9 @@
     {
         public const string SectionName = "ConnectionStrings";
 
-        public string? Default { get; set; }
+        public string Default { get; set; } = String.Empty;
 
-        public string? DefaultConnection { get; set; }
-        public string? Default_3DM { get; set; }
+        public string DefaultConnection { get; set; } = String.Empty;
+        public string Default_3DM { get; set; } = String.Empty;
     }
 }

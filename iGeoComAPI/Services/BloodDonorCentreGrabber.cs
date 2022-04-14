@@ -19,8 +19,6 @@ namespace iGeoComAPI.Services
                                  }";
         private string waitSelector = ".loaded";
 
-        BloodDonorCentreModel bloodDonorCentreModel = new BloodDonorCentreModel();
-
         public BloodDonorCentreGrabber(PuppeteerConnection puppeteerConnection, IOptions<BloodDonorCentreOptions> options, IMemoryCache memoryCache, ILogger<BloodDonorCentreGrabber> logger)
         {
             _puppeteerConnection = puppeteerConnection;
@@ -42,15 +40,15 @@ namespace iGeoComAPI.Services
         {
             try
             {
-                var _listRgx = Regexs.ExtractInfo(bloodDonorCentreModel.ExtraList);
+                var _listRgx = Regexs.ExtractInfo(BloodDonorCentreModel.ExtraList);
                 var splitResult = _listRgx.Match(Regexs.TrimAllAndAdjustSpace(info!)).Groups[1].Value;
                 var resultList = splitResult.Split("'],").ToList();
-                var _lagLngRgx = Regexs.ExtractInfo(bloodDonorCentreModel.RegLagLngRegex);
+                var _lagLngRgx = Regexs.ExtractInfo(BloodDonorCentreModel.RegLagLngRegex);
                 List<BloodDonorCentreModel> BloodDonorCentreList = new List<BloodDonorCentreModel>();
                 foreach (var item in resultList)
                 {
                     BloodDonorCentreModel bloodDonorCentre = new BloodDonorCentreModel();
-                    List<string> replacedResult = Regex.Replace(item, bloodDonorCentreModel.ReplaceExtraInfo, "/split/").Split("/split/").ToList();
+                    List<string> replacedResult = Regex.Replace(item, BloodDonorCentreModel.ReplaceExtraInfo, "/split/").Split("/split/").ToList();
                     if(ReferenceEquals != null)
                     {
                         bloodDonorCentre.Name = replacedResult[2];
