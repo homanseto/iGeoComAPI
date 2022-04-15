@@ -25,9 +25,21 @@ namespace iGeoComAPI.Services
         public async Task<List<IGeoComGrabModel>?> GetWebSiteItems()
         {
             _logger.LogInformation("start grabbing Vango rowdata");
-            var selectConnectHttp = await _httpClient.GetAsync(_options.Value.Url, $"regionID={_options.Value.select}");
-            var selectFoodConnectHttp = await _httpClient.GetAsync(_options.Value.Url, $"regionID={_options.Value.selectFood}");
-            var selectMiniConnectHttp = await _httpClient.GetAsync(_options.Value.Url, $"regionID={_options.Value.selectMini}");
+            var selectQuery = new Dictionary<string, string>()
+            {
+                ["regionID"] = _options.Value.select.ToString()
+            };
+            var selectFoodQuery = new Dictionary<string, string>()
+            {
+                ["regionID"] = _options.Value.selectFood.ToString()
+            };
+            var selectMiniQuery = new Dictionary<string, string>()
+            {
+                ["regionID"] = _options.Value.selectMini.ToString()
+            };
+            var selectConnectHttp = await _httpClient.GetAsync(_options.Value.Url, selectQuery);
+            var selectFoodConnectHttp = await _httpClient.GetAsync(_options.Value.Url, selectFoodQuery);
+            var selectMiniConnectHttp = await _httpClient.GetAsync(_options.Value.Url, selectMiniQuery);
             var selectResult = _json.Dserialize<List<USelectModel>>(selectConnectHttp);
             var selectFoodResult = _json.Dserialize<List<USelectModel>>(selectFoodConnectHttp);
             var selectMiniResult = _json.Dserialize<List<USelectModel>>(selectMiniConnectHttp);

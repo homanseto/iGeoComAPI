@@ -1,4 +1,5 @@
 ﻿using iGeoComAPI.Models;
+using iGeoComAPI.Repository;
 using iGeoComAPI.Services;
 using iGeoComAPI.Utilities;
 using Microsoft.AspNetCore.Http;
@@ -12,15 +13,22 @@ namespace iGeoComAPI.Controllers
     {
         private readonly ILogger<VangoController> _logger;
         private readonly VangoGrabber _vangoGrabber;
-        private readonly DataAccess _dataAccess;
-        VangoModel vangoModel = new VangoModel();
-        IGeoComGrabModel igeoComGrabModel = new IGeoComGrabModel();
+        private IGeoComGrabRepository _iGeoComGrabRepository;
 
-        public VangoController(VangoGrabber vangoGrabber, ILogger<VangoController> logger, DataAccess dataAccess)
+        public VangoController(VangoGrabber vangoGrabber, ILogger<VangoController> logger, IGeoComGrabRepository iGeoComGrabRepository)
         {
             _vangoGrabber = vangoGrabber;
             _logger = logger;
-            _dataAccess = dataAccess;
+            _iGeoComGrabRepository = iGeoComGrabRepository;
+        }
+
+        [HttpPost]
+        public async Task<List<IGeoComGrabModel>?> Post()
+        {
+            //_logger.LogControllerRequest(nameof(VangoController), nameof(Post));
+            var GrabbedResult = await _vangoGrabber.GetWebSiteItems();
+            _iGeoComGrabRepository.CreateShops(GrabbedResult);
+            return GrabbedResult;
         }
 
         /*

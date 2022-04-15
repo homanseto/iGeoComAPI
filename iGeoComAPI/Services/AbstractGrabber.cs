@@ -14,22 +14,27 @@ namespace iGeoComAPI.Services
         {
             _httpClient = httpClient;
             _absOptions = absOptions;
-           _json = json;
+            _json = json;
         }
 
 
         public async Task<NorthEastModel?> getNorthEastNorth(double lat, double lng)
         {
-            var query = new Dictionary<string, string>()
+            if (lat < 0 || lng < 0)
             {
-                ["inSys"] = "wgsgeog",
-                ["iutSys"] = "hkgird",
-                ["lat"] = lat.ToString(),
-                ["long"] = lng.ToString()
-            };
-            var result = await _httpClient.GetAsyncTest(_absOptions.Value.ConvertNE, query);
-            return _json.Dserialize<NorthEastModel>(result);
-            
+                var query = new Dictionary<string, string>()
+                {
+                    ["inSys"] = _absOptions.Value.InSys,
+                    ["iutSys"] = _absOptions.Value.IutSys,
+                    ["lat"] = lat.ToString(),
+                    ["long"] = lng.ToString()
+                };
+
+                var result = await _httpClient.GetAsync(_absOptions.Value.ConvertNE, query);
+                return _json.Dserialize<NorthEastModel>(result);
+            }else
+                throw new Exception("lat and lng cannot be empty or zero");
+
         }
     }
 }
