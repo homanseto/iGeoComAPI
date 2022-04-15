@@ -13,13 +13,13 @@ namespace iGeoComAPI.Controllers
     public class SevenElevenController : ControllerBase
     {
         private readonly MyLogger _logger;
-        private IGrabberAPI<SevenElevenModel> _sevenElevenGrabber;
+        private readonly SevenElevenGrabber _sevenElevenGrabber;
         private IGeoComGrabRepository _iGeoComGrabRepository;
 
         SevenElevenModel sevenElevenModel = new SevenElevenModel();
         //IGeoComGrabModel igeoComGrabModel = new IGeoComGrabModel();
 
-        public SevenElevenController(IGrabberAPI<SevenElevenModel> sevenElevenGrabber, MyLogger logger, IGeoComGrabRepository iGeoComGrabRepository)
+        public SevenElevenController(SevenElevenGrabber sevenElevenGrabber, MyLogger logger, IGeoComGrabRepository iGeoComGrabRepository)
         {
             _sevenElevenGrabber = sevenElevenGrabber;
             _logger = logger;

@@ -1,4 +1,5 @@
-﻿using iGeoComAPI.Options;
+﻿using iGeoComAPI.Models;
+using iGeoComAPI.Options;
 using iGeoComAPI.Utilities;
 using Microsoft.Extensions.Options;
 
@@ -7,17 +8,28 @@ namespace iGeoComAPI.Services
     public abstract class AbstractGrabber
     {
         private readonly ConnectClient _httpClient;
-        private IOptions<NorthEastOptions> _options;
-        public AbstractGrabber(ConnectClient httpClient, IOptions<NorthEastOptions> options)
+        private IOptions<NorthEastOptions> _absOptions;
+        private JsonFunction _json;
+        public AbstractGrabber(ConnectClient httpClient, IOptions<NorthEastOptions> absOptions, JsonFunction json)
         {
             _httpClient = httpClient;
-            _options = options;
+            _absOptions = absOptions;
+           _json = json;
         }
 
 
-        public void getNorthEastNorth(double lat, double lng)
+        public async Task<NorthEastModel?> getNorthEastNorth(double lat, double lng)
         {
-           
+            var query = new Dictionary<string, string>()
+            {
+                ["inSys"] = "wgsgeog",
+                ["iutSys"] = "hkgird",
+                ["lat"] = lat.ToString(),
+                ["long"] = lng.ToString()
+            };
+            var result = await _httpClient.GetAsyncTest(_absOptions.Value.ConvertNE, query);
+            return _json.Dserialize<NorthEastModel>(result);
+            
         }
     }
 }

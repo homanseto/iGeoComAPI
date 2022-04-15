@@ -6,14 +6,13 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace iGeoComAPI.Services
 {
-    public class SevenElevenGrabber : IGrabberAPI<SevenElevenModel>
+    public class SevenElevenGrabber : AbstractGrabber
     {
         //private readonly HttpClient _httpcClient;
         //private readonly IOptions<SevenElevenOptions> _options;
         private readonly ConnectClient _httpClient;
         private readonly JsonFunction _json;
         private readonly IOptions<SevenElevenOptions> _options;
-        private readonly IMemoryCache _memoryCache;
         private readonly MyLogger _logger;
 
         /*
@@ -24,12 +23,11 @@ namespace iGeoComAPI.Services
         }
         */
 
-        public SevenElevenGrabber(ConnectClient httpClient, JsonFunction json, IOptions<SevenElevenOptions> options, IMemoryCache memoryCache, MyLogger logger)
+        public SevenElevenGrabber(ConnectClient httpClient, JsonFunction json, IOptions<SevenElevenOptions> options, MyLogger logger, IOptions<NorthEastOptions> absOptions) : base (httpClient, absOptions, json)
         {
             _httpClient = httpClient;
             _json = json;
             _options = options;
-            _memoryCache = memoryCache;
             _logger = logger;
         }
 
@@ -43,7 +41,7 @@ namespace iGeoComAPI.Services
                 var enSerializedResult =  _json.Dserialize<List<SevenElevenModel>>(enConnectHttp);
                 var zhConnectHttp = await _httpClient.GetAsync(_options.Value.ZhUrl);
                 var zhSerializedResult = _json.Dserialize<List<SevenElevenModel>>(zhConnectHttp);
-                var mergeResult = MergeEnAndZh(enSerializedResult, zhSerializedResult);
+                var mergeResult = await MergeEnAndZh(enSerializedResult, zhSerializedResult);
                 // _memoryCache.Set("iGeoCom", mergeResult, TimeSpan.FromHours(2));
                 return mergeResult;
             }
@@ -54,7 +52,7 @@ namespace iGeoComAPI.Services
 
         }
 
-        public List<IGeoComGrabModel> MergeEnAndZh(List<SevenElevenModel>? enResult, List<SevenElevenModel>? zhResult)
+        public async Task<List<IGeoComGrabModel>> MergeEnAndZh(List<SevenElevenModel>? enResult, List<SevenElevenModel>? zhResult)
         {
             var _rgx = Regexs.ExtractInfo(SevenElevenModel.RegLatLngRegex);
             List<IGeoComGrabModel> SevenElevenIGeoComList = new List<IGeoComGrabModel>();
@@ -83,6 +81,12 @@ namespace iGeoComAPI.Services
                         var matchesEn = _rgx.Matches(shopEn.LatLng!);
                         sevenElevenIGeoCom.Latitude = Convert.ToDouble(matchesEn[0].Value);
                         sevenElevenIGeoCom.Longitude = Convert.ToDouble(matchesEn[2].Value);
+                        NorthEastModel eastNorth =  await this.getNorthEastNorth(sevenElevenIGeoCom.Latitude, sevenElevenIGeoCom.Longitude);
+                        if(eastNorth != null)
+                        {
+                            sevenElevenIGeoCom.Easting = eastNorth.hkE;
+                            sevenElevenIGeoCom.Northing = eastNorth.hkN;
+                        }
                         sevenElevenIGeoCom.Class = "CMF";
                         sevenElevenIGeoCom.Type = "CVS";
                         if (shopEn.Opening_24 == "1")
