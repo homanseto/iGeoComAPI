@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 
 namespace iGeoComAPI.Services
 {
-    public class WellcomeGrabber: IGrabberAPI<WellcomeModel>
+    public class WellcomeGrabber: AbstractGrabber
     {
         private PuppeteerConnection _puppeteerConnection;
         private IOptions<WellcomeOptions> _options;
@@ -22,7 +22,8 @@ namespace iGeoComAPI.Services
         private string waitSelector = ".table-responsive";
         private string _regLagLngRegex = "([^|]*)";
 
-        public WellcomeGrabber(PuppeteerConnection puppeteerConnection, IOptions<WellcomeOptions> options, IMemoryCache memoryCache, ILogger<WellcomeGrabber> logger)
+        public WellcomeGrabber(PuppeteerConnection puppeteerConnection, IOptions<WellcomeOptions> options, IMemoryCache memoryCache, ILogger<WellcomeGrabber> logger,
+            IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json) : base(httpClient, absOptions, json)
         {
             _puppeteerConnection = puppeteerConnection;
             _options = options;
@@ -36,13 +37,13 @@ namespace iGeoComAPI.Services
            var zhResult = await _puppeteerConnection.PuppeteerGrabber<WellcomeModel[]>(_options.Value.ZhUrl, infoCode, waitSelector);
            var enResultList = enResult.ToList();
            var zhResultList = zhResult.ToList();
-           var mergeResult = MergeEnAndZh(enResultList, zhResultList);
+           var mergeResult = await MergeEnAndZh(enResultList, zhResultList);
            //_memoryCache.Set("iGeoCom", mergeResult, TimeSpan.FromHours(2));
             return mergeResult;
 
         }
 
-        public List<IGeoComGrabModel> MergeEnAndZh(List<WellcomeModel> enResult, List<WellcomeModel> zhResult)
+        public async Task<List<IGeoComGrabModel>> MergeEnAndZh(List<WellcomeModel> enResult, List<WellcomeModel> zhResult)
         {
             try
             {
@@ -59,6 +60,12 @@ namespace iGeoComAPI.Services
                     var matchesEn = _rgx.Matches(shopEn.LatLng!);
                     WellcomeIGeoCom.Latitude = Convert.ToDouble(matchesEn[0].Value);
                     WellcomeIGeoCom.Longitude = Convert.ToDouble(matchesEn[2].Value);
+                    NorthEastModel eastNorth = await this.getNorthEastNorth(WellcomeIGeoCom.Latitude, WellcomeIGeoCom.Longitude);
+                    if (eastNorth != null)
+                    {
+                        WellcomeIGeoCom.Easting = eastNorth.hkE;
+                        WellcomeIGeoCom.Northing = eastNorth.hkN;
+                    }
                     WellcomeIGeoCom.Tel_No = shopEn.Phone!;
                     WellcomeIGeoCom.Web_Site = _options.Value.BaseUrl!;
                     WellcomeIGeoCom.Class = "CMF";

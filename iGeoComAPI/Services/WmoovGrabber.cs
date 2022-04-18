@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 
 namespace iGeoComAPI.Services
 {
-    public class WmoovGrabber
+    public class WmoovGrabber:AbstractGrabber
     {
         private PuppeteerConnection _puppeteerConnection;
         private IOptions<WmoovOptions> _options;
@@ -38,7 +38,8 @@ namespace iGeoComAPI.Services
 
 
 
-        public WmoovGrabber(PuppeteerConnection puppeteerConnection, IOptions<WmoovOptions> options, IMemoryCache memoryCache)
+        public WmoovGrabber(PuppeteerConnection puppeteerConnection, IOptions<WmoovOptions> options, IMemoryCache memoryCache,
+            IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json) : base(httpClient, absOptions, json)
         {
             _puppeteerConnection = puppeteerConnection;
             _options = options;
@@ -58,6 +59,12 @@ namespace iGeoComAPI.Services
                 infoResult.ChineseName = shop.Name;
                 infoResult.Latitude = Convert.ToDouble(shop.Latitude);
                 infoResult.Longitude = Convert.ToDouble(shop.Longitude);
+                NorthEastModel eastNorth = await this.getNorthEastNorth(infoResult.Latitude, infoResult.Longitude);
+                if (eastNorth != null)
+                {
+                    infoResult.Easting = eastNorth.hkE;
+                    infoResult.Northing = eastNorth.hkN;
+                }
                 infoResult.Class = "CUF";
                 infoResult.Type = "TNC";
                 var matchId = _rgx.Matches(shop.Website!);

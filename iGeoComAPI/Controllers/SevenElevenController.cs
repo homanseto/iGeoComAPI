@@ -42,6 +42,21 @@ namespace iGeoComAPI.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+        [HttpGet("download")]
+        public async Task<IActionResult> GetDownload()
+        {
+            try
+            {
+                string name = this.GetType().Name.Replace("Controller", "").ToLower();
+                var result = await _iGeoComGrabRepository.GetShopsByName(name);
+                return CsvFile.Download(result, name);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+
+        }
 
         [HttpPost]
         public async Task<List<IGeoComGrabModel>?> Post()

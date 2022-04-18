@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 
 namespace iGeoComAPI.Services
 {
-    public class USelectGrabber
+    public class USelectGrabber:AbstractGrabber
     {
         private ConnectClient _httpClient;
         private JsonFunction _json;
@@ -13,7 +13,7 @@ namespace iGeoComAPI.Services
         private IMemoryCache _memoryCache;
         private ILogger<USelectGrabber> _logger;
 
-        public USelectGrabber(ConnectClient httpClient, JsonFunction json, IOptions<USelectOptions> options, IMemoryCache memoryCache, ILogger<USelectGrabber> logger)
+        public USelectGrabber(ConnectClient httpClient, JsonFunction json, IOptions<USelectOptions> options, IMemoryCache memoryCache, ILogger<USelectGrabber> logger, IOptions<NorthEastOptions> absOptions) : base(httpClient, absOptions, json)
         {
             _httpClient = httpClient;
             _json = json;
@@ -43,15 +43,15 @@ namespace iGeoComAPI.Services
             var selectResult = _json.Dserialize<List<USelectModel>>(selectConnectHttp);
             var selectFoodResult = _json.Dserialize<List<USelectModel>>(selectFoodConnectHttp);
             var selectMiniResult = _json.Dserialize<List<USelectModel>>(selectMiniConnectHttp);
-            var parsingSelectResult = Parsing(selectResult);
-            var parsingSelectFoodResult = Parsing(selectFoodResult);
-            var parsingSelectMiniResult = Parsing(selectMiniResult);
+            var parsingSelectResult = await Parsing(selectResult);
+            var parsingSelectFoodResult = await Parsing(selectFoodResult);
+            var parsingSelectMiniResult = await Parsing(selectMiniResult);
             List<IGeoComGrabModel> USelectResult = parsingSelectResult.Concat(parsingSelectFoodResult).Concat(parsingSelectMiniResult).ToList();
             return USelectResult;
             // _memoryCache.Set("iGeoCom", mergeResult, TimeSpan.FromHours(2));
         }
 
-        public List<IGeoComGrabModel> Parsing(List<USelectModel>? grabResult)
+        public async  Task<List<IGeoComGrabModel>> Parsing(List<USelectModel>? grabResult)
         {
             try
             {
@@ -67,6 +67,12 @@ namespace iGeoComAPI.Services
                         USelectIGeoCom.E_Address = shop.address_description_en;
                         USelectIGeoCom.Latitude = Convert.ToDouble(shop.address_geo_lat);
                         USelectIGeoCom.Longitude = Convert.ToDouble(shop.address_geo_lng);
+                        NorthEastModel eastNorth = await this.getNorthEastNorth(USelectIGeoCom.Latitude, USelectIGeoCom.Longitude);
+                        if (eastNorth != null)
+                        {
+                            USelectIGeoCom.Easting = eastNorth.hkE;
+                            USelectIGeoCom.Northing = eastNorth.hkN;
+                        }
                         USelectIGeoCom.Class = "CMF";
                         USelectIGeoCom.Type = "SMK";
                         USelectIGeoCom.Source = "27";

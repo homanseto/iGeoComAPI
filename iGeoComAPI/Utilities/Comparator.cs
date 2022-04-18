@@ -1,62 +1,44 @@
-﻿using iGeoComAPI.Models;
-
-namespace iGeoComAPI.Utilities
+﻿namespace iGeoComAPI.Utilities
 {
-    //public static class Comparator
-    //{
-    //    public static void FindDiffernet(List<IGeoComRepository> Left, List<IGeoComGrabModel> Right, string status, List<String> properties)
-    //    {
-    //        int LeftLength = Left.Count;
-    //        int RightLength = Right.Count;
-    //        int propertiesLength = properties.Count;
-    //        List<IGeoComGrabModel> AddedWellcomeIGeoComList = new List<IGeoComGrabModel>();
-           
-    //        for (int i = 0; i < LeftLength; i++)
-    //        {
-    //           List<string> leftItem = new List<string>();
-    //            foreach (var property in properties)
-    //            {
-    //                var leftProperty = Left[i].GetType().GetProperty(property);
-    //                if (leftProperty != null)
-    //                {
-    //                    var leftValue = leftProperty.GetValue(Left[i], null);
-    //                    if(leftValue!.GetType() == typeof(string))
-    //                    {
-    //                        Console.WriteLine(leftValue);
-    //                        leftItem.Add((string)leftValue);
-    //                    }
-    //                }
-    //            }
-    //                int j;
-    //                for (j = 0; j <= RightLength; j++)
-    //            {
-    //                List<string> rightItem = new List<string>();
-    //                foreach (var property in properties)
-    //                {
-    //                    var rightProperty = Right[j].GetType().GetProperty(property);
-    //                    if (rightProperty != null)
-    //                    {
-    //                        var rightValue = rightProperty.GetValue(Right[j], null);
-    //                        if (rightValue!.GetType() == typeof(string))
-    //                        {
-    //                            Console.WriteLine(rightValue);
-    //                            rightItem.Add((string)rightValue);
-    //                        }
-    //                    }
-    //                }
-    //                if (leftItem[0]?.Replace(",", "").Replace(" ", "") == rightItem[0]?.Replace(",", "").Replace(" ", "")|
-    //                    leftItem[1]?.Replace(",", "").Replace(" ", "") == rightItem[1]?.Replace(",", "").Replace(" ", "")
-    //                   )
-    //                    break;
-    //                if (j == RightLength)
-    //                {
-    //                    //Left[i].status = status;
-    //                    Console.WriteLine(Left[i].E_Address);
-    //                }
-    //            }
+    public static class Comparator
+    {
+        public static void finddiffernet<L, R>(List<L> left, List<R> right, string status, List<string> properties)
+        {
+            int leftlength = left.Count;
+            int rightlength = right.Count;
+            int propertieslength = properties.Count;
 
-    //        }
-    //    }
+
+        //    for (int i = 0; i < leftlength; i++)
+        //    {
+        //        int j;
+        //        for (j = 0; j < leftlength; j++)
+
+        //            if (left[i].e_address?.replace(" ", "") == previousdata[j].e_address?.replace(" ", "") |
+        //               newdata[i].tel_no?.replace(" ", "") == previousdata[j].tel_no?.replace(" ", "") |
+        //               newdata[i].c_address?.replace(" ", "") == previousdata[j].c_address?.replace(" ", "")
+        //                )
+        //                break;
+        //        if (j == previousdatalength)
+        //        {
+        //            igeocomdeltamodel addedshop = new igeocomdeltamodel();
+        //            addedshop.status = "added";
+        //            addedshop.englishname = newdata[i].englishname;
+        //            addedshop.chinesename = newdata[i].chinesename;
+        //            addedshop.class = newdata[i].class;
+        //addedshop.type = newdata[i].type;
+        //                    addedshop.e_address = newdata[i].e_address;
+        //                    addedshop.c_address = newdata[i].c_address;
+        //                    addedshop.tel_no = newdata[i].tel_no;
+        //                    addedshop.web_site = newdata[i].web_site;
+        //                    addedshop.latitude = newdata[i].latitude;
+        //                    addedshop.longitude = newdata[i].longitude;
+
+        //                    addedwellcomeigeocomlist.add(addedshop);
+        //                }
+        }
+    }
+}
     //    /*
     //    public List<IGeoComModel> FindDiffernet(List<IGeoComModel> Left, List<IGeoComModel> Right, string status)
     //    {
@@ -210,5 +192,3 @@ namespace iGeoComAPI.Utilities
     //        */
     //        return results;
     //    }
-    //}
-}

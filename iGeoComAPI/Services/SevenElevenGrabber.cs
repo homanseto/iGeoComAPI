@@ -69,13 +69,13 @@ namespace iGeoComAPI.Services
                         {
                             sevenElevenIGeoCom.E_Region = "KLN";
                         }
-                        else if (shopEn.Region == "New Territories")
+                        else if (shopEn.Region == "Hong Kong Island")
                         {
-                            sevenElevenIGeoCom.C_Region = "NT";
+                            sevenElevenIGeoCom.C_Region = "HK";
                         }
                         else
                         {
-                            sevenElevenIGeoCom.C_Region = "HK";
+                            sevenElevenIGeoCom.C_Region = "NT";
                         }
                         sevenElevenIGeoCom.E_District = shopEn.District;
                         var matchesEn = _rgx.Matches(shopEn.LatLng!);

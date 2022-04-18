@@ -20,8 +20,6 @@ namespace iGeoComAPI.Services
 
         public async Task<NorthEastModel?> getNorthEastNorth(double lat, double lng)
         {
-            if (lat < 0 || lng < 0)
-            {
                 var query = new Dictionary<string, string>()
                 {
                     ["inSys"] = _absOptions.Value.InSys,
@@ -32,8 +30,6 @@ namespace iGeoComAPI.Services
 
                 var result = await _httpClient.GetAsync(_absOptions.Value.ConvertNE, query);
                 return _json.Dserialize<NorthEastModel>(result);
-            }else
-                throw new Exception("lat and lng cannot be empty or zero");
 
         }
     }
