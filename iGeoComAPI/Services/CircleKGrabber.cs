@@ -33,7 +33,7 @@ namespace iGeoComAPI.Services
             _memoryCache = memoryCache;
             _logger = logger;
         }
-        public async Task<List<IGeoComGrabModel>?> GetWebSiteItems()
+        public async Task GetWebSiteItems()
         {
             var rawDataEng = await _puppeteerConnection.PuppeteerGrabber<string>(_options.Value.EnUrl, infoCode, waitSelector);
             var rawDataZh = await _puppeteerConnection.PuppeteerGrabber<string>(_options.Value.ZhUrl, infoCode, waitSelector);
@@ -43,76 +43,56 @@ namespace iGeoComAPI.Services
             string storeStringEng = _rgxStoreList.Match(rawDataEng).Groups[1].Value;
             string regionStringZh = _rgxRegionList.Match(rawDataZh).Groups[1].Value;
             string storeStringZh = _rgxStoreList.Match(rawDataZh).Groups[1].Value;
-            var enSerializedRegionResult = _json.Dserialize<CircleKRegionFilter>(regionStringEng);
-            var zhSerializedRegionResult = _json.Dserialize<CircleKRegionFilter>(regionStringZh);
-            var enSerializedDistrictResult = _json.Dserialize<CircleKDistrictFilter>(storeStringEng);
-            
-            var result = Parsing(enSerializedDistrictResult);
+            var enSerializedRegionResult = _json.Dserialize<Dictionary<string, List<string>>>(regionStringEng);
+            var zhSerializedRegionResult = _json.Dserialize<Dictionary<string, List<string>>>(regionStringZh);
+            var enSerializedDistrictResult = _json.Dserialize<Dictionary<string, List<CircleKModel>>>(storeStringEng);
+            var zhSerializedDistrictResult = _json.Dserialize<Dictionary<string, List<CircleKModel>>>(storeStringZh);
+            MergeEnAndZh(enSerializedDistrictResult, zhSerializedDistrictResult);
 
-            return result;
         }
 
+        //public async Task Testing(CircleKRegionFilter input)
+        //{
+        //    IEnumerable<CircleKRegionFilter> en = input;
+        //    foreach(var item in en)
+        //    {
+        //        Console.WriteLine(item);
+        //    }
+        //}
 
-        public List<IGeoComGrabModel> Parsing(CircleKDistrictFilter? input)
+        public void MergeEnAndZh(Dictionary<string, List<CircleKModel>> emResult, Dictionary<string, List<CircleKModel>> zhResult)
         {
-            List<IGeoComGrabModel> CircleKIGeoComList = new List<IGeoComGrabModel>();
-            if(input != null)
+            List<IGeoComGrabModel> CircleKList = new List<IGeoComGrabModel>();
+            foreach (KeyValuePair<string, List<CircleKModel>> enEntry in emResult)
             {
-                List<List<CircleKModel>> collection = new List<List<CircleKModel>>((IEnumerable<List<CircleKModel>>)input);
-                var collection1 = ((IEnumerable)input).Cast<List<CircleKModel>>().ToList();
-
-                foreach (List<CircleKModel> prop in collection)
+                foreach (var en in enEntry.Value)
                 {
-                    foreach (CircleKModel v in prop)
+                    IGeoComGrabModel circleK = new IGeoComGrabModel();
+                    circleK.E_District = en.location;
+                    circleK.Latitude = Convert.ToDouble(en.latitude);
+                    circleK.Longitude = Convert.ToDouble(en.longitude);
+                    circleK.Grab_ID = $"circleK_{en.store_no}";
+                    circleK.E_Address = en.address;
+                    foreach (KeyValuePair<string, List<CircleKModel>> zhEntry in zhResult)
                     {
-                        IGeoComGrabModel circleKIGeoCom = new IGeoComGrabModel();
-                        circleKIGeoCom.EnglishName = $"CircleK_{v.store_no}";
-                        circleKIGeoCom.E_Address = v.address;
-                        circleKIGeoCom.E_District = v.location;
-                        if (v.zone == "Hong Kong Island")
+                        foreach (var zh in zhEntry.Value)
                         {
-                            circleKIGeoCom.E_Region = "HK";
+                            if (en.longitude == zh.longitude && en.latitude == zh.latitude)
+                            {
+                                circleK.C_District = zh.location;
+                                circleK.C_Address = zh.address;
+                               
+                            }
                         }
-                        else if (v.zone == "Kowloon")
-                        {
-                            circleKIGeoCom.E_Region = "KLN";
-                        }
-                        else
-                        {
-                            circleKIGeoCom.E_Region = "NT";
-                        }
-                        circleKIGeoCom.Latitude = Convert.ToDouble(v.latitude);
-                        circleKIGeoCom.Longitude = Convert.ToDouble(v.longitude);
-                        CircleKIGeoComList.Add(circleKIGeoCom);
-
                     }
+                    CircleKList.Add(circleK);
                 }
             }
-            
-           return CircleKIGeoComList;
         }
 
 
-        public List<IGeoComGrabModel> MergeEnAndZh(List<CircleKModel> enResult, List<CircleKModel> zhResult)
-        {
-            throw new NotImplementedException();
-        }
     }
 
 
-    public class CircleKRegionFilter
-    {
-        public List<string>? 香港 { get; set; }
-        public List<string>? 九龍 { get; set; }
-        public List<string>? 新界 { get; set; }
 
-    }
-
-    public class CircleKDistrictFilter
-    {   
-        public List<CircleKModel>? Wanchai { get; set; }
-
-        public List<CircleKModel>? Aberdeen { get; set; }
-
-    }
 }

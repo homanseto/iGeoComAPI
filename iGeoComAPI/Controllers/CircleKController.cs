@@ -43,11 +43,10 @@ namespace iGeoComAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post()
+        public async Task Post()
         {
-            var GrabbedResult = await _circleKGrabber.GetWebSiteItems();
-            _iGeoComGrabRepository.CreateShops(GrabbedResult);
-            return Ok(GrabbedResult);
+             await _circleKGrabber.GetWebSiteItems();
+            
         }
     }
 }
