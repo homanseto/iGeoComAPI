@@ -10,21 +10,21 @@ namespace iGeoComAPI.Controllers
     public class AllController : ControllerBase
     {
         private readonly ILogger<AllController> _logger;
-        private readonly IGeoComRepository _iGeoComRepository;
+        private readonly IGeoComGrabRepository _iGeoComGrabRepository;
 
-        public AllController(ILogger<AllController> logger, IGeoComRepository iGeoComRepository)
+        public AllController(ILogger<AllController> logger, IGeoComGrabRepository iGeoComGrabRepository)
         {
             _logger = logger;
-            _iGeoComRepository = iGeoComRepository;
+            _iGeoComGrabRepository = iGeoComGrabRepository;
 
         }
 
         [HttpGet("{type}")]
-        public async Task<IActionResult> GetShops(string type)
+        public async Task<IActionResult> GetShopsByType(string type)
         {
             try
             {
-                var result = await _iGeoComRepository.GetShops(type);
+                var result = await _iGeoComGrabRepository.GetShopsByType(type);
                 if (result == null)
                     return NotFound();
                 return Ok(result);
@@ -33,6 +33,20 @@ namespace iGeoComAPI.Controllers
             {
                 return StatusCode(500, ex.Message);
             }
+        }
+        [HttpGet("{type}/download")]
+        public async Task<IActionResult> GetDownload(string type)
+        {
+            try
+            {
+                var result = await _iGeoComGrabRepository.GetShopsByType(type);
+                return CsvFile.Download(result, type);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+
         }
         /*
         [Route("api/@ID/@action")]

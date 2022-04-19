@@ -10,7 +10,7 @@ namespace iGeoComAPI.Repository
         {
             _dataAccess = dataAccess;
         }
-        public async Task<List<IGeoComModel>> GetShops(string type)
+        public async Task<List<IGeoComModel>> GetShops(string name)
         {
             /*
             string query = $"SELECT * FROM iGeoCom_Dec2021 WHERE '' = '' ";
@@ -19,8 +19,9 @@ namespace iGeoComAPI.Repository
             if (!string.IsNullOrEmpty(type))
                 query += "AND TYPE like @type ";
             */
-            string query = "SELECT * FROM iGeoCom_Dec2021 WHERE TYPE = @TYPE ";
-            var result = await _dataAccess.LoadData<IGeoComModel>(query, new {  type });
+            name = $"%{name}_%";
+            string query = "SELECT * FROM iGeoCom_Dec2021 WHERE ENGLISHNAME LIKE @NAME ";
+            var result = await _dataAccess.LoadData<IGeoComModel>(query, new {  name });
             return result;
         }
 

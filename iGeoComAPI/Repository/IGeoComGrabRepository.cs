@@ -25,6 +25,13 @@ namespace iGeoComAPI.Repository
             var result = await _dataAccess.LoadData<IGeoComGrabModel>(query, new {  name });
             return result;
         }
+        public async Task<List<IGeoComModel>> GetShopsByType(string type)
+        {
+
+            string query = "SELECT * FROM iGeoCom_Dec2021 WHERE TYPE = @type ";
+            var result = await _dataAccess.LoadData<IGeoComModel>(query, new { type });
+            return result;
+        }
 
         public void CreateShops(List<IGeoComGrabModel> result )
         {

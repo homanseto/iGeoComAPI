@@ -16,10 +16,10 @@ namespace iGeoComAPI.Services
             {
                 _logger.LogInformation("HttpResponseMessage");
                 if (parameter == null) parameter = new Dictionary<string, string>();
-                if (url != null)
+                if (url != null && parameter != null)
                 {
-                    url =  QueryHelpers.AddQueryString(url, parameter);
-
+                    url = QueryHelpers.AddQueryString(url, parameter);
+                }
                     using (var client = new HttpClient())
                     {
                         HttpResponseMessage resultMessage = await client.GetAsync(url);
@@ -27,9 +27,6 @@ namespace iGeoComAPI.Services
                         string result = await resultMessage.Content.ReadAsStringAsync();
                         return result;
                     }
-                }
-                else
-                    throw new Exception("url cannot be empty or null");
             }
             catch (Exception ex)
             {

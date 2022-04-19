@@ -13,14 +13,13 @@ namespace iGeoComAPI.Controllers
     public class CaltexController : ControllerBase
     {
         private  ILogger<CaltexController> _logger;
-        private IGrabberAPI<CaltexModel> _caltexGrabber;
-        private  DataAccess _dataAccess;
+        private CaltexGrabber _caltexGrabber;
         private IGeoComGrabRepository _iGeoComGrabRepository;
 
         IGeoComGrabModel igeoComGrabModel = new IGeoComGrabModel();
         CaltexModel caltexModel = new CaltexModel();
 
-        public CaltexController(IGrabberAPI<CaltexModel> caltexGrabber, ILogger<CaltexController> logger, IGeoComGrabRepository iGeoComGrabRepository)
+        public CaltexController(CaltexGrabber caltexGrabber, ILogger<CaltexController> logger, IGeoComGrabRepository iGeoComGrabRepository)
         {
             _caltexGrabber = caltexGrabber;
             _logger = logger;
@@ -32,7 +31,8 @@ namespace iGeoComAPI.Controllers
         {
             try
             {
-                var result = await _iGeoComGrabRepository.GetShopsByName("%caltex_%");
+                string name = this.GetType().Name.Replace("Controller", "").ToLower();
+                var result = await _iGeoComGrabRepository.GetShopsByName(name);
                 if (result == null)
                     return NotFound();
                 return Ok(result);
@@ -42,24 +42,28 @@ namespace iGeoComAPI.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-        /*
-        [HttpGet]
-        public async Task<List<IGeoComGrabModel>?> Get()
+        [HttpGet("download")]
+        public async Task<IActionResult> GetDownload()
         {
-            //var GrabbedResult = await _caltexGrabber.GetWebSiteItems();
-            //_dataAccess.SaveGrabbedData(InsertSql, GrabbedResult);
-            var result = await _dataAccess.LoadData<IGeoComGrabModel>(caltexModel.SelectCaltex);
-            CsvFile.DownloadCsv(result, "Caltex_grab_result");
-            return result;
+            try
+            {
+                string name = this.GetType().Name.Replace("Controller", "").ToLower();
+                var result = await _iGeoComGrabRepository.GetShopsByName(name);
+                return CsvFile.Download(result, name);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+
         }
 
         [HttpPost]
-        public async Task<List<IGeoComGrabModel?>> Create()
+        public async Task<IActionResult> Post()
         {
             var GrabbedResult = await _caltexGrabber.GetWebSiteItems();
-            _dataAccess.SaveGrabbedData(igeoComGrabModel.InsertSql, GrabbedResult);
-            return GrabbedResult;
+            _iGeoComGrabRepository.CreateShops(GrabbedResult);
+            return Ok(GrabbedResult);
         }
-        */
     }
 }

@@ -71,11 +71,11 @@ namespace iGeoComAPI.Services
                         }
                         else if (shopEn.Region == "Hong Kong Island")
                         {
-                            sevenElevenIGeoCom.C_Region = "HK";
+                            sevenElevenIGeoCom.E_Region = "HK";
                         }
                         else
                         {
-                            sevenElevenIGeoCom.C_Region = "NT";
+                            sevenElevenIGeoCom.E_Region = "NT";
                         }
                         sevenElevenIGeoCom.E_District = shopEn.District;
                         var matchesEn = _rgx.Matches(shopEn.LatLng!);
@@ -112,13 +112,13 @@ namespace iGeoComAPI.Services
                                     {
                                         sevenElevenIGeoCom.C_Region = "九龍";
                                     }
-                                    else if (shopZh.Region == "New Territories")
+                                    else if (shopZh.Region == "Hong Kong Island")
                                     {
-                                        sevenElevenIGeoCom.C_Region = "新界";
+                                        sevenElevenIGeoCom.C_Region = "香港"; 
                                     }
                                     else
                                     {
-                                        sevenElevenIGeoCom.C_Region = "香港";
+                                        sevenElevenIGeoCom.C_Region = "新界";
                                     }
                                     sevenElevenIGeoCom.C_District = shopZh.District;
                                     continue;

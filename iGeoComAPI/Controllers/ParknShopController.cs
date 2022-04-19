@@ -1,4 +1,5 @@
 ﻿using iGeoComAPI.Models;
+using iGeoComAPI.Repository;
 using iGeoComAPI.Services;
 using iGeoComAPI.Utilities;
 using Microsoft.AspNetCore.Http;
@@ -10,37 +11,55 @@ namespace iGeoComAPI.Controllers
     [ApiController]
     public class ParknShopController : ControllerBase
     {
-        private string InsertSql = "INSERT INTO igeocomtable VALUES (@GEONAMEID,@ENGLISHNAME,@CHINESENAME,@ClASS,@TYPE, @SUBCAT,@EASTING,@NORTHING,@SOURCE,@E_FLOOR,@C_FLOOR,@E_SITENAME,@C_SITENAME,@E_AREA,@C_AREA,@E_DISTRICT,@C_DISTRICT,@E_REGION,@C_REGION,@E_ADDRESS,@C_ADDRESS,@TEL_NO,@FAX_NO,@WEB_SITE,@REV_DATE,@GRAB_ID,@Latitude,@Longitude);";
-        private string SelectParknShopFromDataBase = "SELECT * FROM iGeoCom_Dec2021 WHERE (ENGLISHNAME like '%park n shop%') or (ENGLISHNAME like '%Fusion-%') or (ENGLISHNAME like '%international-%') or (ENGLISHNAME like '%taste-%') or (ENGLISHNAME like '%FOODLEPARC%');";
-        private string SelectParknShop = "SELECT * FROM igeocomtable WHERE GRAB_ID LIKE '%parknshop_%'";
-        private ILogger<ParknShopController> _logger;
-        private IGrabberAPI<ParknShopModel> _parknShopGrabber;
-        private DataAccess _dataAccess;
+        private readonly ILogger<ParknShopController> _logger;
+        private readonly ParknShopGrabber _parknShopGrabber;
+        private readonly IGeoComGrabRepository _iGeoComGrabRepository;
 
-        public ParknShopController(IGrabberAPI<ParknShopModel> parknShopGrabber, ILogger<ParknShopController> logger, DataAccess dataAccess)
+        public ParknShopController(ParknShopGrabber parknShopGrabber, ILogger<ParknShopController> logger, IGeoComGrabRepository iGeoComGrabRepository)
         {
             _parknShopGrabber = parknShopGrabber;
             _logger = logger;
-            _dataAccess = dataAccess;
+            _iGeoComGrabRepository = iGeoComGrabRepository;
         }
-        /*
+
         [HttpGet]
-        public async Task<List<IGeoComGrabModel>?> Get()
+        public async Task<IActionResult> Get()
         {
-            //var GrabbedResult = await _parknShopGrabber.GetWebSiteItems();
-            //_dataAccess.SaveGrabbedData(InsertSql, GrabbedResult);
-            var result = await _dataAccess.LoadData<IGeoComGrabModel>(SelectParknShop);
-            CsvFile.DownloadCsv(result, "ParknShop_grab_result");
-            return result;
+            try
+            {
+                string name = this.GetType().Name.Replace("Controller", "").ToLower();
+                var result = await _iGeoComGrabRepository.GetShopsByName(name);
+                if (result == null)
+                    return NotFound();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+        [HttpGet("download")]
+        public async Task<IActionResult> GetDownload()
+        {
+            try
+            {
+                string name = this.GetType().Name.Replace("Controller", "").ToLower();
+                var result = await _iGeoComGrabRepository.GetShopsByName(name);
+                return CsvFile.Download(result, name);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+
         }
 
         [HttpPost]
-        public async Task<List<IGeoComGrabModel?>> Create()
+        public async Task<IActionResult> Post()
         {
             var GrabbedResult = await _parknShopGrabber.GetWebSiteItems();
-            _dataAccess.SaveGrabbedData(InsertSql, GrabbedResult);
-            return GrabbedResult;
+            _iGeoComGrabRepository.CreateShops(GrabbedResult);
+            return Ok(GrabbedResult);
         }
-        */
     }
 }

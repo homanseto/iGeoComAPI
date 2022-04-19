@@ -1,4 +1,5 @@
 ﻿using iGeoComAPI.Models;
+using iGeoComAPI.Repository;
 using iGeoComAPI.Services;
 using iGeoComAPI.Utilities;
 using Microsoft.AspNetCore.Http;
@@ -12,16 +13,53 @@ namespace iGeoComAPI.Controllers
     {
         private readonly ILogger<WmoovController> _logger;
         private readonly WmoovGrabber _wmoovGrabber;
-        private readonly DataAccess _dataAccess;
-        public WmoovController(WmoovGrabber wmoovGrabber, ILogger<WmoovController> logger, DataAccess dataAccess)
+        private readonly IGeoComGrabRepository _iGeoComGrabRepository;
+        public WmoovController(WmoovGrabber wmoovGrabber, ILogger<WmoovController> logger, IGeoComGrabRepository iGeoComGrabRepository)
         {
             _wmoovGrabber = wmoovGrabber;
             _logger = logger;
-            _dataAccess = dataAccess;
+            _iGeoComGrabRepository = iGeoComGrabRepository;
         }
 
-        WmoovModel wmoovModel = new WmoovModel();
-        IGeoComGrabModel igeoComGrabModel = new IGeoComGrabModel();
+        [HttpGet]
+        public async Task<IActionResult> Get()
+        {
+            try
+            {
+                string name = this.GetType().Name.Replace("Controller", "").ToLower();
+                var result = await _iGeoComGrabRepository.GetShopsByName(name);
+                if (result == null)
+                    return NotFound();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+        [HttpGet("download")]
+        public async Task<IActionResult> GetDownload()
+        {
+            try
+            {
+                string name = this.GetType().Name.Replace("Controller", "").ToLower();
+                var result = await _iGeoComGrabRepository.GetShopsByName(name);
+                return CsvFile.Download(result, name);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Post()
+        {
+            var GrabbedResult = await _wmoovGrabber.GetWebSiteItems();
+            _iGeoComGrabRepository.CreateShops(GrabbedResult);
+            return Ok(GrabbedResult);
+        }
 
         /*
         [HttpGet]

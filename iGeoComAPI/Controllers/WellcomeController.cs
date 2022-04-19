@@ -15,12 +15,14 @@ namespace iGeoComAPI.Controllers
         private readonly ILogger<WellcomeController> _logger;
         private readonly WellcomeGrabber _wellcomeGrabber;
         private readonly IGeoComGrabRepository _iGeoComGrabRepository;
+        private readonly IGeoComRepository _iGeoComRepository;
 
-        public WellcomeController(WellcomeGrabber wellcomeGrabber, ILogger<WellcomeController> logger, IGeoComGrabRepository iGeoComGrabRepository)
+        public WellcomeController(WellcomeGrabber wellcomeGrabber, ILogger<WellcomeController> logger, IGeoComGrabRepository iGeoComGrabRepository, IGeoComRepository iGeoComRepository)
         {
             _wellcomeGrabber = wellcomeGrabber;
             _logger = logger;
             _iGeoComGrabRepository = iGeoComGrabRepository;
+            _iGeoComRepository = iGeoComRepository;
         }
 
         [HttpGet]
@@ -45,8 +47,33 @@ namespace iGeoComAPI.Controllers
             try
             {
                 string name = this.GetType().Name.Replace("Controller", "").ToLower();
+                
                 var result = await _iGeoComGrabRepository.GetShopsByName(name);
                 return CsvFile.Download(result, name);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+
+        }
+
+        [HttpGet("delta/download")]
+        public async Task<IActionResult> GetDelta()
+        {
+            try
+            {
+                string name = this.GetType().Name.Replace("Controller", "").ToLower();
+                var previousResult = await _iGeoComRepository.GetShops("wellcome sup");
+                var newResult = await _iGeoComGrabRepository.GetShopsByName(name);
+                var removedResult = _wellcomeGrabber.FindRemoved(previousResult, newResult);
+                var addedResult = _wellcomeGrabber.FindAdded(newResult, previousResult);
+                var leftResult = _wellcomeGrabber.LeftIntersection(newResult, addedResult);
+                var rightResult = _wellcomeGrabber.RightIntersection(previousResult, removedResult);
+                var orgModified = _wellcomeGrabber.orgModified(rightResult, leftResult);
+                var newModified = _wellcomeGrabber.newModified(leftResult, rightResult);
+                var result = _wellcomeGrabber.MergeResults(addedResult, removedResult, newModified, orgModified);
+                return CsvFile.Download(result, $"{name}_delta");
             }
             catch (Exception ex)
             {

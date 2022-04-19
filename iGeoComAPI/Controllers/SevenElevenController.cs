@@ -59,12 +59,12 @@ namespace iGeoComAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<List<IGeoComGrabModel>?> Post()
+        public async Task<IActionResult> Post()
         {
             _logger.LogControllerRequest(nameof(SevenElevenController), nameof(Post));
             var GrabbedResult = await _sevenElevenGrabber.GetWebSiteItems();
             _iGeoComGrabRepository.CreateShops(GrabbedResult);
-            return GrabbedResult;
+            return Ok(GrabbedResult);
         }
         /*
         [HttpGet]
