@@ -6,12 +6,12 @@ using Microsoft.Extensions.Options;
 
 namespace iGeoComAPI.Services
 {
-    public class AmbulanceDepotGrabber : IGrabberAPI<AmbulanceDepotModel>
+    public class AmbulanceDepotGrabber 
     {
         private PuppeteerConnection _puppeteerConnection;
         private IOptions<AmbulanceDepotOptions> _options;
-        private IMemoryCache _memoryCache;
         private ILogger<AmbulanceDepotGrabber> _logger;
+        private UtilityFunction _function;
         private string infoCode = @"()=>{
                                  const selectors = Array.from(document.querySelectorAll('.navigation > .content > .table > .content > .row'));
                                  return selectors.map(v1=>{ 
@@ -30,12 +30,12 @@ namespace iGeoComAPI.Services
                                  }";
         private string waitSelector = ".navigation";
 
-        public AmbulanceDepotGrabber(PuppeteerConnection puppeteerConnection, IOptions<AmbulanceDepotOptions> options, IMemoryCache memoryCache, ILogger<AmbulanceDepotGrabber> logger)
+        public AmbulanceDepotGrabber(PuppeteerConnection puppeteerConnection, IOptions<AmbulanceDepotOptions> options, ILogger<AmbulanceDepotGrabber> logger, UtilityFunction function)
         {
             _puppeteerConnection = puppeteerConnection;
             _options = options;
-            _memoryCache = memoryCache;
             _logger = logger;
+            _function = function;
         }
 
         public async Task<List<IGeoComGrabModel>?> GetWebSiteItems()
@@ -44,11 +44,11 @@ namespace iGeoComAPI.Services
             var zhResult = await _puppeteerConnection.PuppeteerGrabber<AmbulanceDepotModel[]>(_options.Value.ZhUrl, infoCode, waitSelector);
             var enResultList = enResult.ToList();
             var zhResultList = zhResult.ToList();
-            var mergeResult = MergeEnAndZh(enResultList, zhResultList);
+            var mergeResult = await MergeEnAndZh(enResultList, zhResultList);
             return mergeResult;
         }
 
-        public List<IGeoComGrabModel> MergeEnAndZh(List<AmbulanceDepotModel> enResult, List<AmbulanceDepotModel> zhResult)
+        public async Task<List<IGeoComGrabModel>> MergeEnAndZh(List<AmbulanceDepotModel> enResult, List<AmbulanceDepotModel> zhResult)
         {
             try
             {
@@ -68,6 +68,7 @@ namespace iGeoComAPI.Services
                         {
                             AmbulanceDepotIGeoCom.ChineseName = shopZh.Name;
                             AmbulanceDepotIGeoCom.C_Address = shopZh.Address;
+                            await _function.FindLatLngByAddress($"{LatLngModel.googleMapUrl}{shopZh.Address}");
                         }
                     }
                     AmbulanceDepotIGeoComList.Add(AmbulanceDepotIGeoCom);

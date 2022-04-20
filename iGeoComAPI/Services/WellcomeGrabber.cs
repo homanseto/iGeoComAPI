@@ -8,11 +8,11 @@ namespace iGeoComAPI.Services
 {
     public class WellcomeGrabber: AbstractGrabber
     {
-        private PuppeteerConnection _puppeteerConnection;
-        private IOptions<WellcomeOptions> _options;
-        private IMemoryCache _memoryCache;
-        private ILogger<WellcomeGrabber> _logger;
-        private string infoCode = @"() =>{
+        private readonly PuppeteerConnection _puppeteerConnection;
+        private readonly IOptions<WellcomeOptions> _options;
+        private readonly IMemoryCache _memoryCache;
+        private readonly ILogger<WellcomeGrabber> _logger;
+        private readonly string infoCode = @"() =>{
                                  const selectors = Array.from(document.querySelectorAll('.table-responsive > .table-striped > tbody > tr'));
                                  return selectors.map(v => {return {Address: v.querySelector('.views-field-field-address').textContent.trim(), Name: v.querySelector(
                                  '.views-field-title > .store-title',).textContent, LatLng: v.querySelector('.views-field-title > .store-title').getAttribute('data-latlng'),

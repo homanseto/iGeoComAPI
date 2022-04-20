@@ -34,6 +34,23 @@ namespace iGeoComAPI.Utilities
             }
         }
 
-
+        public async Task<string> GetUrl(string url)
+        {
+            BrowserFetcher browserFetcher = new BrowserFetcher();
+            await browserFetcher.DownloadAsync(BrowserFetcher.DefaultChromiumRevision);
+            using (var browser = await Puppeteer.LaunchAsync(new LaunchOptions
+            {
+                Headless = false,
+                IgnoreHTTPSErrors = true
+            })) using (var page = await browser.NewPageAsync())
+            {
+                await page.GoToAsync(url);
+                new NavigationOptions().WaitUntil = new[]
+                {
+                    WaitUntilNavigation.Networkidle0
+                };
+                return page.Url;
+            }
+        }
     }
 }

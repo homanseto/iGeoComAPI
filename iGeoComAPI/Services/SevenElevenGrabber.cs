@@ -2,7 +2,6 @@
 using iGeoComAPI.Utilities;
 using Microsoft.Extensions.Options;
 using iGeoComAPI.Options;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace iGeoComAPI.Services
 {
@@ -81,7 +80,7 @@ namespace iGeoComAPI.Services
                         var matchesEn = _rgx.Matches(shopEn.LatLng!);
                         sevenElevenIGeoCom.Latitude = Convert.ToDouble(matchesEn[0].Value);
                         sevenElevenIGeoCom.Longitude = Convert.ToDouble(matchesEn[2].Value);
-                        NorthEastModel eastNorth =  await this.getNorthEastNorth(sevenElevenIGeoCom.Latitude, sevenElevenIGeoCom.Longitude);
+                        NorthEastModel eastNorth = await this.getNorthEastNorth(sevenElevenIGeoCom.Latitude, sevenElevenIGeoCom.Longitude);
                         if(eastNorth != null)
                         {
                             sevenElevenIGeoCom.Easting = eastNorth.hkE;
@@ -129,7 +128,7 @@ namespace iGeoComAPI.Services
 
                     }
                 }
-                return SevenElevenIGeoComList.Where(shop => shop.E_District != "Macau").ToList();
+                return SevenElevenIGeoComList.Where(shop => shop.E_District.ToLower() != "macau").ToList();
             }
             catch (Exception ex)
             {

@@ -12,8 +12,6 @@ namespace iGeoComAPI.Controllers
     [ApiController]
     public class CircleKController : ControllerBase
     {
-        private string SelectCircleKFromDataBase = "SELECT * FROM iGeoCom_Dec2021 WHERE ENGLISHNAME like '%Caltex%';";
-        private string SelectCaltex = "SELECT * FROM igeocomtable WHERE GRAB_ID LIKE '%caltex%'";
         private ILogger<CircleKController> _logger;
         private CircleKGrabber _circleKGrabber;
         private readonly IGeoComGrabRepository _iGeoComGrabRepository;
@@ -41,12 +39,28 @@ namespace iGeoComAPI.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+        [HttpGet("download")]
+        public async Task<IActionResult> GetDownload()
+        {
+            try
+            {
+                string name = this.GetType().Name.Replace("Controller", "").ToLower();
+                var result = await _iGeoComGrabRepository.GetShopsByName(name);
+                return CsvFile.Download(result, name);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+
+        }
 
         [HttpPost]
-        public async Task Post()
+        public async Task<IActionResult> Post()
         {
-             await _circleKGrabber.GetWebSiteItems();
-            
+            var GrabbedResult = await _circleKGrabber.GetWebSiteItems();
+            _iGeoComGrabRepository.CreateShops(GrabbedResult);
+            return Ok(GrabbedResult);
         }
     }
 }
