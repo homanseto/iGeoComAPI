@@ -48,7 +48,7 @@ builder.Services.AddSingleton<JsonFunction>();
 builder.Services.AddSingleton<IDataAccess, DataAccess>();
 builder.Services.AddSingleton<PuppeteerConnection>();
 builder.Services.AddSingleton<MyLogger>();
-builder.Services.AddSingleton<UtilityFunction>();
+builder.Services.AddSingleton<LatLngFunction>();
 builder.Services.AddSingleton<IGeoComRepository>();
 builder.Services.AddSingleton<IGeoComGrabRepository>();
 builder.Services.AddMemoryCache();

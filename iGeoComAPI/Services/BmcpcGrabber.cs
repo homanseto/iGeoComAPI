@@ -45,7 +45,7 @@ namespace iGeoComAPI.Services
             {
                 IGeoComGrabModel BmcpcIGeoCom = new IGeoComGrabModel();
                 BmcpcIGeoCom.ChineseName = shop.Name;
-                BmcpcIGeoCom.C_Address = addressRgx.Match(shop.Info!).Groups[1].Value;
+                BmcpcIGeoCom.C_Address = addressRgx.Match(shop.Info!).Groups[1].Value.Replace(" ", "");
                 BmcpcIGeoCom.Tel_No = phoneRgx.Match(shop.Info!).Groups[1].Value;
                 BmcpcIGeoCom.Class = "BGD";
                 BmcpcIGeoCom.Type = "CEM";

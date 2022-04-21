@@ -10,12 +10,12 @@ namespace iGeoComAPI.Services
             _logger = logger;
         }
 
-        public async Task<string> GetAsync(string? url, Dictionary<string, string> parameter = null)
+        public async Task<string> GetAsync(string? url, Dictionary<string, string>? parameter = null)
         {
             try
             {
                 _logger.LogInformation("HttpResponseMessage");
-                if (parameter == null) parameter = new Dictionary<string, string>();
+                //if (parameter == null) parameter = new Dictionary<string, string>();
                 if (url != null && parameter != null)
                 {
                     url = QueryHelpers.AddQueryString(url, parameter);

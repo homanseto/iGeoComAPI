@@ -102,7 +102,7 @@ namespace iGeoComAPI.Services
                     {
                         if (shopEn.Id == shopZh.Id)
                         {
-                            AromeNMaximsCakesIGeoCom.ChineseName = shopZh.Name;
+                            AromeNMaximsCakesIGeoCom.ChineseName = shopZh.Name.Replace(" ", "");
                             AromeNMaximsCakesIGeoCom.C_Address = shopZh.Address;
                         }
                     }

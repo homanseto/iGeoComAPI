@@ -7,14 +7,14 @@ namespace iGeoComAPI.Services
 {
     public abstract class AbstractGrabber
     {
-        private readonly ConnectClient _httpClient;
-        private IOptions<NorthEastOptions> _absOptions;
-        private JsonFunction _json;
+        private readonly ConnectClient httpClient;
+        private IOptions<NorthEastOptions> absOptions;
+        private JsonFunction json;
         public AbstractGrabber(ConnectClient httpClient, IOptions<NorthEastOptions> absOptions, JsonFunction json)
         {
-            _httpClient = httpClient;
-            _absOptions = absOptions;
-            _json = json;
+            this.httpClient = httpClient;
+            this.absOptions = absOptions;
+            this.json = json;
         }
 
 
@@ -22,14 +22,14 @@ namespace iGeoComAPI.Services
         {
                 var query = new Dictionary<string, string>()
                 {
-                    ["inSys"] = _absOptions.Value.InSys,
-                    ["iutSys"] = _absOptions.Value.IutSys,
+                    ["inSys"] = this.absOptions.Value.InSys,
+                    ["iutSys"] = this.absOptions.Value.IutSys,
                     ["lat"] = lat.ToString(),
                     ["long"] = lng.ToString()
                 };
 
-                var result = await _httpClient.GetAsync(_absOptions.Value.ConvertNE, query);
-                return _json.Dserialize<NorthEastModel>(result);
+                var result = await this.httpClient.GetAsync(this.absOptions.Value.ConvertNE, query);
+                return this.json.Dserialize<NorthEastModel>(result);
 
         }
     }

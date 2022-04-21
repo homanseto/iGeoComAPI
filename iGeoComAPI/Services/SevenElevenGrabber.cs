@@ -41,6 +41,8 @@ namespace iGeoComAPI.Services
                 var zhConnectHttp = await _httpClient.GetAsync(_options.Value.ZhUrl);
                 var zhSerializedResult = _json.Dserialize<List<SevenElevenModel>>(zhConnectHttp);
                 var mergeResult = await MergeEnAndZh(enSerializedResult, zhSerializedResult);
+              
+               
                 // _memoryCache.Set("iGeoCom", mergeResult, TimeSpan.FromHours(2));
                 return mergeResult;
             }
@@ -106,8 +108,13 @@ namespace iGeoComAPI.Services
                             {
                                 if (matchesEn[0].Value == matchesZh[0].Value && matchesEn[2].Value == matchesZh[2].Value)
                                 {
-                                    sevenElevenIGeoCom.C_Address = shopZh.Address;
-                                    if (shopZh.Region == "Kowloon")
+                                    sevenElevenIGeoCom.C_Address = shopZh.Address.Replace(" ", "");
+                                    var cFloor = Regexs.ExtractC_Floor().Matches(sevenElevenIGeoCom.C_Address);
+                                    if (cFloor.Count > 0 && cFloor != null)
+                                    {
+                                        sevenElevenIGeoCom.C_floor = cFloor[0].Value; 
+                                    }
+                                        if (shopZh.Region == "Kowloon")
                                     {
                                         sevenElevenIGeoCom.C_Region = "九龍";
                                     }

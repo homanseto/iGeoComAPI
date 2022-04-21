@@ -65,6 +65,7 @@ namespace iGeoComAPI.Services
                     infoResult.Easting = eastNorth.hkE;
                     infoResult.Northing = eastNorth.hkN;
                 }
+                infoResult.C_Address = shop.Address.Replace(" ", "");
                 infoResult.Class = "CUF";
                 infoResult.Type = "TNC";
                 var matchId = _rgx.Matches(shop.Website!);

@@ -96,7 +96,7 @@ namespace iGeoComAPI.Services
                         {
                             if (shopEn.Id == shopZh.Id)
                             {
-                                ChinaMobileIGeoCom.C_Address = shopZh.Address;
+                                ChinaMobileIGeoCom.C_Address = shopZh.Address.Replace(" ", "");
                             }
                             continue;
                         }

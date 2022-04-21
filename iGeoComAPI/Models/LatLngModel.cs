@@ -6,15 +6,15 @@
         public double Longtitude { get; set; }
         public static string getLat
         {
-            get { return "(?<=!3d)(.*)(?=!)"; }
+            get { return "(?<=!3d)(.*)(?=!4d)"; }
         }
         public static string getLng
         {
             get { return "(?<=!4d)(.*)"; }
         }
-        public static string googleMapUrl
+        public static string getLngWithExClamation
         {
-            get { return "https://www.google.com/maps/search/"; }
+            get { return "(.*)(?=!)"; }
         }
     }
 }

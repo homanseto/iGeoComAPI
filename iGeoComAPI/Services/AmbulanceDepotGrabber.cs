@@ -6,17 +6,17 @@ using Microsoft.Extensions.Options;
 
 namespace iGeoComAPI.Services
 {
-    public class AmbulanceDepotGrabber 
+    public class AmbulanceDepotGrabber:AbstractGrabber
     {
         private PuppeteerConnection _puppeteerConnection;
         private IOptions<AmbulanceDepotOptions> _options;
         private ILogger<AmbulanceDepotGrabber> _logger;
-        private UtilityFunction _function;
+        private LatLngFunction _function;
         private string infoCode = @"()=>{
                                  const selectors = Array.from(document.querySelectorAll('.navigation > .content > .table > .content > .row'));
                                  return selectors.map(v1=>{ 
                                  const info = Array.from(v1.querySelectorAll('div'));
-                                 return {Name: info[1].textContent.trim(), Address: info[2].textContent.trim(),
+                                 return {Name: info[1].textContent.trim(), Address: info[2].textContent.trim(),Email: info[2].querySelector('a').textContent.trim(),
                                  Phone: info[3].textContent.trim(), Fax: info[4].textContent.trim()};
                                  })
                                  }";
@@ -30,7 +30,8 @@ namespace iGeoComAPI.Services
                                  }";
         private string waitSelector = ".navigation";
 
-        public AmbulanceDepotGrabber(PuppeteerConnection puppeteerConnection, IOptions<AmbulanceDepotOptions> options, ILogger<AmbulanceDepotGrabber> logger, UtilityFunction function)
+        public AmbulanceDepotGrabber(PuppeteerConnection puppeteerConnection, IOptions<AmbulanceDepotOptions> options, ILogger<AmbulanceDepotGrabber> logger, LatLngFunction function,
+            IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json) : base(httpClient, absOptions, json)
         {
             _puppeteerConnection = puppeteerConnection;
             _options = options;
@@ -58,7 +59,7 @@ namespace iGeoComAPI.Services
                 {
                     IGeoComGrabModel AmbulanceDepotIGeoCom = new IGeoComGrabModel();
                     AmbulanceDepotIGeoCom.EnglishName = shopEn.Name;
-                    AmbulanceDepotIGeoCom.E_Address = shopEn.Address;
+                    AmbulanceDepotIGeoCom.E_Address = shopEn.Address.Replace(shopEn.Email,"");
                     AmbulanceDepotIGeoCom.Tel_No = shopEn.Phone;
                     AmbulanceDepotIGeoCom.Fax_No = shopEn.Fax;
                     AmbulanceDepotIGeoCom.Grab_ID = $"ambulanceDepot_{shopEn.Fax}".Replace(" ","");
@@ -67,9 +68,17 @@ namespace iGeoComAPI.Services
                         if (shopEn.Phone == shopZh.Phone && shopEn.Fax == shopZh.Fax)
                         {
                             AmbulanceDepotIGeoCom.ChineseName = shopZh.Name;
-                            AmbulanceDepotIGeoCom.C_Address = shopZh.Address;
-                            await _function.FindLatLngByAddress($"{LatLngModel.googleMapUrl}{shopZh.Address}");
+                            AmbulanceDepotIGeoCom.C_Address = shopZh.Address.Replace(shopZh.Email, "").Replace(" ", "");
+                           var latlng =  await _function.FindLatLngByAddress($"消防局{AmbulanceDepotIGeoCom.C_Address}");
+                            AmbulanceDepotIGeoCom.Latitude = latlng.Latitude;
+                            AmbulanceDepotIGeoCom.Longitude = latlng.Longtitude;
                         }
+                    }
+                    NorthEastModel eastNorth = await this.getNorthEastNorth(AmbulanceDepotIGeoCom.Latitude, AmbulanceDepotIGeoCom.Longitude);
+                    if (eastNorth != null)
+                    {
+                        AmbulanceDepotIGeoCom.Easting = eastNorth.hkE;
+                        AmbulanceDepotIGeoCom.Northing = eastNorth.hkN;
                     }
                     AmbulanceDepotIGeoComList.Add(AmbulanceDepotIGeoCom);
                 }

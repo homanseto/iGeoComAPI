@@ -29,6 +29,7 @@ namespace iGeoComAPI
             services.Configure<CheungKongOptions>(config.GetSection(CheungKongOptions.SectionName));
             services.Configure<ChinaMobileOptions>(config.GetSection(ChinaMobileOptions.SectionName));
             services.Configure<NorthEastOptions>(config.GetSection(NorthEastOptions.SectionName));
+            services.Configure<GoogleMapOptions>(config.GetSection(GoogleMapOptions.SectionName));
             return services;
         }
     }

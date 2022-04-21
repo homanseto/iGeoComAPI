@@ -79,7 +79,7 @@ namespace iGeoComAPI.Services
                         {
                             if (matchesEn[0].Value == matchesZh[0].Value && matchesEn[2].Value == matchesZh[2].Value && WellcomeIGeoCom.Tel_No == shopZh.Phone)
                             {
-                                WellcomeIGeoCom.C_Address = shopZh.Address!;
+                                WellcomeIGeoCom.C_Address = shopZh.Address!.Replace(" ", "");
                                 WellcomeIGeoCom.ChineseName = $"惠康超級市場-{shopZh.Name}";
                                 continue;
                             }

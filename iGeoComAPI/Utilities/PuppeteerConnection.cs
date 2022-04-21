@@ -36,6 +36,8 @@ namespace iGeoComAPI.Utilities
 
         public async Task<string> GetUrl(string url)
         {
+            var timeout = (int)TimeSpan.FromSeconds(5).TotalMilliseconds;
+            var options = new NavigationOptions { Timeout = timeout };
             BrowserFetcher browserFetcher = new BrowserFetcher();
             await browserFetcher.DownloadAsync(BrowserFetcher.DefaultChromiumRevision);
             using (var browser = await Puppeteer.LaunchAsync(new LaunchOptions
@@ -44,12 +46,17 @@ namespace iGeoComAPI.Utilities
                 IgnoreHTTPSErrors = true
             })) using (var page = await browser.NewPageAsync())
             {
-                await page.GoToAsync(url);
                 new NavigationOptions().WaitUntil = new[]
-                {
-                    WaitUntilNavigation.Networkidle0
+               {
+                    WaitUntilNavigation.Load,
+                    WaitUntilNavigation.DOMContentLoaded,
+                    WaitUntilNavigation.Networkidle0,
+                    WaitUntilNavigation.Networkidle2
                 };
-                return page.Url;
+                await page.GoToAsync(url);
+                await page.WaitForTimeoutAsync(timeout);
+                var link = page.Url;
+                return link;
             }
         }
     }

@@ -96,7 +96,7 @@ namespace iGeoComAPI.Services
                             if (en.store_no == zh.store_no)
                             {
                                 circleKIGeoCom.C_District = zh.location;
-                                circleKIGeoCom.C_Address = zh.address;
+                                circleKIGeoCom.C_Address = zh.address.Replace(" ", "");
                                 circleKIGeoCom.C_Region = zh.zone;
                                
                             }

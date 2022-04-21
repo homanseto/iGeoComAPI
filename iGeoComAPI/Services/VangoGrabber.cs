@@ -61,7 +61,7 @@ namespace iGeoComAPI.Services
                     IGeoComGrabModel VangoIGeoCom = new IGeoComGrabModel();
                     VangoIGeoCom.ChineseName = $"{shop.store_number}-{shop.storename}";
                     VangoIGeoCom.EnglishName = $"{shop.store_number}-{shop.storename}";
-                    VangoIGeoCom.C_Address = shop.address_description;
+                    VangoIGeoCom.C_Address = shop.address_description.Replace(" ", "");
                     VangoIGeoCom.Latitude = Convert.ToDouble(shop.address_geo_lat);
                     VangoIGeoCom.Longitude = Convert.ToDouble(shop.address_geo_lng);
                     NorthEastModel eastNorth = await this.getNorthEastNorth(VangoIGeoCom.Latitude, VangoIGeoCom.Longitude);
