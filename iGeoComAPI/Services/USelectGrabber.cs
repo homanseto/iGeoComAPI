@@ -1,5 +1,6 @@
 ﻿using iGeoComAPI.Models;
 using iGeoComAPI.Options;
+using iGeoComAPI.Utilities;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 
@@ -64,6 +65,11 @@ namespace iGeoComAPI.Services
                         USelectIGeoCom.ChineseName = $"{shop.store_number}-{shop.storename}";
                         USelectIGeoCom.EnglishName = $"{shop.store_number}-{shop.storename_en}";
                         USelectIGeoCom.C_Address = shop.address_description.Replace(" ", "");
+                        var cFloor = Regexs.ExtractC_Floor().Matches(USelectIGeoCom.C_Address);
+                        if (cFloor.Count > 0 && cFloor != null)
+                        {
+                            USelectIGeoCom.C_floor = cFloor[0].Value;
+                        }
                         USelectIGeoCom.E_Address = shop.address_description_en;
                         USelectIGeoCom.Latitude = Convert.ToDouble(shop.address_geo_lat);
                         USelectIGeoCom.Longitude = Convert.ToDouble(shop.address_geo_lng);

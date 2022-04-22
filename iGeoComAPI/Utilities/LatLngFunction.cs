@@ -38,19 +38,26 @@ namespace iGeoComAPI.Utilities
             var lngExClamation = Regexs.ExtractInfo(LatLngModel.getLngWithExClamation);
             var latMatch = latRgx.Matches(newUrl);
             var lngMatch = lngRgx.Matches(newUrl);
-            if (latMatch.Count > 0 && latMatch != null)
+            if (latMatch.Count > 0 && latMatch != null && lngMatch.Count > 0 && lngMatch != null)
             {
                 latlng.Latitude = Convert.ToDouble(latMatch[0].Value);
+                if (lngMatch[0].Value.Contains("!"))
+                {
+                    var num = lngMatch[0].Value;
+                    var drawExClamation = lngExClamation.Matches(num);
+                    latlng.Longtitude = Convert.ToDouble(drawExClamation[0].Value);
+                }
+                else
+                {
+                    latlng.Longtitude = Convert.ToDouble(lngMatch[0].Value);
+                }
             }
-            if (lngMatch[0].Value.Contains("!"))
+            else
             {
-                var num = lngMatch[0].Value;
-                var drawExClamation = lngExClamation.Matches(num);
-                latlng.Longtitude = Convert.ToDouble(drawExClamation[0].Value);
-            }else
-            {
-                latlng.Longtitude = Convert.ToDouble(lngMatch[0].Value);
+                latlng.Longtitude = 0;
+                latlng.Longtitude = 0;
             }
+            
             return latlng;
 
         }

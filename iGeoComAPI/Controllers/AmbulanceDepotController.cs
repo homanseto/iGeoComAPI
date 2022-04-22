@@ -25,6 +25,7 @@ namespace iGeoComAPI.Controllers
 
         }
 
+
         [HttpGet]
         public async Task<IActionResult> Get()
         {
@@ -47,7 +48,6 @@ namespace iGeoComAPI.Controllers
             try
             {
                 string name = this.GetType().Name.Replace("Controller", "").ToLower();
-
                 var result = await _iGeoComGrabRepository.GetShopsByName(name);
                 return CsvFile.Download(result, name);
             }

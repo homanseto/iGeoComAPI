@@ -55,21 +55,28 @@ namespace iGeoComAPI.Services
             {
                 _logger.LogInformation("Merge AmbulanceDepot En and Zh");
                 List<IGeoComGrabModel> AmbulanceDepotIGeoComList = new List<IGeoComGrabModel>();
-                foreach (var shopEn in enResult)
+                foreach (var item in enResult.Take(50).Select((value, i) => new { i, value }))
                 {
+                    var shopEn = item.value;
+                    var index = item.i;
                     IGeoComGrabModel AmbulanceDepotIGeoCom = new IGeoComGrabModel();
                     AmbulanceDepotIGeoCom.EnglishName = shopEn.Name;
                     AmbulanceDepotIGeoCom.E_Address = shopEn.Address.Replace(shopEn.Email,"");
                     AmbulanceDepotIGeoCom.Tel_No = shopEn.Phone;
                     AmbulanceDepotIGeoCom.Fax_No = shopEn.Fax;
-                    AmbulanceDepotIGeoCom.Grab_ID = $"ambulanceDepot_{shopEn.Fax}".Replace(" ","");
+                    AmbulanceDepotIGeoCom.Grab_ID = $"ambulanceDepot_{shopEn.Fax}{index}".Replace(" ","");
                     foreach (var shopZh in zhResult)
                     {
                         if (shopEn.Phone == shopZh.Phone && shopEn.Fax == shopZh.Fax)
                         {
                             AmbulanceDepotIGeoCom.ChineseName = shopZh.Name;
                             AmbulanceDepotIGeoCom.C_Address = shopZh.Address.Replace(shopZh.Email, "").Replace(" ", "");
-                           var latlng =  await _function.FindLatLngByAddress($"消防局{AmbulanceDepotIGeoCom.C_Address}");
+                            var cFloor = Regexs.ExtractC_Floor().Matches(AmbulanceDepotIGeoCom.C_Address);
+                            if (cFloor.Count > 0 && cFloor != null)
+                            {
+                                AmbulanceDepotIGeoCom.C_floor = cFloor[0].Value;
+                            }
+                            var latlng =  await _function.FindLatLngByAddress($"消防局{AmbulanceDepotIGeoCom.C_Address}");
                             AmbulanceDepotIGeoCom.Latitude = latlng.Latitude;
                             AmbulanceDepotIGeoCom.Longitude = latlng.Longtitude;
                         }

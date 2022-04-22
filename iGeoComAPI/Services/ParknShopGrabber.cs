@@ -77,6 +77,11 @@ namespace iGeoComAPI.Services
                             ParknShopIGeoCom.ChineseName = $"{shopZh.BrandName}-{shopZh.Name}";
                             ParknShopIGeoCom.C_Region = shopZh.Region;
                             ParknShopIGeoCom.C_Address = shopZh.Address.Replace(" ", "");
+                            var cFloor = Regexs.ExtractC_Floor().Matches(ParknShopIGeoCom.C_Address);
+                            if (cFloor.Count > 0 && cFloor != null)
+                            {
+                                ParknShopIGeoCom.C_floor = cFloor[0].Value;
+                            }
                             ParknShopIGeoCom.C_District = shopZh.District;
                             
                             continue;

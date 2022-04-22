@@ -97,6 +97,11 @@ namespace iGeoComAPI.Services
                             {
                                 circleKIGeoCom.C_District = zh.location;
                                 circleKIGeoCom.C_Address = zh.address.Replace(" ", "");
+                                var cFloor = Regexs.ExtractC_Floor().Matches(circleKIGeoCom.C_Address);
+                                if (cFloor.Count > 0 && cFloor != null)
+                                {
+                                    circleKIGeoCom.C_floor = cFloor[0].Value;
+                                }
                                 circleKIGeoCom.C_Region = zh.zone;
                                
                             }

@@ -62,6 +62,7 @@ namespace iGeoComAPI.Services
                 _logger.LogMergeEngAndZh(nameof(SevenElevenModel));
                 if (enResult != null && zhResult != null)
                 {
+                    //Parallel.ForEach(enResult, new ParallelOptions() { MaxDegreeOfParallelism = 10 }, (shopEn) =>
                     foreach (SevenElevenModel shopEn in enResult)
                     {
                         IGeoComGrabModel sevenElevenIGeoCom = new IGeoComGrabModel();

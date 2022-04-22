@@ -77,7 +77,12 @@ namespace iGeoComAPI.Services
                             if (en.PhoneNumber == zh.PhoneNumber)
                             {
                                 CaltexIGeoCom.ChineseName = $"加德士-{zh.Name!.Trim()}";
-                                CaltexIGeoCom.C_Address = zh.Street!.Trim().Replace(" ", "");
+                                CaltexIGeoCom.C_Address = zh.Street!.Trim().Replace(" ", ""); 
+                                var cFloor = Regexs.ExtractC_Floor().Matches(CaltexIGeoCom.C_Address);
+                                if (cFloor.Count > 0 && cFloor != null)
+                                {
+                                    CaltexIGeoCom.C_floor = cFloor[0].Value;
+                                }
                                 continue;
                             }
                         }
