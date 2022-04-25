@@ -27,7 +27,7 @@ namespace iGeoComAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<ActionResult<List<IGeoComGrabModel>>> Get()
         {
             try
             {
@@ -43,7 +43,7 @@ namespace iGeoComAPI.Controllers
             }
         }
         [HttpGet("download")]
-        public async Task<IActionResult> GetDownload()
+        public async Task<ActionResult<FileStreamResult>> GetDownload()
         {
             try
             {
@@ -59,67 +59,20 @@ namespace iGeoComAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post()
+        public async Task<ActionResult<List<IGeoComGrabModel>>> Post()
         {
             _logger.LogControllerRequest(nameof(SevenElevenController), nameof(Post));
             var GrabbedResult = await _sevenElevenGrabber.GetWebSiteItems();
-            _iGeoComGrabRepository.CreateShops(GrabbedResult);
+            if (GrabbedResult == null)
+                return BadRequest("Cannot insert grabbed data");
+           _iGeoComGrabRepository.CreateShops(GrabbedResult);
             return Ok(GrabbedResult);
         }
-        /*
-        [HttpGet]
-        public async Task<List<IGeoComGrabModel>?> Get()
-        {
-            _logger.LogControllerRequest(nameof(SevenElevenController), nameof(Get));
-            // var GrabbedResult = await _sevenElevenGrabber.GetWebSiteItems();
-            // _dataAccess.SaveGrabbedData(InsertSql, GrabbedResult);
-            var result = await _dataAccess.LoadData<IGeoComGrabModel>(sevenElevenModel.SelectSevenElevenFromDataBase);
-            CsvFile.DownloadCsv(result, "SevenEleven_grab_Result");
+        //[HttpDelete("{id}")]
+        //public async Task<ActionResult<IGeoComModel>> Delete(string id)
+        //{
 
-            return result;
-        }
-
-        [HttpGet("download")]
-        public async Task<FileStreamResult> GetDownload()
-        {
-            var result = await _dataAccess.LoadData<IGeoComGrabModel>(sevenElevenModel.SelectSevenElevenFromGrabbedCache);
-            return CsvFile.Download(result, "seveneleven");
-        }
-
-        
-        [HttpGet("cache")]
-        public List<IGeoComGrabModel>? GetTodoItem()
-        {
-            var result = _dataAccess.LoadDataCache<IGeoComGrabModel>();
-            return result.Where(r => r.Grab_ID.Contains("seveneleven")).ToList();
-        }
-        
-        [HttpGet("database")]
-        public async Task<List<IGeoComGrabModel>?> GetTodoItem()
-        {
-            var previousResult = await _dataAccess.LoadData<IGeoComModel>(SelectSevenElevenFromDataBase);
-            var newResult = await _dataAccess.LoadData<IGeoComGrabModel>(SelectSevenEleven);
-            var finalResult = _sevenElevenGrabber.FindAdded(newResult, previousResult);
-            return finalResult;
-        }
-        
-
-        [HttpPost]
-        public async Task<List<IGeoComGrabModel>?> Post()
-        {
-            _logger.LogControllerRequest(nameof(SevenElevenController), nameof(Post));
-            var GrabbedResult = await _sevenElevenGrabber.GetWebSiteItems();
-            _dataAccess.SaveGrabbedData(igeoComGrabModel.InsertSql, GrabbedResult);
-            return GrabbedResult;
-        }
-
-        [HttpDelete]
-        public async Task DeleteAllFromCache()
-        {
-            await _dataAccess.DeleteDataFromDataBase<IGeoComGrabModel>(sevenElevenModel.DeleteSevenElevenFromGrabbedCache);
-        }
-        */
-
+        //}
 
     }
 

@@ -20,7 +20,7 @@ namespace iGeoComAPI.Controllers
         }
 
         [HttpGet("{type}")]
-        public async Task<IActionResult> GetShopsByType(string type)
+        public async Task<ActionResult<List<IGeoComGrabModel>>> GetShopsByType(string type)
         {
             try
             {
@@ -35,18 +35,19 @@ namespace iGeoComAPI.Controllers
             }
         }
         [HttpGet("{type}/download")]
-        public async Task<IActionResult> GetDownload(string type)
+        public async Task<ActionResult<FileStreamResult>> GetDownload(string type)
         {
             try
             {
                 var result = await _iGeoComGrabRepository.GetShopsByType(type);
-                return CsvFile.Download(result, type);
+                if (result == null)
+                    return BadRequest("type not found.");
+                return Ok(CsvFile.Download(result, type));
             }
             catch (Exception ex)
             {
                 return StatusCode(500, ex.Message);
             }
-
         }
         /*
         [Route("api/@ID/@action")]
