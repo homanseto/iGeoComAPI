@@ -54,6 +54,7 @@ builder.Services.AddSingleton<IGeoComGrabRepository>();
 builder.Services.AddMemoryCache();
 MyConfigServiceCollection.AddConfig(builder.Services, _configuration);
 builder.Services.AddOptions(); //IOptions<T>
+
 /*
 if(_environment.EnvironmentName == "Production")
 {
