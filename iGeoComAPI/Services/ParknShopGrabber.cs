@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 
 namespace iGeoComAPI.Services
 {
-    public class ParknShopGrabber : IGrabberAPI<ParknShopModel>
+    public class ParknShopGrabber : AbstractGrabber
     {
         private PuppeteerConnection _puppeteerConnection;
         private IOptions<ParknShopOptions> _options;
@@ -22,7 +22,8 @@ namespace iGeoComAPI.Services
                                  }";
         private string waitSelector = ".result-list";
 
-        public ParknShopGrabber(PuppeteerConnection puppeteerConnection, IOptions<ParknShopOptions> options, IMemoryCache memoryCache, ILogger<ParknShopGrabber> logger)
+        public ParknShopGrabber(PuppeteerConnection puppeteerConnection, IOptions<ParknShopOptions> options, IMemoryCache memoryCache, ILogger<ParknShopGrabber> logger,
+            IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json) : base(httpClient, absOptions, json)
         {
             _puppeteerConnection = puppeteerConnection;
             _options = options;
@@ -35,12 +36,12 @@ namespace iGeoComAPI.Services
             var zhResult = await _puppeteerConnection.PuppeteerGrabber<ParknShopModel[]>(_options.Value.ZhUrl, infoCode, waitSelector);
             var enResultList = enResult.ToList();
             var zhResultList = zhResult.ToList();
-            var mergeResult = MergeEnAndZh(enResultList, zhResultList);
+            var mergeResult = await MergeEnAndZh(enResultList, zhResultList);
             //_memoryCache.Set("iGeoCom", mergeResult, TimeSpan.FromHours(2));
             return mergeResult;
         }
 
-        public List<IGeoComGrabModel> MergeEnAndZh(List<ParknShopModel> enResult, List<ParknShopModel> zhResult)
+        public async Task<List<IGeoComGrabModel>> MergeEnAndZh(List<ParknShopModel> enResult, List<ParknShopModel> zhResult)
         {
             try
             {
@@ -57,6 +58,12 @@ namespace iGeoComAPI.Services
                     ParknShopIGeoCom.E_District = shopEn.District;
                     ParknShopIGeoCom.Latitude = Convert.ToDouble(shopEn.Latitude);
                     ParknShopIGeoCom.Longitude = Convert.ToDouble(shopEn.Longitude);
+                    NorthEastModel eastNorth = await this.getNorthEastNorth(ParknShopIGeoCom.Latitude, ParknShopIGeoCom.Longitude);
+                    if (eastNorth != null)
+                    {
+                        ParknShopIGeoCom.Easting = eastNorth.hkE;
+                        ParknShopIGeoCom.Northing = eastNorth.hkN;
+                    }
                     ParknShopIGeoCom.Tel_No = shopEn.Phone;
                     ParknShopIGeoCom.Class = "CMF";
                     ParknShopIGeoCom.Type = "SMK";
@@ -69,7 +76,12 @@ namespace iGeoComAPI.Services
                         {
                             ParknShopIGeoCom.ChineseName = $"{shopZh.BrandName}-{shopZh.Name}";
                             ParknShopIGeoCom.C_Region = shopZh.Region;
-                            ParknShopIGeoCom.C_Address = shopZh.Address;
+                            ParknShopIGeoCom.C_Address = shopZh.Address.Replace(" ", "");
+                            var cFloor = Regexs.ExtractC_Floor().Matches(ParknShopIGeoCom.C_Address);
+                            if (cFloor.Count > 0 && cFloor != null)
+                            {
+                                ParknShopIGeoCom.C_floor = cFloor[0].Value;
+                            }
                             ParknShopIGeoCom.C_District = shopZh.District;
                             
                             continue;

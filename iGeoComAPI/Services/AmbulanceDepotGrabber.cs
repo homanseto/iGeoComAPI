@@ -6,17 +6,17 @@ using Microsoft.Extensions.Options;
 
 namespace iGeoComAPI.Services
 {
-    public class AmbulanceDepotGrabber : IGrabberAPI<AmbulanceDepotModel>
+    public class AmbulanceDepotGrabber:AbstractGrabber
     {
         private PuppeteerConnection _puppeteerConnection;
         private IOptions<AmbulanceDepotOptions> _options;
-        private IMemoryCache _memoryCache;
         private ILogger<AmbulanceDepotGrabber> _logger;
+        private LatLngFunction _function;
         private string infoCode = @"()=>{
                                  const selectors = Array.from(document.querySelectorAll('.navigation > .content > .table > .content > .row'));
                                  return selectors.map(v1=>{ 
                                  const info = Array.from(v1.querySelectorAll('div'));
-                                 return {Name: info[1].textContent.trim(), Address: info[2].textContent.trim(),
+                                 return {Name: info[1].textContent.trim(), Address: info[2].textContent.trim(),Email: info[2].querySelector('a').textContent.trim(),
                                  Phone: info[3].textContent.trim(), Fax: info[4].textContent.trim()};
                                  })
                                  }";
@@ -30,12 +30,13 @@ namespace iGeoComAPI.Services
                                  }";
         private string waitSelector = ".navigation";
 
-        public AmbulanceDepotGrabber(PuppeteerConnection puppeteerConnection, IOptions<AmbulanceDepotOptions> options, IMemoryCache memoryCache, ILogger<AmbulanceDepotGrabber> logger)
+        public AmbulanceDepotGrabber(PuppeteerConnection puppeteerConnection, IOptions<AmbulanceDepotOptions> options, ILogger<AmbulanceDepotGrabber> logger, LatLngFunction function,
+            IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json) : base(httpClient, absOptions, json)
         {
             _puppeteerConnection = puppeteerConnection;
             _options = options;
-            _memoryCache = memoryCache;
             _logger = logger;
+            _function = function;
         }
 
         public async Task<List<IGeoComGrabModel>?> GetWebSiteItems()
@@ -44,31 +45,47 @@ namespace iGeoComAPI.Services
             var zhResult = await _puppeteerConnection.PuppeteerGrabber<AmbulanceDepotModel[]>(_options.Value.ZhUrl, infoCode, waitSelector);
             var enResultList = enResult.ToList();
             var zhResultList = zhResult.ToList();
-            var mergeResult = MergeEnAndZh(enResultList, zhResultList);
+            var mergeResult = await MergeEnAndZh(enResultList, zhResultList);
             return mergeResult;
         }
 
-        public List<IGeoComGrabModel> MergeEnAndZh(List<AmbulanceDepotModel> enResult, List<AmbulanceDepotModel> zhResult)
+        public async Task<List<IGeoComGrabModel>> MergeEnAndZh(List<AmbulanceDepotModel> enResult, List<AmbulanceDepotModel> zhResult)
         {
             try
             {
                 _logger.LogInformation("Merge AmbulanceDepot En and Zh");
                 List<IGeoComGrabModel> AmbulanceDepotIGeoComList = new List<IGeoComGrabModel>();
-                foreach (var shopEn in enResult)
+                foreach (var item in enResult.Take(50).Select((value, i) => new { i, value }))
                 {
+                    var shopEn = item.value;
+                    var index = item.i;
                     IGeoComGrabModel AmbulanceDepotIGeoCom = new IGeoComGrabModel();
                     AmbulanceDepotIGeoCom.EnglishName = shopEn.Name;
-                    AmbulanceDepotIGeoCom.E_Address = shopEn.Address;
+                    AmbulanceDepotIGeoCom.E_Address = shopEn.Address.Replace(shopEn.Email,"");
                     AmbulanceDepotIGeoCom.Tel_No = shopEn.Phone;
                     AmbulanceDepotIGeoCom.Fax_No = shopEn.Fax;
-                    AmbulanceDepotIGeoCom.Grab_ID = $"ambulanceDepot_{shopEn.Fax}".Replace(" ","");
+                    AmbulanceDepotIGeoCom.Grab_ID = $"ambulanceDepot_{shopEn.Fax}{index}".Replace(" ","");
                     foreach (var shopZh in zhResult)
                     {
                         if (shopEn.Phone == shopZh.Phone && shopEn.Fax == shopZh.Fax)
                         {
                             AmbulanceDepotIGeoCom.ChineseName = shopZh.Name;
-                            AmbulanceDepotIGeoCom.C_Address = shopZh.Address;
+                            AmbulanceDepotIGeoCom.C_Address = shopZh.Address.Replace(shopZh.Email, "").Replace(" ", "");
+                            var cFloor = Regexs.ExtractC_Floor().Matches(AmbulanceDepotIGeoCom.C_Address);
+                            if (cFloor.Count > 0 && cFloor != null)
+                            {
+                                AmbulanceDepotIGeoCom.C_floor = cFloor[0].Value;
+                            }
+                            var latlng =  await _function.FindLatLngByAddress($"消防局{AmbulanceDepotIGeoCom.C_Address}");
+                            AmbulanceDepotIGeoCom.Latitude = latlng.Latitude;
+                            AmbulanceDepotIGeoCom.Longitude = latlng.Longtitude;
                         }
+                    }
+                    NorthEastModel eastNorth = await this.getNorthEastNorth(AmbulanceDepotIGeoCom.Latitude, AmbulanceDepotIGeoCom.Longitude);
+                    if (eastNorth != null)
+                    {
+                        AmbulanceDepotIGeoCom.Easting = eastNorth.hkE;
+                        AmbulanceDepotIGeoCom.Northing = eastNorth.hkN;
                     }
                     AmbulanceDepotIGeoComList.Add(AmbulanceDepotIGeoCom);
                 }

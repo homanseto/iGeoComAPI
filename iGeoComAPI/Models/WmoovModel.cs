@@ -2,22 +2,14 @@
 {
     public class WmoovModel
     {
-        public string? Name { get; set; }
-        public string? Region { get; set; }
-        public string? Address { get; set; }
-        public string? Phone { get; set; }
-        public string? Website { get; set; }
-        public string? Latitude { get; set; }
-        public string? Longitude { get; set; }
-        public string SelectCinemaFromDataBase
-        {
-            get { return "select * from iGeoCom_Dec2021 where  TYPE = 'TNC';";}
-        } 
-        public string SelectCinema
-        {
-            get { return "select * from igeocomtable where  TYPE = 'TNC';"; }
-        }
-        public string WmoovIdRegex
+        public string Name { get; set; } = String.Empty;
+        public string Region { get; set; } = String.Empty;
+        public string Address { get; set; } = String.Empty;
+        public string Phone { get; set; } = String.Empty;
+        public string Website { get; set; } = String.Empty;
+        public string Latitude { get; set; } = String.Empty;
+        public string Longitude { get; set; } = String.Empty;
+        public static string WmoovIdRegex
         {
             get { return @"(?<=details\/)(.*)(?=\?)"; }
         } 

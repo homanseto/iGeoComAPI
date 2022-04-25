@@ -1,44 +1,36 @@
-﻿namespace iGeoComAPI.Services
+﻿using iGeoComAPI.Models;
+using iGeoComAPI.Options;
+using iGeoComAPI.Utilities;
+using Microsoft.Extensions.Options;
+
+namespace iGeoComAPI.Services
 {
-    public class AbstractGrabber
+    public abstract class AbstractGrabber
     {
-        /*
-        private ConnectClient _httpClient;
-        private JsonFunction _json;
-        private IOptions<SevenElevenOptions> _options;
-        private IMemoryCache _memoryCache;
-        private ILogger<SevenElevenGrabber> _logger;
-        private string _regLagLngRegex = "([^|]*)";
-
-        public SevenElevenGrabber(ConnectClient httpClient, JsonFunction json, IOptions<SevenElevenOptions> options, IMemoryCache memoryCache, ILogger<SevenElevenGrabber> logger)
+        private readonly ConnectClient httpClient;
+        private IOptions<NorthEastOptions> absOptions;
+        private JsonFunction json;
+        public AbstractGrabber(ConnectClient httpClient, IOptions<NorthEastOptions> absOptions, JsonFunction json)
         {
-            _httpClient = httpClient;
-            _json = json;
-            _options = options;
-            _memoryCache = memoryCache;
-            _logger = logger;
+            this.httpClient = httpClient;
+            this.absOptions = absOptions;
+            this.json = json;
         }
 
-        public async Task<List<IGeoComGrabModel>?> GetWebSiteItems()
+
+        public async Task<NorthEastModel?> getNorthEastNorth(double lat, double lng)
         {
-            try
-            {
-                _logger.LogInformation("start grabbing 7-11 rowdata");
-                var enConnectHttp = await _httpClient.GetAsync(_options.Value.EnUrl);
-                var enSerializedResult = _json.Dserialize<SevenElevenModel>(enConnectHttp);
-                var zhConnectHttp = await _httpClient.GetAsync(_options.Value.ZhUrl);
-                var zhSerializedResult = _json.Dserialize<SevenElevenModel>(zhConnectHttp);
-                var mergeResult = MergeEnAndZh(enSerializedResult, zhSerializedResult);
-                // _memoryCache.Set("iGeoCom", mergeResult, TimeSpan.FromHours(2));
-                return mergeResult;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message, "fail to grab  7-11");
-                throw;
-            }
+                var query = new Dictionary<string, string>()
+                {
+                    ["inSys"] = this.absOptions.Value.InSys,
+                    ["iutSys"] = this.absOptions.Value.IutSys,
+                    ["lat"] = lat.ToString(),
+                    ["long"] = lng.ToString()
+                };
+
+                var result = await this.httpClient.GetAsync(this.absOptions.Value.ConvertNE, query);
+                return this.json.Dserialize<NorthEastModel>(result);
 
         }
-        */
     }
 }

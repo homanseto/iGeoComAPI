@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 
 namespace iGeoComAPI.Services
 {
-    public class AeonGrabber : IGrabberAPI<AeonModel>
+    public class AeonGrabber : AbstractGrabber
     {
         private PuppeteerConnection _puppeteerConnection;
         private IOptions<AeonOptions> _options;
@@ -20,9 +20,9 @@ namespace iGeoComAPI.Services
                                  }});
                                  }";
         private string waitSelector = ".framebottom";
-        AeonModel aeonModel = new AeonModel();
 
-        public AeonGrabber(PuppeteerConnection puppeteerConnection, IOptions<AeonOptions> options, IMemoryCache memoryCache, ILogger<AeonGrabber> logger)
+        public AeonGrabber(PuppeteerConnection puppeteerConnection, IOptions<AeonOptions> options, IMemoryCache memoryCache, ILogger<AeonGrabber> logger, 
+            IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json) : base(httpClient, absOptions, json)
         {
             _puppeteerConnection = puppeteerConnection;
             _options = options;
@@ -35,17 +35,17 @@ namespace iGeoComAPI.Services
             var zhResult = await _puppeteerConnection.PuppeteerGrabber<AeonModel[]>(_options.Value.ZhUrl, infoCode, waitSelector);
             var enResultList = enResult.ToList();
             var zhResultList = zhResult.ToList();
-            var mergeResult = MergeEnAndZh(enResultList, zhResultList);
+            var mergeResult = await MergeEnAndZh(enResultList, zhResultList);
             //_memoryCache.Set("iGeoCom", mergeResult, TimeSpan.FromHours(2));
             return mergeResult;
 
         }
 
-        public List<IGeoComGrabModel> MergeEnAndZh(List<AeonModel> enResult, List<AeonModel> zhResult)
+        public async Task<List<IGeoComGrabModel>> MergeEnAndZh(List<AeonModel> enResult, List<AeonModel> zhResult)
         {
             _logger.LogInformation("Merge Aeon En and Zh");
-            var _rgxLat = Regexs.ExtractInfo(aeonModel.AeonLatRegex);
-            var _rgxLng = Regexs.ExtractInfo(aeonModel.AeonLngRegex);
+            var _rgxLat = Regexs.ExtractInfo(AeonModel.AeonLatRegex);
+            var _rgxLng = Regexs.ExtractInfo(AeonModel.AeonLngRegex);
             List<IGeoComGrabModel> AeonIGeoComList = new List<IGeoComGrabModel>();
             foreach (var shopEn in enResult)
             {
@@ -63,6 +63,12 @@ namespace iGeoComAPI.Services
                 if (matchLng.Count > 0 && matchLng != null)
                 {
                     AeonIGeoCom.Longitude = Convert.ToDouble(matchLng[0].Value.Replace(", ","").Replace(")",""));
+                }
+                NorthEastModel eastNorth = await this.getNorthEastNorth(AeonIGeoCom.Latitude, AeonIGeoCom.Longitude);
+                if (eastNorth != null)
+                {
+                    AeonIGeoCom.Easting = eastNorth.hkE;
+                    AeonIGeoCom.Northing = eastNorth.hkN;
                 }
                 foreach (var shopZh in zhResult)
                 {

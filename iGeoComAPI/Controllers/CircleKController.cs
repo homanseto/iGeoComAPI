@@ -1,4 +1,5 @@
 ﻿using iGeoComAPI.Models;
+using iGeoComAPI.Repository;
 using iGeoComAPI.Services;
 using iGeoComAPI.Utilities;
 using Microsoft.AspNetCore.Http;
@@ -11,25 +12,55 @@ namespace iGeoComAPI.Controllers
     [ApiController]
     public class CircleKController : ControllerBase
     {
-        private string InsertSql = "INSERT INTO igeocomtable VALUES (@GEONAMEID,@ENGLISHNAME,@CHINESENAME,@ClASS,@TYPE, @SUBCAT,@EASTING,@NORTHING,@SOURCE,@E_FLOOR,@C_FLOOR,@E_SITENAME,@C_SITENAME,@E_AREA,@C_AREA,@E_DISTRICT,@C_DISTRICT,@E_REGION,@C_REGION,@E_ADDRESS,@C_ADDRESS,@TEL_NO,@FAX_NO,@WEB_SITE,@REV_DATE,@GRAB_ID,@Latitude,@Longitude);";
-        private string SelectCircleKFromDataBase = "SELECT * FROM iGeoCom_Dec2021 WHERE ENGLISHNAME like '%Caltex%';";
-        private string SelectCaltex = "SELECT * FROM igeocomtable WHERE GRAB_ID LIKE '%caltex%'";
         private ILogger<CircleKController> _logger;
         private CircleKGrabber _circleKGrabber;
-        private DataAccess _dataAccess;
+        private readonly IGeoComGrabRepository _iGeoComGrabRepository;
 
 
-        public CircleKController(CircleKGrabber circleKGrabber, ILogger<CircleKController> logger, DataAccess dataAccess)
+        public CircleKController(CircleKGrabber circleKGrabber, ILogger<CircleKController> logger, IGeoComGrabRepository iGeoComGrabRepository)
         {
             _circleKGrabber = circleKGrabber;
             _logger = logger;
-            _dataAccess = dataAccess;
+            _iGeoComGrabRepository = iGeoComGrabRepository;
         }
         [HttpGet]
-        public async Task<List<IGeoComGrabModel>?> Get()
+        public async Task<IActionResult> Get()
         {
-            var result = await _circleKGrabber.GetWebSiteItems();
-            return result;
+            try
+            {
+                string name = this.GetType().Name.Replace("Controller", "").ToLower();
+                var result = await _iGeoComGrabRepository.GetShopsByName(name);
+                if (result == null)
+                    return NotFound();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+        [HttpGet("download")]
+        public async Task<IActionResult> GetDownload()
+        {
+            try
+            {
+                string name = this.GetType().Name.Replace("Controller", "").ToLower();
+                var result = await _iGeoComGrabRepository.GetShopsByName(name);
+                return CsvFile.Download(result, name);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Post()
+        {
+            var GrabbedResult = await _circleKGrabber.GetWebSiteItems();
+            _iGeoComGrabRepository.CreateShops(GrabbedResult);
+            return Ok(GrabbedResult);
         }
     }
 }

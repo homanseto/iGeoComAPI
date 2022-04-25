@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 
 namespace iGeoComAPI.Services
 {
-    public class CheungKongGrabber
+    public class CheungKongGrabber: AbstractGrabber
     {
         private PuppeteerConnection _puppeteerConnection;
         private IOptions<CheungKongOptions> _options;
@@ -27,9 +27,8 @@ namespace iGeoComAPI.Services
         private string idLinkAbout = "about";
         private string replaceAboutToLocation = "location";
 
-        CheungKongModel catholicOrgModel = new CheungKongModel();
-
-        public CheungKongGrabber(PuppeteerConnection puppeteerConnection, IOptions<CheungKongOptions> options, ILogger<CheungKongGrabber> logger)
+        public CheungKongGrabber(PuppeteerConnection puppeteerConnection, IOptions<CheungKongOptions> options, ILogger<CheungKongGrabber> logger,
+            IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json) : base(httpClient, absOptions, json)
         {
             _puppeteerConnection = puppeteerConnection;
             _options = options;
@@ -45,11 +44,11 @@ namespace iGeoComAPI.Services
 
         public async Task<List<CheungKongModel>?> grabResultByID(CheungKongModel[] idResult)
         {
-            var _nameRgx = Regexs.ExtractInfo(catholicOrgModel.ExtractName);
-            var _latLngRgx = Regexs.ExtractInfo(catholicOrgModel.ExtractLatLng);
-            var _addressRgx = Regexs.ExtractInfo(catholicOrgModel.ExtractAdrress);
-            var _idRgx = Regexs.ExtractInfo(catholicOrgModel.ExtractId);
-            var _separateLatLng = Regexs.ExtractInfo(catholicOrgModel.RegLagLngRegex);
+            var _nameRgx = Regexs.ExtractInfo(CheungKongModel.ExtractName);
+            var _latLngRgx = Regexs.ExtractInfo(CheungKongModel.ExtractLatLng);
+            var _addressRgx = Regexs.ExtractInfo(CheungKongModel.ExtractAdrress);
+            var _idRgx = Regexs.ExtractInfo(CheungKongModel.ExtractId);
+            var _separateLatLng = Regexs.ExtractInfo(CheungKongModel.RegLagLngRegex);
             List<CheungKongModel> CheungKongModelList = new List<CheungKongModel>();
             foreach(CheungKongModel id in idResult){
                 CheungKongModel CheungKong = new CheungKongModel();

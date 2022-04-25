@@ -6,13 +6,13 @@ using Microsoft.Extensions.Options;
 
 namespace iGeoComAPI.Services
 {
-    public class WellcomeGrabber: IGrabberAPI<WellcomeModel>
+    public class WellcomeGrabber: AbstractGrabber
     {
-        private PuppeteerConnection _puppeteerConnection;
-        private IOptions<WellcomeOptions> _options;
-        private IMemoryCache _memoryCache;
-        private ILogger<WellcomeGrabber> _logger;
-        private string infoCode = @"() =>{
+        private readonly PuppeteerConnection _puppeteerConnection;
+        private readonly IOptions<WellcomeOptions> _options;
+        private readonly IMemoryCache _memoryCache;
+        private readonly ILogger<WellcomeGrabber> _logger;
+        private readonly string infoCode = @"() =>{
                                  const selectors = Array.from(document.querySelectorAll('.table-responsive > .table-striped > tbody > tr'));
                                  return selectors.map(v => {return {Address: v.querySelector('.views-field-field-address').textContent.trim(), Name: v.querySelector(
                                  '.views-field-title > .store-title',).textContent, LatLng: v.querySelector('.views-field-title > .store-title').getAttribute('data-latlng'),
@@ -22,7 +22,8 @@ namespace iGeoComAPI.Services
         private string waitSelector = ".table-responsive";
         private string _regLagLngRegex = "([^|]*)";
 
-        public WellcomeGrabber(PuppeteerConnection puppeteerConnection, IOptions<WellcomeOptions> options, IMemoryCache memoryCache, ILogger<WellcomeGrabber> logger)
+        public WellcomeGrabber(PuppeteerConnection puppeteerConnection, IOptions<WellcomeOptions> options, IMemoryCache memoryCache, ILogger<WellcomeGrabber> logger,
+            IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json) : base(httpClient, absOptions, json)
         {
             _puppeteerConnection = puppeteerConnection;
             _options = options;
@@ -36,13 +37,13 @@ namespace iGeoComAPI.Services
            var zhResult = await _puppeteerConnection.PuppeteerGrabber<WellcomeModel[]>(_options.Value.ZhUrl, infoCode, waitSelector);
            var enResultList = enResult.ToList();
            var zhResultList = zhResult.ToList();
-           var mergeResult = MergeEnAndZh(enResultList, zhResultList);
+           var mergeResult = await MergeEnAndZh(enResultList, zhResultList);
            //_memoryCache.Set("iGeoCom", mergeResult, TimeSpan.FromHours(2));
             return mergeResult;
 
         }
 
-        public List<IGeoComGrabModel> MergeEnAndZh(List<WellcomeModel> enResult, List<WellcomeModel> zhResult)
+        public async Task<List<IGeoComGrabModel>> MergeEnAndZh(List<WellcomeModel> enResult, List<WellcomeModel> zhResult)
         {
             try
             {
@@ -59,6 +60,12 @@ namespace iGeoComAPI.Services
                     var matchesEn = _rgx.Matches(shopEn.LatLng!);
                     WellcomeIGeoCom.Latitude = Convert.ToDouble(matchesEn[0].Value);
                     WellcomeIGeoCom.Longitude = Convert.ToDouble(matchesEn[2].Value);
+                    NorthEastModel eastNorth = await this.getNorthEastNorth(WellcomeIGeoCom.Latitude, WellcomeIGeoCom.Longitude);
+                    if (eastNorth != null)
+                    {
+                        WellcomeIGeoCom.Easting = eastNorth.hkE;
+                        WellcomeIGeoCom.Northing = eastNorth.hkN;
+                    }
                     WellcomeIGeoCom.Tel_No = shopEn.Phone!;
                     WellcomeIGeoCom.Web_Site = _options.Value.BaseUrl!;
                     WellcomeIGeoCom.Class = "CMF";
@@ -72,7 +79,12 @@ namespace iGeoComAPI.Services
                         {
                             if (matchesEn[0].Value == matchesZh[0].Value && matchesEn[2].Value == matchesZh[2].Value && WellcomeIGeoCom.Tel_No == shopZh.Phone)
                             {
-                                WellcomeIGeoCom.C_Address = shopZh.Address!;
+                                WellcomeIGeoCom.C_Address = shopZh.Address!.Replace(" ", "");
+                                var cFloor = Regexs.ExtractC_Floor().Matches(WellcomeIGeoCom.C_Address);
+                                if (cFloor.Count > 0 && cFloor != null)
+                                {
+                                    WellcomeIGeoCom.C_floor = cFloor[0].Value;
+                                }
                                 WellcomeIGeoCom.ChineseName = $"惠康超級市場-{shopZh.Name}";
                                 continue;
                             }
@@ -89,41 +101,41 @@ namespace iGeoComAPI.Services
             }
         }
 
-        
+
         public List<IGeoComDeltaModel> FindAdded(List<IGeoComGrabModel> newData, List<IGeoComModel> previousData)
         {
             int newDataLength = newData.Count;
             int previousDataLength = previousData.Count;
             List<IGeoComDeltaModel> AddedWellcomeIGeoComList = new List<IGeoComDeltaModel>();
 
-            for (int i =0; i < newDataLength; i++)
+            for (int i = 0; i < newDataLength; i++)
             {
                 int j;
                 for (j = 0; j < previousDataLength; j++)
-                
+
                     if (newData[i].E_Address?.Replace(" ", "") == previousData[j].E_Address?.Replace(" ", "") |
                        newData[i].Tel_No?.Replace(" ", "") == previousData[j].Tel_No?.Replace(" ", "") |
                        newData[i].C_Address?.Replace(" ", "") == previousData[j].C_Address?.Replace(" ", "")
                         )
                         break;
-                    if (j == previousDataLength)
-                    {
-                        IGeoComDeltaModel AddedShop = new IGeoComDeltaModel();
-                        AddedShop.status = "added";
-                        AddedShop.EnglishName = newData[i].EnglishName;
-                        AddedShop.ChineseName = newData[i].ChineseName;
-                        AddedShop.Class = newData[i].Class;
-                        AddedShop.Type = newData[i].Type;
-                        AddedShop.E_Address = newData[i].E_Address;
-                        AddedShop.C_Address = newData[i].C_Address;
-                        AddedShop.Tel_No = newData[i].Tel_No;
-                        AddedShop.Web_Site = newData[i].Web_Site;
-                        AddedShop.Latitude = newData[i].Latitude;
-                        AddedShop.Longitude = newData[i].Longitude;
+                if (j == previousDataLength)
+                {
+                    IGeoComDeltaModel AddedShop = new IGeoComDeltaModel();
+                    AddedShop.status = "added";
+                    AddedShop.EnglishName = newData[i].EnglishName;
+                    AddedShop.ChineseName = newData[i].ChineseName;
+                    AddedShop.Class = newData[i].Class;
+                    AddedShop.Type = newData[i].Type;
+                    AddedShop.E_Address = newData[i].E_Address;
+                    AddedShop.C_Address = newData[i].C_Address;
+                    AddedShop.Tel_No = newData[i].Tel_No;
+                    AddedShop.Web_Site = newData[i].Web_Site;
+                    AddedShop.Latitude = newData[i].Latitude;
+                    AddedShop.Longitude = newData[i].Longitude;
 
-                        AddedWellcomeIGeoComList.Add(AddedShop);
-                    }
-                
+                    AddedWellcomeIGeoComList.Add(AddedShop);
+                }
+
             }
             Console.WriteLine(AddedWellcomeIGeoComList.Count);
             return AddedWellcomeIGeoComList;
@@ -139,46 +151,46 @@ namespace iGeoComAPI.Services
             {
                 int j;
                 for (j = 0; j < newDataLength; j++)
-                
+
                     if (previousData[i].E_Address?.Replace(" ", "") == newData[j].E_Address?.Replace(" ", "") |
                        previousData[i].Tel_No?.Replace(" ", "") == newData[j].Tel_No?.Replace(" ", "") |
                        previousData[i].C_Address?.Replace(" ", "") == newData[j].C_Address?.Replace(" ", "")
                         )
                         break;
-                    if (j == newDataLength)
-                    {
-                        IGeoComDeltaModel RemovedShop = new IGeoComDeltaModel();
-                        RemovedShop.status = "removed";
-                        RemovedShop.GeoNameId = previousData[i].GeoNameId;
-                        RemovedShop.EnglishName = previousData[i].EnglishName;
-                        RemovedShop.ChineseName = previousData[i].ChineseName;
-                        RemovedShop.Class = previousData[i].Class;
-                        RemovedShop.Type = previousData[i].Type;
-                        RemovedShop.Subcat = previousData[i].Subcat;
-                        RemovedShop.Easting = previousData[i].Easting;
-                        RemovedShop.Northing = previousData[i].Northing;
-                        RemovedShop.Source = previousData[i].Source;
-                        RemovedShop.E_floor = previousData[i].E_floor;
-                        RemovedShop.C_floor = previousData[i].C_floor;
-                        RemovedShop.E_sitename = previousData[i].E_sitename;
-                        RemovedShop.C_sitename = previousData[i].C_sitename;
-                        RemovedShop.E_area = previousData[i].E_area;
-                        RemovedShop.C_area = previousData[i].C_area;
-                        RemovedShop.C_District = previousData[i].C_District;
-                        RemovedShop.E_District = previousData[i].E_District;
-                        RemovedShop.E_Region = previousData[i].E_Region;
-                        RemovedShop.C_Region = previousData[i].C_Region;
-                        RemovedShop.E_Address = previousData[i].E_Address;
-                        RemovedShop.C_Address = previousData[i].C_Address;
-                        RemovedShop.Tel_No = previousData[i].Tel_No;
-                        RemovedShop.Fax_No = previousData[i].Fax_No;
-                        RemovedShop.Web_Site = previousData[i].Web_Site;
-                        RemovedShop.Rev_Date = previousData[i].Rev_Date;
+                if (j == newDataLength)
+                {
+                    IGeoComDeltaModel RemovedShop = new IGeoComDeltaModel();
+                    RemovedShop.status = "removed";
+                    RemovedShop.GeoNameId = previousData[i].GeoNameId;
+                    RemovedShop.EnglishName = previousData[i].EnglishName;
+                    RemovedShop.ChineseName = previousData[i].ChineseName;
+                    RemovedShop.Class = previousData[i].Class;
+                    RemovedShop.Type = previousData[i].Type;
+                    RemovedShop.Subcat = previousData[i].Subcat;
+                    RemovedShop.Easting = previousData[i].Easting;
+                    RemovedShop.Northing = previousData[i].Northing;
+                    RemovedShop.Source = previousData[i].Source;
+                    RemovedShop.E_floor = previousData[i].E_floor;
+                    RemovedShop.C_floor = previousData[i].C_floor;
+                    RemovedShop.E_sitename = previousData[i].E_sitename;
+                    RemovedShop.C_sitename = previousData[i].C_sitename;
+                    RemovedShop.E_area = previousData[i].E_area;
+                    RemovedShop.C_area = previousData[i].C_area;
+                    RemovedShop.C_District = previousData[i].C_District;
+                    RemovedShop.E_District = previousData[i].E_District;
+                    RemovedShop.E_Region = previousData[i].E_Region;
+                    RemovedShop.C_Region = previousData[i].C_Region;
+                    RemovedShop.E_Address = previousData[i].E_Address;
+                    RemovedShop.C_Address = previousData[i].C_Address;
+                    RemovedShop.Tel_No = previousData[i].Tel_No;
+                    RemovedShop.Fax_No = previousData[i].Fax_No;
+                    RemovedShop.Web_Site = previousData[i].Web_Site;
+                    RemovedShop.Rev_Date = previousData[i].Rev_Date;
 
-                        RemovedWellcomeIGeoComList.Add(RemovedShop);
-                    }
-                
-            
+                    RemovedWellcomeIGeoComList.Add(RemovedShop);
+                }
+
+
             }
             Console.WriteLine(RemovedWellcomeIGeoComList.Count);
             return RemovedWellcomeIGeoComList;
@@ -194,18 +206,18 @@ namespace iGeoComAPI.Services
             {
                 int j;
                 for (j = 0; j < addedLength; j++)
-                
+
                     if (newData[i].E_Address?.Replace(" ", "") == added[j].E_Address?.Replace(" ", "") |
                        newData[i].Tel_No?.Replace(" ", "") == added[j].Tel_No?.Replace(" ", "") |
                        newData[i].C_Address?.Replace(" ", "") == added[j].C_Address?.Replace(" ", "")
                         )
                         break;
-                    if (j == addedLength)
-                    {
+                if (j == addedLength)
+                {
 
-                        LeftIntersectionIGeoComList.Add(newData[i]);
-                    }
-                
+                    LeftIntersectionIGeoComList.Add(newData[i]);
+                }
+
             }
             return LeftIntersectionIGeoComList;
         }
@@ -220,18 +232,18 @@ namespace iGeoComAPI.Services
             {
                 int j;
                 for (j = 0; j < removedLength; j++)
-                
+
                     if (previousData[i].E_Address?.Replace(" ", "") == removed[j].E_Address?.Replace(" ", "") |
                        previousData[i].Tel_No?.Replace(" ", "") == removed[j].Tel_No?.Replace(" ", "") |
                        previousData[i].C_Address?.Replace(" ", "") == removed[j].C_Address?.Replace(" ", "")
                         )
                         break;
-                    if (j == removedLength)
-                    {
+                if (j == removedLength)
+                {
 
-                        RightIntersectionIGeoComList.Add(previousData[i]);
-                    }
-                
+                    RightIntersectionIGeoComList.Add(previousData[i]);
+                }
+
             }
             return RightIntersectionIGeoComList;
         }
@@ -246,29 +258,29 @@ namespace iGeoComAPI.Services
             {
                 int j;
                 for (j = 0; j < rightLength; j++)
-                
+
                     if (left[i].E_Address?.Replace(" ", "") == right[j].E_Address?.Replace(" ", "") &&
                        left[i].Tel_No?.Replace(" ", "") == right[j].Tel_No?.Replace(" ", "") &&
                        left[i].C_Address?.Replace(" ", "") == right[j].C_Address?.Replace(" ", "")
                         )
                         break;
-                    if (j == rightLength)
-                    {
-                        IGeoComDeltaModel AddedShop = new IGeoComDeltaModel();
-                        AddedShop.status = "new_modified";
-                        AddedShop.EnglishName = left[i].EnglishName;
-                        AddedShop.ChineseName = left[i].ChineseName;
-                        AddedShop.Class = left[i].Class;
-                        AddedShop.Type = left[i].Type;
-                        AddedShop.E_Address = left[i].E_Address;
-                        AddedShop.C_Address = left[i].C_Address;
-                        AddedShop.Tel_No = left[i].Tel_No;
-                        AddedShop.Web_Site = left[i].Web_Site;
-                        AddedShop.Latitude = left[i].Latitude;
-                        AddedShop.Longitude = left[i].Longitude;
-                        ModifiedIGeoComList.Add(AddedShop);
-                    }
-                
+                if (j == rightLength)
+                {
+                    IGeoComDeltaModel AddedShop = new IGeoComDeltaModel();
+                    AddedShop.status = "new_modified";
+                    AddedShop.EnglishName = left[i].EnglishName;
+                    AddedShop.ChineseName = left[i].ChineseName;
+                    AddedShop.Class = left[i].Class;
+                    AddedShop.Type = left[i].Type;
+                    AddedShop.E_Address = left[i].E_Address;
+                    AddedShop.C_Address = left[i].C_Address;
+                    AddedShop.Tel_No = left[i].Tel_No;
+                    AddedShop.Web_Site = left[i].Web_Site;
+                    AddedShop.Latitude = left[i].Latitude;
+                    AddedShop.Longitude = left[i].Longitude;
+                    ModifiedIGeoComList.Add(AddedShop);
+                }
+
             }
             return ModifiedIGeoComList;
         }
@@ -283,45 +295,45 @@ namespace iGeoComAPI.Services
             {
                 int j;
                 for (j = 0; j < rightLength; j++)
-                
+
                     if (previousData[i].E_Address?.Replace(" ", "") == right[j].E_Address?.Replace(" ", "") &&
                        previousData[i].Tel_No?.Replace(" ", "") == right[j].Tel_No?.Replace(" ", "") &&
                        previousData[i].C_Address?.Replace(" ", "") == right[j].C_Address?.Replace(" ", "")
                         )
                         break;
-                    if (j == rightLength)
-                    {
-                        IGeoComDeltaModel RemovedShop = new IGeoComDeltaModel();
-                        RemovedShop.status = "org_modified";
-                        RemovedShop.GeoNameId = previousData[i].GeoNameId;
-                        RemovedShop.EnglishName = previousData[i].EnglishName;
-                        RemovedShop.ChineseName = previousData[i].ChineseName;
-                        RemovedShop.Class = previousData[i].Class;
-                        RemovedShop.Type = previousData[i].Type;
-                        RemovedShop.Subcat = previousData[i].Subcat;
-                        RemovedShop.Easting = previousData[i].Easting;
-                        RemovedShop.Northing = previousData[i].Northing;
-                        RemovedShop.Source = previousData[i].Source;
-                        RemovedShop.E_floor = previousData[i].E_floor;
-                        RemovedShop.C_floor = previousData[i].C_floor;
-                        RemovedShop.E_sitename = previousData[i].E_sitename;
-                        RemovedShop.C_sitename = previousData[i].C_sitename;
-                        RemovedShop.E_area = previousData[i].E_area;
-                        RemovedShop.C_area = previousData[i].C_area;
-                        RemovedShop.C_District = previousData[i].C_District;
-                        RemovedShop.E_District = previousData[i].E_District;
-                        RemovedShop.E_Region = previousData[i].E_Region;
-                        RemovedShop.C_Region = previousData[i].C_Region;
-                        RemovedShop.E_Address = previousData[i].E_Address;
-                        RemovedShop.C_Address = previousData[i].C_Address;
-                        RemovedShop.Tel_No = previousData[i].Tel_No;
-                        RemovedShop.Fax_No = previousData[i].Fax_No;
-                        RemovedShop.Web_Site = previousData[i].Web_Site;
-                        RemovedShop.Rev_Date = previousData[i].Rev_Date;
+                if (j == rightLength)
+                {
+                    IGeoComDeltaModel RemovedShop = new IGeoComDeltaModel();
+                    RemovedShop.status = "org_modified";
+                    RemovedShop.GeoNameId = previousData[i].GeoNameId;
+                    RemovedShop.EnglishName = previousData[i].EnglishName;
+                    RemovedShop.ChineseName = previousData[i].ChineseName;
+                    RemovedShop.Class = previousData[i].Class;
+                    RemovedShop.Type = previousData[i].Type;
+                    RemovedShop.Subcat = previousData[i].Subcat;
+                    RemovedShop.Easting = previousData[i].Easting;
+                    RemovedShop.Northing = previousData[i].Northing;
+                    RemovedShop.Source = previousData[i].Source;
+                    RemovedShop.E_floor = previousData[i].E_floor;
+                    RemovedShop.C_floor = previousData[i].C_floor;
+                    RemovedShop.E_sitename = previousData[i].E_sitename;
+                    RemovedShop.C_sitename = previousData[i].C_sitename;
+                    RemovedShop.E_area = previousData[i].E_area;
+                    RemovedShop.C_area = previousData[i].C_area;
+                    RemovedShop.C_District = previousData[i].C_District;
+                    RemovedShop.E_District = previousData[i].E_District;
+                    RemovedShop.E_Region = previousData[i].E_Region;
+                    RemovedShop.C_Region = previousData[i].C_Region;
+                    RemovedShop.E_Address = previousData[i].E_Address;
+                    RemovedShop.C_Address = previousData[i].C_Address;
+                    RemovedShop.Tel_No = previousData[i].Tel_No;
+                    RemovedShop.Fax_No = previousData[i].Fax_No;
+                    RemovedShop.Web_Site = previousData[i].Web_Site;
+                    RemovedShop.Rev_Date = previousData[i].Rev_Date;
 
-                        ModifiedIGeoComList.Add(RemovedShop);
-                    }
-                
+                    ModifiedIGeoComList.Add(RemovedShop);
+                }
+
             }
             return ModifiedIGeoComList;
         }
@@ -329,12 +341,12 @@ namespace iGeoComAPI.Services
         public List<IGeoComDeltaModel> MergeResults(List<IGeoComDeltaModel> added, List<IGeoComDeltaModel> removed, List<IGeoComDeltaModel> newDelta, List<IGeoComDeltaModel> orgDelta)
         {
             List<IGeoComDeltaModel> DeltaChange = new List<IGeoComDeltaModel>();
-            List<IGeoComDeltaModel>  mergeAddedAndRemoved = added.Concat(removed).ToList();
-            
-            foreach(var (v,i) in newDelta.Select((v,i)=>(v,i)))
+            List<IGeoComDeltaModel> mergeAddedAndRemoved = added.Concat(removed).ToList();
+
+            foreach (var (v, i) in newDelta.Select((v, i) => (v, i)))
             {
                 DeltaChange.Add(v);
-                foreach(var item in orgDelta)
+                foreach (var item in orgDelta)
                 {
                     if (v.E_Address?.Replace(" ", "") == item.E_Address?.Replace(" ", "") |
                        v.Tel_No?.Replace(" ", "") == item.Tel_No?.Replace(" ", "") |
@@ -342,7 +354,7 @@ namespace iGeoComAPI.Services
                         )
                     {
                         DeltaChange.Add(item);
-                    }  
+                    }
                 }
             }
             var results = mergeAddedAndRemoved.Concat(DeltaChange).ToList();

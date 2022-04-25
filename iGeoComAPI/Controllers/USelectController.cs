@@ -1,4 +1,5 @@
 ﻿using iGeoComAPI.Models;
+using iGeoComAPI.Repository;
 using iGeoComAPI.Services;
 using iGeoComAPI.Utilities;
 using Microsoft.AspNetCore.Http;
@@ -12,17 +13,54 @@ namespace iGeoComAPI.Controllers
     {
         private readonly ILogger<USelectController> _logger;
         private readonly USelectGrabber _uSelectGrabber;
-        private readonly DataAccess _dataAccess;
-        public USelectController(USelectGrabber uSelectGrabber, ILogger<USelectController> logger, DataAccess dataAccess)
+        private readonly IGeoComGrabRepository _iGeoComGrabRepository;
+        public USelectController(USelectGrabber uSelectGrabber, ILogger<USelectController> logger, IGeoComGrabRepository iGeoComGrabRepository)
         {
             _uSelectGrabber = uSelectGrabber;
             _logger = logger;
-            _dataAccess = dataAccess;
+            _iGeoComGrabRepository = iGeoComGrabRepository;
         }
 
-        USelectModel uSelectModel = new USelectModel();
-        IGeoComModel igeoComModel = new IGeoComModel();
+        [HttpGet]
+        public async Task<IActionResult> Get()
+        {
+            try
+            {
+                //string name = this.GetType().Name.Replace("Controller", "").ToLower();
+                var result = await _iGeoComGrabRepository.GetShopsByName("U select");
+                if (result == null)
+                    return NotFound();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+        [HttpGet("download")]
+        public async Task<IActionResult> GetDownload()
+        {
+            try
+            {
+                string name = this.GetType().Name.Replace("Controller", "").ToLower();
+                var result = await _iGeoComGrabRepository.GetShopsByName("U select");
+                return CsvFile.Download(result, name);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
 
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Post()
+        {
+            var GrabbedResult = await _uSelectGrabber.GetWebSiteItems();
+            _iGeoComGrabRepository.CreateShops(GrabbedResult);
+            return Ok(GrabbedResult);
+        }
+        /*
         [HttpGet]
         public async Task<List<IGeoComGrabModel>?> Get()
         {
@@ -37,8 +75,9 @@ namespace iGeoComAPI.Controllers
         public async Task<List<IGeoComGrabModel?>> Create()
         {
             var GrabbedResult = await _uSelectGrabber.GetWebSiteItems();
-            _dataAccess.SaveGrabbedData(igeoComModel.InsertSql, GrabbedResult);
+            _dataAccess.SaveGrabbedData(igeoComGrabModel.InsertSql, GrabbedResult);
             return GrabbedResult;
         }
+        */
     }
 }

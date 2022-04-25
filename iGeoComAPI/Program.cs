@@ -1,10 +1,10 @@
 using iGeoComAPI.Services;
 using iGeoComAPI.Options;
-//using Microsoft.Extensions.DependencyInjection;
 using iGeoComAPI.Utilities;
 using Serilog;
 using iGeoComAPI.Models;
 using iGeoComAPI;
+using iGeoComAPI.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,13 +23,13 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-//builder.Services.AddLazyCache();
+builder.Services.AddLazyCache();
 //builder.Services.AddHttpClient();
-builder.Services.AddSingleton<IGrabberAPI<SevenElevenModel>,SevenElevenGrabber>();
-builder.Services.AddSingleton<IGrabberAPI<CaltexModel>, CaltexGrabber>();
-builder.Services.AddSingleton<IGrabberAPI<ParknShopModel>, ParknShopGrabber>();
-builder.Services.AddSingleton<IGrabberAPI<AeonModel>, AeonGrabber>();
-builder.Services.AddSingleton<IGrabberAPI<AromeNMaximsCakesModel>,AromeNMaximsCakesGrabber>();
+builder.Services.AddSingleton<SevenElevenGrabber>();
+builder.Services.AddSingleton< CaltexGrabber>();
+builder.Services.AddSingleton<ParknShopGrabber>();
+builder.Services.AddSingleton<AeonGrabber>();
+builder.Services.AddSingleton<AromeNMaximsCakesGrabber>();
 builder.Services.AddSingleton<AmbulanceDepotGrabber>();
 builder.Services.AddSingleton<BloodDonorCentreGrabber>();
 builder.Services.AddSingleton<WellcomeGrabber>();
@@ -44,19 +44,21 @@ builder.Services.AddSingleton<CatholicOrgGrabber>();
 builder.Services.AddSingleton<ChinaMobileGrabber>();
 builder.Services.AddSingleton<ConnectClient>();
 builder.Services.AddSingleton<JsonFunction>();
-builder.Services.AddSingleton<DataAccess>();
+builder.Services.AddSingleton<IDataAccess, DataAccess>();
 builder.Services.AddSingleton<PuppeteerConnection>();
 builder.Services.AddSingleton<MyLogger>();
+builder.Services.AddSingleton<LatLngFunction>();
+builder.Services.AddSingleton<IGeoComRepository>();
+builder.Services.AddSingleton<IGeoComGrabRepository>();
 builder.Services.AddMemoryCache();
-builder.Services.Configure<AppSettingOptions>( a => new AppSettingOptions { Environment = _environment.EnvironmentName });
 MyConfigServiceCollection.AddConfig(builder.Services, _configuration);
 builder.Services.AddOptions(); //IOptions<T>
-/*
-if(_environment.EnvironmentName == "Production")
-{
-    builder.Services.AddHostedService<MyBackGroundService>();
-}
-*/
+
+//if(_environment.EnvironmentName == "Production")
+//{
+//    builder.Services.AddHostedService<MyBackGroundService>();
+//}
+
 var app = builder.Build();
 app.Logger.LogInformation("Project start");
 // Configure the HTTP request pipeline.

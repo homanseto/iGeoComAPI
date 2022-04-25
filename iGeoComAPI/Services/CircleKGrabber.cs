@@ -9,110 +9,111 @@ using System.Reflection;
 
 namespace iGeoComAPI.Services
 {
-    public class CircleKGrabber 
+    public class CircleKGrabber :AbstractGrabber
     {
         private PuppeteerConnection _puppeteerConnection;
         private JsonFunction _json;
         private IOptions<CircleKOptions> _options;
-        private IMemoryCache _memoryCache;
         private ILogger<CircleKGrabber> _logger;
         private string infoCode = @"() =>{
                                  const selector = document.querySelector('td.ff_parent_table > script').textContent;
                                  return selector;
                                  }";
         private string waitSelector = "td.ff_parent_table";
-        private string _regionListRegex = @"\s* region_list = jQuery\.parseJSON\('(.*)'\)";
-        private string _storeListRegex = @"\s* store_list = jQuery\.parseJSON\('(.*)'\);";
 
 
-        public CircleKGrabber(PuppeteerConnection puppeteerConnection, JsonFunction json, IOptions<CircleKOptions> options, IMemoryCache memoryCache, ILogger<CircleKGrabber> logger)
+
+        public CircleKGrabber(PuppeteerConnection puppeteerConnection, IOptions<CircleKOptions> options, ILogger<CircleKGrabber> logger,
+            IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json) : base(httpClient, absOptions, json)
         {
             _puppeteerConnection = puppeteerConnection;
             _json = json;
             _options = options;
-            _memoryCache = memoryCache;
             _logger = logger;
         }
-        public async Task<List<IGeoComGrabModel>?> GetWebSiteItems()
+        
+        public async Task<List<IGeoComGrabModel>> GetWebSiteItems()
         {
             var rawDataEng = await _puppeteerConnection.PuppeteerGrabber<string>(_options.Value.EnUrl, infoCode, waitSelector);
             var rawDataZh = await _puppeteerConnection.PuppeteerGrabber<string>(_options.Value.ZhUrl, infoCode, waitSelector);
-            var _rgxRegionList = Regexs.ExtractInfo(_regionListRegex);
-            var _rgxStoreList = Regexs.ExtractInfo(_storeListRegex);
-            string regionStringEng = _rgxRegionList.Match(rawDataEng).Groups[1].Value;
+            //var _rgxRegionList = Regexs.ExtractInfo(_regionListRegex);
+            var _rgxStoreList = Regexs.ExtractInfo(CircleKModel.storeListRegex);
+            //string regionStringEng = _rgxRegionList.Match(rawDataEng).Groups[1].Value;
             string storeStringEng = _rgxStoreList.Match(rawDataEng).Groups[1].Value;
-            string regionStringZh = _rgxRegionList.Match(rawDataZh).Groups[1].Value;
+            //string regionStringZh = _rgxRegionList.Match(rawDataZh).Groups[1].Value;
             string storeStringZh = _rgxStoreList.Match(rawDataZh).Groups[1].Value;
-            var enSerializedRegionResult = _json.Dserialize<CircleKRegionFilter>(regionStringEng);
-            var zhSerializedRegionResult = _json.Dserialize<CircleKRegionFilter>(regionStringZh);
-            var enSerializedDistrictResult = _json.Dserialize<CircleKDistrictFilter>(storeStringEng);
-            
-            var result = Parsing(enSerializedDistrictResult);
+            //var enSerializedRegionResult = _json.Dserialize<Dictionary<string, List<string>>>(regionStringEng);
+            //var zhSerializedRegionResult = _json.Dserialize<Dictionary<string, List<string>>>(regionStringZh);
+            var enSerializedDistrictResult = _json.Dserialize<Dictionary<string, List<CircleKModel>>>(storeStringEng);
+            var zhSerializedDistrictResult = _json.Dserialize<Dictionary<string, List<CircleKModel>>>(storeStringZh);
+           return await MergeEnAndZhAsync(enSerializedDistrictResult, zhSerializedDistrictResult);
 
-            return result;
         }
 
+        //public async Task Testing(CircleKRegionFilter input)
+        //{
+        //    IEnumerable<CircleKRegionFilter> en = input;
+        //    foreach(var item in en)
+        //    {
+        //        Console.WriteLine(item);
+        //    }
+        //}
 
-        public List<IGeoComGrabModel> Parsing(CircleKDistrictFilter? input)
+        public async Task<List<IGeoComGrabModel>> MergeEnAndZhAsync(Dictionary<string, List<CircleKModel>> emResult, Dictionary<string, List<CircleKModel>> zhResult)
         {
             List<IGeoComGrabModel> CircleKIGeoComList = new List<IGeoComGrabModel>();
-            if(input != null)
+            foreach (KeyValuePair<string, List<CircleKModel>> enEntry in emResult)
             {
-                List<List<CircleKModel>> collection = new List<List<CircleKModel>>((IEnumerable<List<CircleKModel>>)input);
-                var collection1 = ((IEnumerable)input).Cast<List<CircleKModel>>().ToList();
-
-                foreach (List<CircleKModel> prop in collection)
+                foreach (var en in enEntry.Value)
                 {
-                    foreach (CircleKModel v in prop)
+                    IGeoComGrabModel circleKIGeoCom = new IGeoComGrabModel();
+                    circleKIGeoCom.E_Region = en.zone;
+                    circleKIGeoCom.E_District = en.location;
+                    circleKIGeoCom.Latitude = Convert.ToDouble(en.latitude);
+                    circleKIGeoCom.Longitude = Convert.ToDouble(en.longitude);
+                    NorthEastModel eastNorth = await this.getNorthEastNorth(circleKIGeoCom.Latitude, circleKIGeoCom.Longitude);
+                    if (eastNorth != null)
                     {
-                        IGeoComGrabModel circleKIGeoCom = new IGeoComGrabModel();
-                        circleKIGeoCom.EnglishName = $"CircleK_{v.store_no}";
-                        circleKIGeoCom.E_Address = v.address;
-                        circleKIGeoCom.E_District = v.location;
-                        if (v.zone == "Hong Kong Island")
-                        {
-                            circleKIGeoCom.E_Region = "HK";
-                        }
-                        else if (v.zone == "Kowloon")
-                        {
-                            circleKIGeoCom.E_Region = "KLN";
-                        }
-                        else
-                        {
-                            circleKIGeoCom.E_Region = "NT";
-                        }
-                        circleKIGeoCom.Latitude = Convert.ToDouble(v.latitude);
-                        circleKIGeoCom.Longitude = Convert.ToDouble(v.longitude);
-                        CircleKIGeoComList.Add(circleKIGeoCom);
-
+                        circleKIGeoCom.Easting = eastNorth.hkE;
+                        circleKIGeoCom.Northing = eastNorth.hkN;
                     }
+                    circleKIGeoCom.Grab_ID = $"circleK_{en.store_no}";
+                    circleKIGeoCom.E_Address = en.address;
+                    if(en.operation_hour.ToLower() == "24 hours")
+                    {
+                        circleKIGeoCom.Subcat = " ";
+                    }
+                    else
+                    {
+                        circleKIGeoCom.Subcat = "NON24R";
+                    }
+                    circleKIGeoCom.Class = "CMF";
+                    circleKIGeoCom.Type = "CVS";
+                    foreach (KeyValuePair<string, List<CircleKModel>> zhEntry in zhResult)
+                    {
+                        foreach (var zh in zhEntry.Value)
+                        {
+                            if (en.store_no == zh.store_no)
+                            {
+                                circleKIGeoCom.C_District = zh.location;
+                                circleKIGeoCom.C_Address = zh.address.Replace(" ", "");
+                                var cFloor = Regexs.ExtractC_Floor().Matches(circleKIGeoCom.C_Address);
+                                if (cFloor.Count > 0 && cFloor != null)
+                                {
+                                    circleKIGeoCom.C_floor = cFloor[0].Value;
+                                }
+                                circleKIGeoCom.C_Region = zh.zone;
+                               
+                            }
+                        }
+                    }
+                    CircleKIGeoComList.Add(circleKIGeoCom);
                 }
             }
-            
-           return CircleKIGeoComList;
-        }
-
-
-        public List<IGeoComGrabModel> MergeEnAndZh(List<CircleKModel> enResult, List<CircleKModel> zhResult)
-        {
-            throw new NotImplementedException();
+             return CircleKIGeoComList.Where(shop => (shop.E_Region.ToLower() != "macau") && (shop.E_Region.ToLower() != "zhuhai")).ToList();
         }
     }
 
 
-    public class CircleKRegionFilter
-    {
-        public List<string>? 香港 { get; set; }
-        public List<string>? 九龍 { get; set; }
-        public List<string>? 新界 { get; set; }
 
-    }
-
-    public class CircleKDistrictFilter
-    {   
-        public List<CircleKModel>? Wanchai { get; set; }
-
-        public List<CircleKModel>? Aberdeen { get; set; }
-
-    }
 }

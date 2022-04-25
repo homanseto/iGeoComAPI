@@ -1,4 +1,5 @@
 ﻿using iGeoComAPI.Models;
+using iGeoComAPI.Repository;
 using iGeoComAPI.Utilities;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,22 +9,44 @@ namespace iGeoComAPI.Controllers
     [ApiController]
     public class AllController : ControllerBase
     {
-        private ILogger<AllController> _logger;
-        private DataAccess _dataAccess;
-        private string SelectSMK = "SELECT * FROM igeocomtable WHERE TYPE = 'SMK'";
+        private readonly ILogger<AllController> _logger;
+        private readonly IGeoComGrabRepository _iGeoComGrabRepository;
 
-        public AllController( ILogger<AllController> logger, DataAccess dataAccess)
+        public AllController(ILogger<AllController> logger, IGeoComGrabRepository iGeoComGrabRepository)
         {
             _logger = logger;
-            _dataAccess = dataAccess;
+            _iGeoComGrabRepository = iGeoComGrabRepository;
+
         }
 
-        [HttpGet("market")]
-        public async Task<List<IGeoComGrabModel>?> Get()
+        [HttpGet("{type}")]
+        public async Task<IActionResult> GetShopsByType(string type)
         {
-            var result = await _dataAccess.LoadData<IGeoComGrabModel>(SelectSMK);
-            CsvFile.DownloadCsv(result, "SMK_grab_result");
-            return result;
+            try
+            {
+                var result = await _iGeoComGrabRepository.GetShopsByType(type);
+                if (result == null)
+                    return NotFound();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+        [HttpGet("{type}/download")]
+        public async Task<IActionResult> GetDownload(string type)
+        {
+            try
+            {
+                var result = await _iGeoComGrabRepository.GetShopsByType(type);
+                return CsvFile.Download(result, type);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+
         }
         /*
         [Route("api/@ID/@action")]

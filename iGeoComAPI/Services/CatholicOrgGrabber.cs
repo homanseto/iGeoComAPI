@@ -21,7 +21,6 @@ namespace iGeoComAPI.Services
                                  return hkListResult.concat(klnListResult,ntListResult);
                                  }";
         private string waitSelector = ".rich_editor_text";
-        CatholicOrgModel catholicOrgModel = new CatholicOrgModel();
 
         public CatholicOrgGrabber(PuppeteerConnection puppeteerConnection, IOptions<CatholicOrgOptions> options, ILogger<CatholicOrgGrabber> logger)
         {

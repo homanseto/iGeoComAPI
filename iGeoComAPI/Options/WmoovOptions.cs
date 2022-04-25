@@ -4,6 +4,6 @@
     {
         public const string SectionName = "Wmoov";
 
-        public string? BaseUrl { get; set; }
+        public string BaseUrl { get; set; } = String.Empty;
     }
 }

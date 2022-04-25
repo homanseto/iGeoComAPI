@@ -15,7 +15,7 @@ namespace iGeoComAPI.Controllers
         private DataAccess _dataAccess;
 
         AmbulanceDepotModel ambulanceDepotModel = new AmbulanceDepotModel();
-        IGeoComModel igeoComModel = new IGeoComModel();
+        //IGeoComModel igeoComModel = new IGeoComModel();
 
         public CatholicOrgController(CatholicOrgGrabber catholicOrgGrabber, ILogger<CatholicOrgController> logger, DataAccess dataAccess)
         {

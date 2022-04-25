@@ -14,7 +14,7 @@ namespace iGeoComAPI.Controllers
         private DataAccess _dataAccess;
 
         CSLModel csl1010Model = new CSLModel();
-        IGeoComModel igeoComModel = new IGeoComModel();
+       // IGeoComModel igeoComModel = new IGeoComModel();
 
         public CSLController(CSLGrabber cslGrabber, ILogger<CSLController> logger, DataAccess dataAccess)
         {

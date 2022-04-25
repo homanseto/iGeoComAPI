@@ -2,14 +2,14 @@
 {
     public class ParknShopModel
     {
-        public string? BrandName { get; set; }
-        public string? Name { get; set; }
-        public string? Region { get; set; }
-        public string? District { get; set; }
-        public string? Latitude { get; set; }
-        public string? Longitude { get; set; }  
-        public string? Address { get; set; }
-        public string? Phone { get; set; }
+        public string BrandName { get; set; } = String.Empty;
+        public string Name { get; set; } = String.Empty;
+        public string Region { get; set; } = String.Empty;
+        public string District { get; set; } = String.Empty;
+        public string Latitude { get; set; } = String.Empty;
+        public string Longitude { get; set; } = String.Empty;
+        public string Address { get; set; } = String.Empty;
+        public string Phone { get; set; } = String.Empty;
 
     }
 }

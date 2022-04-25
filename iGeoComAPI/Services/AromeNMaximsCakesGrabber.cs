@@ -28,7 +28,6 @@ namespace iGeoComAPI.Services
                                  }";
         private string waitSelector1st = "#contentcell";
         private string waitSelector2nd = ".restaurant_details_tb";
-        AromeNMaximsCakesModel aromeNMaximsCakesModel = new AromeNMaximsCakesModel();
 
         public AromeNMaximsCakesGrabber(PuppeteerConnection puppeteerConnection, IOptions<AromeNMaximsCakesOptions> options, IMemoryCache memoryCache, ILogger<AromeNMaximsCakesGrabber> logger)
         {
@@ -50,7 +49,7 @@ namespace iGeoComAPI.Services
 
         public decimal EachPageNumberOfShops(string number)
         {
-            var _rgx = Regexs.ExtractInfo(aromeNMaximsCakesModel.NumberofShopRegex);
+            var _rgx = Regexs.ExtractInfo(AromeNMaximsCakesModel.NumberofShopRegex);
             int num = int.Parse(_rgx.Match(number).Groups[1].Value);
             decimal EachPageNum = Math.Ceiling((decimal)(num / _options.Value.EachPageNumber));
             return EachPageNum+1;
@@ -71,8 +70,8 @@ namespace iGeoComAPI.Services
 
         public async Task<List<AromeNMaximsCakesModel>?> Extract2stLevelData(List<AromeNMaximsCakesModel>? pathList, string? searchPath)
         {
-            var _pathRgx = Regexs.ExtractInfo(aromeNMaximsCakesModel.RestaurantPathRegex);
-            var _idRgx = Regexs.ExtractInfo(aromeNMaximsCakesModel.IdRegex);
+            var _pathRgx = Regexs.ExtractInfo(AromeNMaximsCakesModel.RestaurantPathRegex);
+            var _idRgx = Regexs.ExtractInfo(AromeNMaximsCakesModel.IdRegex);
             List<AromeNMaximsCakesModel> AromeNMaximsCakesList = new List<AromeNMaximsCakesModel>();
             foreach (var path in pathList)
             {
@@ -103,7 +102,7 @@ namespace iGeoComAPI.Services
                     {
                         if (shopEn.Id == shopZh.Id)
                         {
-                            AromeNMaximsCakesIGeoCom.ChineseName = shopZh.Name;
+                            AromeNMaximsCakesIGeoCom.ChineseName = shopZh.Name.Replace(" ", "");
                             AromeNMaximsCakesIGeoCom.C_Address = shopZh.Address;
                         }
                     }

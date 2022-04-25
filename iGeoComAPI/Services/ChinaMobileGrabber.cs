@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 
 namespace iGeoComAPI.Services
 {
-    public class ChinaMobileGrabber
+    public class ChinaMobileGrabber:AbstractGrabber
     {
         private PuppeteerConnection _puppeteerConnection;
         private IOptions<ChinaMobileOptions> _options;
@@ -26,9 +26,9 @@ namespace iGeoComAPI.Services
                                  }";
         private string waitSelectorId = ".innerpage-content";
         private string waitSelectorInfo = "head";
-        ChinaMobileModel chinaMobileModel = new ChinaMobileModel();
 
-        public ChinaMobileGrabber(PuppeteerConnection puppeteerConnection, IOptions<ChinaMobileOptions> options, ILogger<ChinaMobileGrabber> logger)
+        public ChinaMobileGrabber(PuppeteerConnection puppeteerConnection, IOptions<ChinaMobileOptions> options, ILogger<ChinaMobileGrabber> logger,
+            IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json) : base(httpClient, absOptions, json)
         {
             _puppeteerConnection = puppeteerConnection;
             _options = options;
@@ -41,16 +41,16 @@ namespace iGeoComAPI.Services
             var zhIdLink = await _puppeteerConnection.PuppeteerGrabber<ChinaMobileModel[]>(_options.Value.ZhUrl, idCode, waitSelectorId);
             var enResult = await grabResultByID(enIdLink);
             var zhResult = await grabResultByID(zhIdLink);
-            var result = MergeEnAndZh(enResult, zhResult);
+            var result = await MergeEnAndZh(enResult, zhResult);
             return result;
         }
 
         public async Task<List<ChinaMobileModel>?> grabResultByID(ChinaMobileModel[] idResult)
         {
-            var _linkRgx = Regexs.ExtractInfo(chinaMobileModel.ExtractLink);
-            var _addressAndHourRgx = Regexs.ExtractInfo(chinaMobileModel.ExtractAddressAndOpeningHour);
-            var _latLngRgx = Regexs.ExtractInfo(chinaMobileModel.ExtractLatLng);
-            var _IdRgx = Regexs.ExtractInfo(chinaMobileModel.ExtractId);
+            var _linkRgx = Regexs.ExtractInfo(ChinaMobileModel.ExtractLink);
+            var _addressAndHourRgx = Regexs.ExtractInfo(ChinaMobileModel.ExtractAddressAndOpeningHour);
+            var _latLngRgx = Regexs.ExtractInfo(ChinaMobileModel.ExtractLatLng);
+            var _IdRgx = Regexs.ExtractInfo(ChinaMobileModel.ExtractId);
             List<ChinaMobileModel> ChinaMobileList = new List<ChinaMobileModel>();
             foreach (ChinaMobileModel id in idResult)
             {
@@ -68,12 +68,12 @@ namespace iGeoComAPI.Services
             return ChinaMobileList;
         }
 
-        public List<IGeoComGrabModel> MergeEnAndZh(List<ChinaMobileModel>? enResult, List<ChinaMobileModel>? zhResult)
+        public async Task<List<IGeoComGrabModel>> MergeEnAndZh(List<ChinaMobileModel>? enResult, List<ChinaMobileModel>? zhResult)
         {
             try
             {
                 _logger.LogInformation("Start merging ChinaMobile eng and Zh");
-                var _LatLngrgx = Regexs.ExtractInfo(chinaMobileModel.RegLatLngRegex);
+                var _LatLngrgx = Regexs.ExtractInfo(ChinaMobileModel.RegLatLngRegex);
                 List<IGeoComGrabModel> ChinaMobileIGeoComList = new List<IGeoComGrabModel>();
                 if (enResult != null && zhResult != null)
                 {
@@ -85,12 +85,18 @@ namespace iGeoComAPI.Services
                         var matchesEn = _LatLngrgx.Matches(shopEn.LatLng!);
                         ChinaMobileIGeoCom.Latitude = Convert.ToDouble(matchesEn[0].Value);
                         ChinaMobileIGeoCom.Longitude = Convert.ToDouble(matchesEn[2].Value);
+                        NorthEastModel eastNorth = await this.getNorthEastNorth(ChinaMobileIGeoCom.Latitude, ChinaMobileIGeoCom.Longitude);
+                        if (eastNorth != null)
+                        {
+                            ChinaMobileIGeoCom.Easting = eastNorth.hkE;
+                            ChinaMobileIGeoCom.Northing = eastNorth.hkN;
+                        }
                         ChinaMobileIGeoCom.GeoNameId = $"chinamobile_{shopEn.Id}";
                         foreach (ChinaMobileModel shopZh in zhResult)
                         {
                             if (shopEn.Id == shopZh.Id)
                             {
-                                ChinaMobileIGeoCom.C_Address = shopZh.Address;
+                                ChinaMobileIGeoCom.C_Address = shopZh.Address.Replace(" ", "");
                             }
                             continue;
                         }

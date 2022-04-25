@@ -15,7 +15,7 @@ namespace iGeoComAPI.Controllers
         private DataAccess _dataAccess;
 
         BmcpcModel bmcpcModel = new BmcpcModel();
-        IGeoComModel igeoComModel = new IGeoComModel();
+        //IGeoComModel igeoComModel = new IGeoComModel();
 
         public BmcpcController(BmcpcGrabber bmcpcGrabber, ILogger<BmcpcController> logger, DataAccess dataAccess)
         {

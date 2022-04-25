@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 
 namespace iGeoComAPI.Services
 {
-    public class WmoovGrabber
+    public class WmoovGrabber:AbstractGrabber
     {
         private PuppeteerConnection _puppeteerConnection;
         private IOptions<WmoovOptions> _options;
@@ -36,10 +36,10 @@ namespace iGeoComAPI.Services
                                  map(v=>{return {Region: selectors[i].querySelector('h3').textContent.trim(),Name: v.querySelector('.gotomap').textContent.trim()}})} 
                                  }";
 
-        WmoovModel wmoovModel = new WmoovModel();
 
 
-        public WmoovGrabber(PuppeteerConnection puppeteerConnection, IOptions<WmoovOptions> options, IMemoryCache memoryCache)
+        public WmoovGrabber(PuppeteerConnection puppeteerConnection, IOptions<WmoovOptions> options, IMemoryCache memoryCache,
+            IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json) : base(httpClient, absOptions, json)
         {
             _puppeteerConnection = puppeteerConnection;
             _options = options;
@@ -50,7 +50,7 @@ namespace iGeoComAPI.Services
         {
             var shopResult = await _puppeteerConnection.PuppeteerGrabber<WmoovModel[]>(_options.Value.BaseUrl, shopCode, waitSelectorShop);
             var shopList = shopResult.ToList();
-            var _rgx = Regexs.ExtractInfo(wmoovModel.WmoovIdRegex);
+            var _rgx = Regexs.ExtractInfo(WmoovModel.WmoovIdRegex);
             List<IGeoComGrabModel> WmoovIGeoComList = new List<IGeoComGrabModel>();
             foreach (var shop in shopList)
             {
@@ -59,6 +59,13 @@ namespace iGeoComAPI.Services
                 infoResult.ChineseName = shop.Name;
                 infoResult.Latitude = Convert.ToDouble(shop.Latitude);
                 infoResult.Longitude = Convert.ToDouble(shop.Longitude);
+                NorthEastModel eastNorth = await this.getNorthEastNorth(infoResult.Latitude, infoResult.Longitude);
+                if (eastNorth != null)
+                {
+                    infoResult.Easting = eastNorth.hkE;
+                    infoResult.Northing = eastNorth.hkN;
+                }
+                infoResult.C_Address = shop.Address.Replace(" ", "");
                 infoResult.Class = "CUF";
                 infoResult.Type = "TNC";
                 var matchId = _rgx.Matches(shop.Website!);
@@ -73,27 +80,27 @@ namespace iGeoComAPI.Services
 
         }
 
-        public List<IGeoComGrabModel> FindAdded(List<IGeoComGrabModel> newData, List<IGeoComModel> previousData)
-        {
-            int newDataLength = newData.Count;
-            int previousDataLength = previousData.Count;
-            List<IGeoComGrabModel> AddedWellcomeIGeoComList = new List<IGeoComGrabModel>();
+        //public List<IGeoComGrabModel> FindAdded(List<IGeoComGrabModel> newData, List<IGeoComRepository> previousData)
+        //{
+        //    int newDataLength = newData.Count;
+        //    int previousDataLength = previousData.Count;
+        //    List<IGeoComGrabModel> AddedWellcomeIGeoComList = new List<IGeoComGrabModel>();
 
-            for (int i = 0; i < newDataLength; i++)
-            {
-                int j;
-                for (j = 0; j < previousDataLength; j++) 
-                    if (newData[i].C_Address?.Replace(" ","") == previousData[j].C_Address?.Replace(" ", "") &&
-                       newData[i].Tel_No?.Replace(" ", "").Replace("-", "") == previousData[j].Tel_No?.Replace(" ", "").Replace("-", "") &&
-                       newData[i].Web_Site == previousData[j].Web_Site
-                        )
-                        break;
-                    if (j == previousDataLength)
-                    {
-                        AddedWellcomeIGeoComList.Add(newData[i]);
-                    }
-            }
-            return AddedWellcomeIGeoComList;
-        }
+        //    for (int i = 0; i < newDataLength; i++)
+        //    {
+        //        int j;
+        //        for (j = 0; j < previousDataLength; j++) 
+        //            if (newData[i].C_Address?.Replace(" ","") == previousData[j].C_Address?.Replace(" ", "") &&
+        //               newData[i].Tel_No?.Replace(" ", "").Replace("-", "") == previousData[j].Tel_No?.Replace(" ", "").Replace("-", "") &&
+        //               newData[i].Web_Site == previousData[j].Web_Site
+        //                )
+        //                break;
+        //            if (j == previousDataLength)
+        //            {
+        //                AddedWellcomeIGeoComList.Add(newData[i]);
+        //            }
+        //    }
+        //    return AddedWellcomeIGeoComList;
+        //}
     }
 }
