@@ -52,7 +52,7 @@ namespace iGeoComAPI.Services
                 IGeoComGrabModel AeonIGeoCom = new IGeoComGrabModel();
                 AeonIGeoCom.EnglishName = shopEn.Name;
                 AeonIGeoCom.E_Address = shopEn.Address;
-                AeonIGeoCom.Grab_ID = $"Aeon_{shopEn.Id}";
+                AeonIGeoCom.GrabId = $"Aeon_{shopEn.Id}";
                 AeonIGeoCom.Tel_No = shopEn.Phone!.Replace("Tel No.","").Replace(" ","");
                 var matchLat = _rgxLat.Matches(shopEn.LatLng!);
                 if (matchLat.Count > 0 && matchLat != null)

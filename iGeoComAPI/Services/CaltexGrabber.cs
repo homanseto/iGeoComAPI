@@ -56,7 +56,7 @@ namespace iGeoComAPI.Services
                     foreach (var en in enResult)
                     {
                         IGeoComGrabModel CaltexIGeoCom = new IGeoComGrabModel();
-                        CaltexIGeoCom.Grab_ID = $"caltex_{en.Id}";
+                        CaltexIGeoCom.GrabId = $"caltex_{en.Id}";
                         CaltexIGeoCom.EnglishName = $"Caltex-{en.Name!.Trim()}";
                         CaltexIGeoCom.E_Address = en.Street!.Trim();
                         CaltexIGeoCom.Tel_No = en.PhoneNumber!.Replace(" ", "");

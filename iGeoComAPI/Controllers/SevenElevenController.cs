@@ -12,18 +12,19 @@ namespace iGeoComAPI.Controllers
     [ApiController]
     public class SevenElevenController : ControllerBase
     {
-        private readonly MyLogger _logger;
-        private readonly SevenElevenGrabber _sevenElevenGrabber;
-        private IGeoComGrabRepository _iGeoComGrabRepository;
-
+        private readonly MyLogger logger;
+        private readonly SevenElevenGrabber sevenElevenGrabber;
+        private readonly IGeoComGrabRepository iGeoComGrabRepository;
+        private readonly DataContext dataContext;
         SevenElevenModel sevenElevenModel = new SevenElevenModel();
         //IGeoComGrabModel igeoComGrabModel = new IGeoComGrabModel();
 
-        public SevenElevenController(SevenElevenGrabber sevenElevenGrabber, MyLogger logger, IGeoComGrabRepository iGeoComGrabRepository)
+        public SevenElevenController(SevenElevenGrabber sevenElevenGrabber, MyLogger logger, IGeoComGrabRepository iGeoComGrabRepository, DataContext dataContext)
         {
-            _sevenElevenGrabber = sevenElevenGrabber;
-            _logger = logger;
-            _iGeoComGrabRepository = iGeoComGrabRepository;
+            this.sevenElevenGrabber = sevenElevenGrabber;
+            this.logger = logger;
+            this.iGeoComGrabRepository = iGeoComGrabRepository;
+            this.dataContext = dataContext;
         }
 
         [HttpGet]
@@ -32,7 +33,8 @@ namespace iGeoComAPI.Controllers
             try
             {
                 string name = this.GetType().Name.Replace("Controller", "").ToLower();
-                var result = await _iGeoComGrabRepository.GetShopsByName(name);
+                //var result = await this.iGeoComGrabRepository.GetShopsByName(name);
+                var result = await dataContext.IGeoComGrabModels.ToListAsync();
                 if (result == null)
                     return NotFound();
                 return Ok(result);
@@ -48,7 +50,7 @@ namespace iGeoComAPI.Controllers
             try
             {
                 string name = this.GetType().Name.Replace("Controller", "").ToLower();
-                var result = await _iGeoComGrabRepository.GetShopsByName(name);
+                var result = await this.iGeoComGrabRepository.GetShopsByName(name);
                 return CsvFile.Download(result, name);
             }
             catch (Exception ex)
@@ -61,11 +63,13 @@ namespace iGeoComAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<List<IGeoComGrabModel>>> Post()
         {
-            _logger.LogControllerRequest(nameof(SevenElevenController), nameof(Post));
-            var GrabbedResult = await _sevenElevenGrabber.GetWebSiteItems();
+            this.logger.LogControllerRequest(nameof(SevenElevenController), nameof(Post));
+            var GrabbedResult = await this.sevenElevenGrabber.GetWebSiteItems();
             if (GrabbedResult == null)
                 return BadRequest("Cannot insert grabbed data");
-           _iGeoComGrabRepository.CreateShops(GrabbedResult);
+            //this.iGeoComGrabRepository.CreateShops(GrabbedResult);
+            this.dataContext.IGeoComGrabModels.AddRange(GrabbedResult);
+            await this.dataContext.SaveChangesAsync();
             return Ok(GrabbedResult);
         }
         //[HttpDelete("{id}")]

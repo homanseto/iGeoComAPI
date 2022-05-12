@@ -71,7 +71,7 @@ namespace iGeoComAPI.Services
                     WellcomeIGeoCom.Class = "CMF";
                     WellcomeIGeoCom.Type = "SMK";
                     WellcomeIGeoCom.Source = "27";
-                    WellcomeIGeoCom.Grab_ID = $"wellcome_{shopEn.LatLng}{shopEn.Phone}_{index}".Replace(" ", "").Replace("|", "").Replace(".", "");
+                    WellcomeIGeoCom.GrabId = $"wellcome_{shopEn.LatLng}{shopEn.Phone}_{index}".Replace(" ", "").Replace("|", "").Replace(".", "");
                     foreach (var shopZh in zhResult)
                     {
                         var matchesZh = _rgx.Matches(shopZh.LatLng!);

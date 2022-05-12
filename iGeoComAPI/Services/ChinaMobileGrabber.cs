@@ -91,7 +91,7 @@ namespace iGeoComAPI.Services
                             ChinaMobileIGeoCom.Easting = eastNorth.hkE;
                             ChinaMobileIGeoCom.Northing = eastNorth.hkN;
                         }
-                        ChinaMobileIGeoCom.GeoNameId = $"chinamobile_{shopEn.Id}";
+                        ChinaMobileIGeoCom.GrabId = $"chinamobile_{shopEn.Id}";
                         foreach (ChinaMobileModel shopZh in zhResult)
                         {
                             if (shopEn.Id == shopZh.Id)

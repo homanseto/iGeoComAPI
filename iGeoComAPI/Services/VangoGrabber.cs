@@ -80,7 +80,7 @@ namespace iGeoComAPI.Services
                     VangoIGeoCom.Type = "CVS";
                     VangoIGeoCom.Source = "27";
                     VangoIGeoCom.Web_Site = _options.Value.BaseUrl;
-                    VangoIGeoCom.Grab_ID = $"{shop.store_number}_{shop.storename}{shop.address_geo_lat}";
+                    VangoIGeoCom.GrabId = $"{shop.store_number}_{shop.storename}{shop.address_geo_lat}";
                     if (region != null & region == "hk")
                     {
                         VangoIGeoCom.C_Region = "香港";

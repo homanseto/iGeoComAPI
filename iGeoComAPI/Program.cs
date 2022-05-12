@@ -1,5 +1,7 @@
+global using iGeoComAPI.Data;
+global using Microsoft.EntityFrameworkCore;
+global using HKMap.Repository;
 using iGeoComAPI.Services;
-using iGeoComAPI.Options;
 using iGeoComAPI.Utilities;
 using Serilog;
 using iGeoComAPI.Models;
@@ -11,6 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 ConfigurationManager _configuration = builder.Configuration;
 IWebHostEnvironment _environment = builder.Environment;
+
 var logger = new LoggerConfiguration()
     .ReadFrom.Configuration(_configuration)
     .Enrich.WithThreadId()
@@ -20,6 +23,22 @@ builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(logger);
 
 builder.Services.AddControllers();
+
+builder.Services.AddDbContext<DataContext>(options =>
+{
+        if (_environment.EnvironmentName == "Development" || _environment.EnvironmentName == "Production")
+        {
+            options.UseSqlServer(_configuration.GetConnectionString("Default_3DM"));
+        }
+        else
+        {
+            options.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"));
+        }
+});
+var folder = Environment.SpecialFolder.LocalApplicationData;
+var path = Environment.GetFolderPath(folder);
+Console.WriteLine(path);
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -50,14 +69,16 @@ builder.Services.AddSingleton<MyLogger>();
 builder.Services.AddSingleton<LatLngFunction>();
 builder.Services.AddSingleton<IGeoComRepository>();
 builder.Services.AddSingleton<IGeoComGrabRepository>();
+//builder.Services.AddSingleton<MapRepository>();
 builder.Services.AddMemoryCache();
 MyConfigServiceCollection.AddConfig(builder.Services, _configuration);
 builder.Services.AddOptions(); //IOptions<T>
 
-//if(_environment.EnvironmentName == "Production")
-//{
-//    builder.Services.AddHostedService<MyBackGroundService>();
-//}
+
+if (_environment.EnvironmentName == "production")
+{
+    //builder.Services.AddHostedService<MyBackGroundService>();
+}
 
 var app = builder.Build();
 app.Logger.LogInformation("Project start");

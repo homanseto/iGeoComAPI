@@ -64,7 +64,7 @@ namespace iGeoComAPI.Services
                     AmbulanceDepotIGeoCom.E_Address = shopEn.Address.Replace(shopEn.Email,"");
                     AmbulanceDepotIGeoCom.Tel_No = shopEn.Phone;
                     AmbulanceDepotIGeoCom.Fax_No = shopEn.Fax;
-                    AmbulanceDepotIGeoCom.Grab_ID = $"ambulanceDepot_{shopEn.Fax}{index}".Replace(" ","");
+                    AmbulanceDepotIGeoCom.GrabId = $"ambulanceDepot_{shopEn.Fax}{index}".Replace(" ","");
                     foreach (var shopZh in zhResult)
                     {
                         if (shopEn.Phone == shopZh.Phone && shopEn.Fax == shopZh.Fax)

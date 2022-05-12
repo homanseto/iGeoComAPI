@@ -77,7 +77,7 @@ namespace iGeoComAPI.Services
                         circleKIGeoCom.Easting = eastNorth.hkE;
                         circleKIGeoCom.Northing = eastNorth.hkN;
                     }
-                    circleKIGeoCom.Grab_ID = $"circleK_{en.store_no}";
+                    circleKIGeoCom.GrabId = $"circleK_{en.store_no}";
                     circleKIGeoCom.E_Address = en.address;
                     if(en.operation_hour.ToLower() == "24 hours")
                     {

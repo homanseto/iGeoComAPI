@@ -13,6 +13,7 @@ namespace iGeoComAPI.Services
         private readonly JsonFunction _json;
         private readonly IOptions<SevenElevenOptions> _options;
         private readonly MyLogger _logger;
+        private readonly MapRepository _hkMap;
 
         /*
         public SevenElevenGrabber(HttpClient client, IOptions<SevenElevenOptions> options)
@@ -22,12 +23,13 @@ namespace iGeoComAPI.Services
         }
         */
 
-        public SevenElevenGrabber(ConnectClient httpClient, JsonFunction json, IOptions<SevenElevenOptions> options, MyLogger logger, IOptions<NorthEastOptions> absOptions) : base (httpClient, absOptions, json)
+        public SevenElevenGrabber(ConnectClient httpClient, JsonFunction json, IOptions<SevenElevenOptions> options, MyLogger logger, IOptions<NorthEastOptions> absOptions, MapRepository hkMap) : base (httpClient, absOptions, json)
         {
             _httpClient = httpClient;
             _json = json;
             _options = options;
             _logger = logger;
+            _hkMap = hkMap;
         }
 
         //HttpClient _HttpClient = new HttpClient();
@@ -67,22 +69,13 @@ namespace iGeoComAPI.Services
                     {
                         IGeoComGrabModel sevenElevenIGeoCom = new IGeoComGrabModel();
                         sevenElevenIGeoCom.E_Address = shopEn.Address;
-                        if (shopEn.Region == "Kowloon")
-                        {
-                            sevenElevenIGeoCom.E_Region = "KLN";
-                        }
-                        else if (shopEn.Region == "Hong Kong Island")
-                        {
-                            sevenElevenIGeoCom.E_Region = "HK";
-                        }
-                        else
-                        {
-                            sevenElevenIGeoCom.E_Region = "NT";
-                        }
                         sevenElevenIGeoCom.E_District = shopEn.District;
                         var matchesEn = _rgx.Matches(shopEn.LatLng!);
                         sevenElevenIGeoCom.Latitude = Convert.ToDouble(matchesEn[0].Value);
                         sevenElevenIGeoCom.Longitude = Convert.ToDouble(matchesEn[2].Value);
+                        var mapResult = await _hkMap.GetRegion(sevenElevenIGeoCom.Longitude, sevenElevenIGeoCom.Latitude);
+                        sevenElevenIGeoCom.E_Region = mapResult.Region;
+                        sevenElevenIGeoCom.E_area = mapResult.Area2_Enam;
                         NorthEastModel eastNorth = await this.getNorthEastNorth(sevenElevenIGeoCom.Latitude, sevenElevenIGeoCom.Longitude);
                         if(eastNorth != null)
                         {
@@ -99,7 +92,7 @@ namespace iGeoComAPI.Services
                         {
                             sevenElevenIGeoCom.Subcat = "NON24R";
                         }
-                        sevenElevenIGeoCom.Grab_ID = $"seveneleven_{shopEn.Address?.Replace(" ", "").Replace("/", "").Replace(",", "").Replace(".", "")}";
+                        sevenElevenIGeoCom.GrabId = $"seveneleven_{shopEn.Address?.Replace(" ", "").Replace("/", "").Replace(",", "").Replace(".", "")}";
                         sevenElevenIGeoCom.Web_Site = _options.Value.BaseUrl;
 
                         foreach (SevenElevenModel shopZh in zhResult)
@@ -115,11 +108,11 @@ namespace iGeoComAPI.Services
                                     {
                                         sevenElevenIGeoCom.C_floor = cFloor[0].Value; 
                                     }
-                                        if (shopZh.Region == "Kowloon")
+                                    if (sevenElevenIGeoCom.E_Region == "KLN")
                                     {
                                         sevenElevenIGeoCom.C_Region = "九龍";
                                     }
-                                    else if (shopZh.Region == "Hong Kong Island")
+                                    else if (sevenElevenIGeoCom.E_Region == "HK")
                                     {
                                         sevenElevenIGeoCom.C_Region = "香港"; 
                                     }
@@ -128,6 +121,7 @@ namespace iGeoComAPI.Services
                                         sevenElevenIGeoCom.C_Region = "新界";
                                     }
                                     sevenElevenIGeoCom.C_District = shopZh.District;
+                                    sevenElevenIGeoCom.C_area = mapResult.Area2_Cnam;
                                     continue;
                                 }
                             }

@@ -71,7 +71,7 @@ namespace iGeoComAPI.Services
                 var matchId = _rgx.Matches(shop.Website!);
                 if (matchId.Count > 0 && matchId != null)
                 {
-                    infoResult.Grab_ID = $"wmoov_{matchId[0].Value}";
+                    infoResult.GrabId = $"wmoov_{matchId[0].Value}";
                 }
                 WmoovIGeoComList.Add(infoResult);
             }

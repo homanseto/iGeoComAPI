@@ -50,9 +50,9 @@ namespace iGeoComAPI.Services
         public decimal EachPageNumberOfShops(string number)
         {
             var _rgx = Regexs.ExtractInfo(AromeNMaximsCakesModel.NumberofShopRegex);
-            int num = int.Parse(_rgx.Match(number).Groups[1].Value);
-            decimal EachPageNum = Math.Ceiling((decimal)(num / _options.Value.EachPageNumber));
-            return EachPageNum+1;
+            decimal num = decimal.Parse(_rgx.Match(number).Groups[1].Value);
+            decimal EachPageNum = Math.Ceiling((num / Convert.ToDecimal(_options.Value.EachPageNumber)));
+            return EachPageNum;
             
         }
 
@@ -93,7 +93,7 @@ namespace iGeoComAPI.Services
                 foreach (var shopEn in enResult)
                 {
                     IGeoComGrabModel AromeNMaximsCakesIGeoCom = new IGeoComGrabModel();
-                    AromeNMaximsCakesIGeoCom.Grab_ID = $"aromeNMaximsCakes_{shopEn.Id}";
+                    AromeNMaximsCakesIGeoCom.GrabId = $"aromeNMaximsCakes_{shopEn.Id}";
                     AromeNMaximsCakesIGeoCom.EnglishName = shopEn.Name;
                     AromeNMaximsCakesIGeoCom.E_Address = shopEn.Address;
                     AromeNMaximsCakesIGeoCom.Tel_No = shopEn.Phone;

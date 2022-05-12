@@ -83,7 +83,7 @@ namespace iGeoComAPI.Services
                         USelectIGeoCom.Type = "SMK";
                         USelectIGeoCom.Source = "27";
                         USelectIGeoCom.Web_Site = _options.Value.BaseUrl;
-                        USelectIGeoCom.Grab_ID = $"{shop.store_number}_{shop.storename}{shop.address_geo_lat}";
+                        USelectIGeoCom.GrabId = $"{shop.store_number}_{shop.storename}{shop.address_geo_lat}";
                         USelectIGeoCom.Tel_No = $"{shop.telephone} {shop.telephone2} {shop.telephone3}";
                         USelectIGeoComList.Add(USelectIGeoCom);
                     }

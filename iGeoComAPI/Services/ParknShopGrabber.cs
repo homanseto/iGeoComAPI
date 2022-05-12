@@ -69,7 +69,7 @@ namespace iGeoComAPI.Services
                     ParknShopIGeoCom.Type = "SMK";
                     ParknShopIGeoCom.Source = "27";
                     ParknShopIGeoCom.Web_Site = _options.Value.BaseUrl;
-                    ParknShopIGeoCom.Grab_ID = $"parknshop_{shopEn.BrandName}{shopEn.Latitude}{shopEn.Longitude}{shopEn.Phone}_{index}".Replace(".", "").Replace(" ", "");
+                    ParknShopIGeoCom.GrabId = $"parknshop_{shopEn.BrandName}{shopEn.Latitude}{shopEn.Longitude}{shopEn.Phone}_{index}".Replace(".", "").Replace(" ", "");
                     foreach (var shopZh in zhResult)
                     {
                         if (shopEn.Latitude == shopZh.Latitude && shopEn.Longitude == shopZh.Longitude && shopEn.Phone == shopZh.Phone)
