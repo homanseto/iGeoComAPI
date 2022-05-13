@@ -69,7 +69,7 @@ builder.Services.AddSingleton<MyLogger>();
 builder.Services.AddSingleton<LatLngFunction>();
 builder.Services.AddSingleton<IGeoComRepository>();
 builder.Services.AddSingleton<IGeoComGrabRepository>();
-//builder.Services.AddSingleton<MapRepository>();
+builder.Services.AddScoped<MapRepository>();
 builder.Services.AddMemoryCache();
 MyConfigServiceCollection.AddConfig(builder.Services, _configuration);
 builder.Services.AddOptions(); //IOptions<T>
