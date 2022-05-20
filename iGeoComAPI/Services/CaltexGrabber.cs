@@ -6,7 +6,7 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace iGeoComAPI.Services
 {
-    public class CaltexGrabber : AbstractGrabber
+    public class CaltexGrabber
     {
         private ConnectClient _httpClient;
         private JsonFunction _json;
@@ -15,7 +15,16 @@ namespace iGeoComAPI.Services
         private ILogger<CaltexGrabber> _logger;
 
 
-        public CaltexGrabber(ConnectClient httpClient, JsonFunction json, IOptions<CaltexOptions> options, IMemoryCache memoryCache, ILogger<CaltexGrabber> logger, IOptions<NorthEastOptions> absOptions) : base(httpClient, absOptions, json)
+        //public CaltexGrabber(ConnectClient httpClient, JsonFunction json, IOptions<CaltexOptions> options, IMemoryCache memoryCache, ILogger<CaltexGrabber> logger, IOptions<NorthEastOptions> absOptions) : base(httpClient, absOptions, json)
+        //{
+        //    _httpClient = httpClient;
+        //    _json = json;
+        //    _options = options;
+        //    _memoryCache = memoryCache;
+        //    _logger = logger;
+        //}
+
+        public CaltexGrabber(ConnectClient httpClient, JsonFunction json, IOptions<CaltexOptions> options, IMemoryCache memoryCache, ILogger<CaltexGrabber> logger, IOptions<NorthEastOptions> absOptions)
         {
             _httpClient = httpClient;
             _json = json;
@@ -62,12 +71,6 @@ namespace iGeoComAPI.Services
                         CaltexIGeoCom.Tel_No = en.PhoneNumber!.Replace(" ", "");
                         CaltexIGeoCom.Latitude = Convert.ToDouble(en.Latitude!.Trim());
                         CaltexIGeoCom.Longitude = Convert.ToDouble(en.Longitude!.Trim());
-                        NorthEastModel eastNorth = await this.getNorthEastNorth(CaltexIGeoCom.Latitude, CaltexIGeoCom.Longitude);
-                        if (eastNorth != null)
-                        {
-                            CaltexIGeoCom.Easting = eastNorth.hkE;
-                            CaltexIGeoCom.Northing = eastNorth.hkN;
-                        }
                         CaltexIGeoCom.Web_Site = _options.Value.BaseUrl;
                         CaltexIGeoCom.Class = "UTI";
                         CaltexIGeoCom.Type = "PFS";

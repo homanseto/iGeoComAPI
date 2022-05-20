@@ -9,7 +9,7 @@ using System.Reflection;
 
 namespace iGeoComAPI.Services
 {
-    public class CircleKGrabber :AbstractGrabber
+    public class CircleKGrabber 
     {
         private PuppeteerConnection _puppeteerConnection;
         private JsonFunction _json;
@@ -23,15 +23,23 @@ namespace iGeoComAPI.Services
 
 
 
+        //public CircleKGrabber(PuppeteerConnection puppeteerConnection, IOptions<CircleKOptions> options, ILogger<CircleKGrabber> logger,
+        //    IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json) : base(httpClient, absOptions, json)
+        //{
+        //    _puppeteerConnection = puppeteerConnection;
+        //    _json = json;
+        //    _options = options;
+        //    _logger = logger;
+        //}
         public CircleKGrabber(PuppeteerConnection puppeteerConnection, IOptions<CircleKOptions> options, ILogger<CircleKGrabber> logger,
-            IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json) : base(httpClient, absOptions, json)
+    IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json)
         {
             _puppeteerConnection = puppeteerConnection;
             _json = json;
             _options = options;
             _logger = logger;
         }
-        
+
         public async Task<List<IGeoComGrabModel>> GetWebSiteItems()
         {
             var rawDataEng = await _puppeteerConnection.PuppeteerGrabber<string>(_options.Value.EnUrl, infoCode, waitSelector);
@@ -42,8 +50,6 @@ namespace iGeoComAPI.Services
             string storeStringEng = _rgxStoreList.Match(rawDataEng).Groups[1].Value;
             //string regionStringZh = _rgxRegionList.Match(rawDataZh).Groups[1].Value;
             string storeStringZh = _rgxStoreList.Match(rawDataZh).Groups[1].Value;
-            //var enSerializedRegionResult = _json.Dserialize<Dictionary<string, List<string>>>(regionStringEng);
-            //var zhSerializedRegionResult = _json.Dserialize<Dictionary<string, List<string>>>(regionStringZh);
             var enSerializedDistrictResult = _json.Dserialize<Dictionary<string, List<CircleKModel>>>(storeStringEng);
             var zhSerializedDistrictResult = _json.Dserialize<Dictionary<string, List<CircleKModel>>>(storeStringZh);
            return await MergeEnAndZhAsync(enSerializedDistrictResult, zhSerializedDistrictResult);
@@ -71,12 +77,7 @@ namespace iGeoComAPI.Services
                     circleKIGeoCom.E_District = en.location;
                     circleKIGeoCom.Latitude = Convert.ToDouble(en.latitude);
                     circleKIGeoCom.Longitude = Convert.ToDouble(en.longitude);
-                    NorthEastModel eastNorth = await this.getNorthEastNorth(circleKIGeoCom.Latitude, circleKIGeoCom.Longitude);
-                    if (eastNorth != null)
-                    {
-                        circleKIGeoCom.Easting = eastNorth.hkE;
-                        circleKIGeoCom.Northing = eastNorth.hkN;
-                    }
+
                     circleKIGeoCom.GrabId = $"circleK_{en.store_no}";
                     circleKIGeoCom.E_Address = en.address;
                     if(en.operation_hour.ToLower() == "24 hours")

@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 
 namespace iGeoComAPI.Services
 {
-    public class CheungKongGrabber: AbstractGrabber
+    public class CheungKongGrabber
     {
         private PuppeteerConnection _puppeteerConnection;
         private IOptions<CheungKongOptions> _options;
@@ -28,7 +28,7 @@ namespace iGeoComAPI.Services
         private string replaceAboutToLocation = "location";
 
         public CheungKongGrabber(PuppeteerConnection puppeteerConnection, IOptions<CheungKongOptions> options, ILogger<CheungKongGrabber> logger,
-            IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json) : base(httpClient, absOptions, json)
+            IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json)
         {
             _puppeteerConnection = puppeteerConnection;
             _options = options;

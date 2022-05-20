@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 
 namespace iGeoComAPI.Services
 {
-    public class USelectGrabber:AbstractGrabber
+    public class USelectGrabber
     {
         private ConnectClient _httpClient;
         private JsonFunction _json;
@@ -14,7 +14,15 @@ namespace iGeoComAPI.Services
         private IMemoryCache _memoryCache;
         private ILogger<USelectGrabber> _logger;
 
-        public USelectGrabber(ConnectClient httpClient, JsonFunction json, IOptions<USelectOptions> options, IMemoryCache memoryCache, ILogger<USelectGrabber> logger, IOptions<NorthEastOptions> absOptions) : base(httpClient, absOptions, json)
+        //public USelectGrabber(ConnectClient httpClient, JsonFunction json, IOptions<USelectOptions> options, IMemoryCache memoryCache, ILogger<USelectGrabber> logger, IOptions<NorthEastOptions> absOptions) : base(httpClient, absOptions, json)
+        //{
+        //    _httpClient = httpClient;
+        //    _json = json;
+        //    _options = options;
+        //    _memoryCache = memoryCache;
+        //    _logger = logger;
+        //}
+        public USelectGrabber(ConnectClient httpClient, JsonFunction json, IOptions<USelectOptions> options, IMemoryCache memoryCache, ILogger<USelectGrabber> logger, IOptions<NorthEastOptions> absOptions)
         {
             _httpClient = httpClient;
             _json = json;
@@ -73,12 +81,6 @@ namespace iGeoComAPI.Services
                         USelectIGeoCom.E_Address = shop.address_description_en;
                         USelectIGeoCom.Latitude = Convert.ToDouble(shop.address_geo_lat);
                         USelectIGeoCom.Longitude = Convert.ToDouble(shop.address_geo_lng);
-                        NorthEastModel eastNorth = await this.getNorthEastNorth(USelectIGeoCom.Latitude, USelectIGeoCom.Longitude);
-                        if (eastNorth != null)
-                        {
-                            USelectIGeoCom.Easting = eastNorth.hkE;
-                            USelectIGeoCom.Northing = eastNorth.hkN;
-                        }
                         USelectIGeoCom.Class = "CMF";
                         USelectIGeoCom.Type = "SMK";
                         USelectIGeoCom.Source = "27";

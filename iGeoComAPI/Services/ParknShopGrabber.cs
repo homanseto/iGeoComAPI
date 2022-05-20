@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 
 namespace iGeoComAPI.Services
 {
-    public class ParknShopGrabber : AbstractGrabber
+    public class ParknShopGrabber
     {
         private PuppeteerConnection _puppeteerConnection;
         private IOptions<ParknShopOptions> _options;
@@ -22,8 +22,16 @@ namespace iGeoComAPI.Services
                                  }";
         private string waitSelector = ".result-list";
 
+        //public ParknShopGrabber(PuppeteerConnection puppeteerConnection, IOptions<ParknShopOptions> options, IMemoryCache memoryCache, ILogger<ParknShopGrabber> logger,
+        //    IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json) : base(httpClient, absOptions, json)
+        //{
+        //    _puppeteerConnection = puppeteerConnection;
+        //    _options = options;
+        //    _memoryCache = memoryCache;
+        //    _logger = logger;
+        //}
         public ParknShopGrabber(PuppeteerConnection puppeteerConnection, IOptions<ParknShopOptions> options, IMemoryCache memoryCache, ILogger<ParknShopGrabber> logger,
-            IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json) : base(httpClient, absOptions, json)
+    IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json) 
         {
             _puppeteerConnection = puppeteerConnection;
             _options = options;
@@ -58,12 +66,6 @@ namespace iGeoComAPI.Services
                     ParknShopIGeoCom.E_District = shopEn.District;
                     ParknShopIGeoCom.Latitude = Convert.ToDouble(shopEn.Latitude);
                     ParknShopIGeoCom.Longitude = Convert.ToDouble(shopEn.Longitude);
-                    NorthEastModel eastNorth = await this.getNorthEastNorth(ParknShopIGeoCom.Latitude, ParknShopIGeoCom.Longitude);
-                    if (eastNorth != null)
-                    {
-                        ParknShopIGeoCom.Easting = eastNorth.hkE;
-                        ParknShopIGeoCom.Northing = eastNorth.hkN;
-                    }
                     ParknShopIGeoCom.Tel_No = shopEn.Phone;
                     ParknShopIGeoCom.Class = "CMF";
                     ParknShopIGeoCom.Type = "SMK";

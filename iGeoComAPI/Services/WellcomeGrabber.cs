@@ -6,24 +6,31 @@ using Microsoft.Extensions.Options;
 
 namespace iGeoComAPI.Services
 {
-    public class WellcomeGrabber: AbstractGrabber
+    public class WellcomeGrabber
     {
         private readonly PuppeteerConnection _puppeteerConnection;
         private readonly IOptions<WellcomeOptions> _options;
         private readonly IMemoryCache _memoryCache;
         private readonly ILogger<WellcomeGrabber> _logger;
-        private readonly string infoCode = @"() =>{
-                                 const selectors = Array.from(document.querySelectorAll('.table-responsive > .table-striped > tbody > tr'));
-                                 return selectors.map(v => {return {Address: v.querySelector('.views-field-field-address').textContent.trim(), Name: v.querySelector(
-                                 '.views-field-title > .store-title',).textContent, LatLng: v.querySelector('.views-field-title > .store-title').getAttribute('data-latlng'),
-                                 Phone: v.querySelector('.views-field-field-store-telephone').textContent.trim()
-                                 }});
-                                 }";
+        private readonly string infoCode = @"() =>{"+
+            @"const selectors = Array.from(document.querySelectorAll('.table-responsive > .table-striped > tbody > tr'));"+
+            @"return selectors.map(v => {return {Address: v.querySelector('.views-field-field-address').textContent.trim(), Name: v.querySelector("+
+            @"'.views-field-title > .store-title',).textContent, LatLng: v.querySelector('.views-field-title > .store-title').getAttribute('data-latlng'),"+
+            @"Phone: v.querySelector('.views-field-field-store-telephone').textContent.trim()"+
+            @"}});}";
         private string waitSelector = ".table-responsive";
         private string _regLagLngRegex = "([^|]*)";
 
+        //public WellcomeGrabber(PuppeteerConnection puppeteerConnection, IOptions<WellcomeOptions> options, IMemoryCache memoryCache, ILogger<WellcomeGrabber> logger,
+        //    IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json) : base(httpClient, absOptions, json)
+        //{
+        //    _puppeteerConnection = puppeteerConnection;
+        //    _options = options;
+        //    _memoryCache = memoryCache;
+        //    _logger = logger;
+        //}
         public WellcomeGrabber(PuppeteerConnection puppeteerConnection, IOptions<WellcomeOptions> options, IMemoryCache memoryCache, ILogger<WellcomeGrabber> logger,
-            IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json) : base(httpClient, absOptions, json)
+    IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json) 
         {
             _puppeteerConnection = puppeteerConnection;
             _options = options;
@@ -60,12 +67,6 @@ namespace iGeoComAPI.Services
                     var matchesEn = _rgx.Matches(shopEn.LatLng!);
                     WellcomeIGeoCom.Latitude = Convert.ToDouble(matchesEn[0].Value);
                     WellcomeIGeoCom.Longitude = Convert.ToDouble(matchesEn[2].Value);
-                    NorthEastModel eastNorth = await this.getNorthEastNorth(WellcomeIGeoCom.Latitude, WellcomeIGeoCom.Longitude);
-                    if (eastNorth != null)
-                    {
-                        WellcomeIGeoCom.Easting = eastNorth.hkE;
-                        WellcomeIGeoCom.Northing = eastNorth.hkN;
-                    }
                     WellcomeIGeoCom.Tel_No = shopEn.Phone!;
                     WellcomeIGeoCom.Web_Site = _options.Value.BaseUrl!;
                     WellcomeIGeoCom.Class = "CMF";

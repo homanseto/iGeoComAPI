@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 
 namespace iGeoComAPI.Services
 {
-    public class AeonGrabber : AbstractGrabber
+    public class AeonGrabber
     {
         private PuppeteerConnection _puppeteerConnection;
         private IOptions<AeonOptions> _options;
@@ -21,8 +21,16 @@ namespace iGeoComAPI.Services
                                  }";
         private string waitSelector = ".framebottom";
 
-        public AeonGrabber(PuppeteerConnection puppeteerConnection, IOptions<AeonOptions> options, IMemoryCache memoryCache, ILogger<AeonGrabber> logger, 
-            IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json) : base(httpClient, absOptions, json)
+        //public AeonGrabber(PuppeteerConnection puppeteerConnection, IOptions<AeonOptions> options, IMemoryCache memoryCache, ILogger<AeonGrabber> logger, 
+        //    IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json) : base(httpClient, absOptions, json)
+        //{
+        //    _puppeteerConnection = puppeteerConnection;
+        //    _options = options;
+        //    _memoryCache = memoryCache;
+        //    _logger = logger;
+        //}
+        public AeonGrabber(PuppeteerConnection puppeteerConnection, IOptions<AeonOptions> options, IMemoryCache memoryCache, ILogger<AeonGrabber> logger,
+    IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json)
         {
             _puppeteerConnection = puppeteerConnection;
             _options = options;
@@ -63,12 +71,6 @@ namespace iGeoComAPI.Services
                 if (matchLng.Count > 0 && matchLng != null)
                 {
                     AeonIGeoCom.Longitude = Convert.ToDouble(matchLng[0].Value.Replace(", ","").Replace(")",""));
-                }
-                NorthEastModel eastNorth = await this.getNorthEastNorth(AeonIGeoCom.Latitude, AeonIGeoCom.Longitude);
-                if (eastNorth != null)
-                {
-                    AeonIGeoCom.Easting = eastNorth.hkE;
-                    AeonIGeoCom.Northing = eastNorth.hkN;
                 }
                 foreach (var shopZh in zhResult)
                 {

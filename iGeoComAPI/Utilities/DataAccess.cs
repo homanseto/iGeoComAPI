@@ -6,7 +6,7 @@ using System.Data.SqlClient;
 
 namespace iGeoComAPI.Utilities
 {
-    public class DataAccess : IDataAccess
+    public class DataAccess: IDataAccess
     {
         private readonly IOptions<ConnectionStringsOptions> _options;
         private readonly IOptions<AppSettingOptions> _env;
@@ -17,7 +17,7 @@ namespace iGeoComAPI.Utilities
             _env = env;
         }
 
-        public async Task<List<T>> LoadData<T>(string sql, object param)
+        public async Task<List<T>> LoadData<T>(string sql, object param )
         {
 
             if (_env.Value.Environment == "Development" || _env.Value.Environment == "Production")
@@ -42,23 +42,17 @@ namespace iGeoComAPI.Utilities
 
         }
 
-
-        /*
-        List<T> output;
-        output = _memoryCache.Get<List<T>>("iGeoCom");
-
-        if(output is null)
+        public async Task<T> LoadSingleData<T>(string sql)
         {
-            // get result fro memory
 
-            //how much and how long you save data in cache
-            _memoryCache.Set("iGeoCom", output, TimeSpan.FromMinutes(1));
+             using (SqlConnection connection = new SqlConnection(_options.Value.Default_3DM))
+                {
+                    var info = await connection.QuerySingleOrDefaultAsync<T>(sql);
+
+                    return info;
+                }
 
         }
-        return output;
-        */
-
-
 
         public void SaveGrabbedData<T>(string sql, List<T> parameters)
         {
@@ -92,6 +86,23 @@ namespace iGeoComAPI.Utilities
                 await connection.QueryAsync<T>(sql);
             }
         }
+
+
+        /*
+List<T> output;
+output = _memoryCache.Get<List<T>>("iGeoCom");
+
+if(output is null)
+{
+    // get result fro memory
+
+    //how much and how long you save data in cache
+    _memoryCache.Set("iGeoCom", output, TimeSpan.FromMinutes(1));
+
+}
+return output;
+*/
+
 
         /*
         public void SaveGrabbedData(string sql, List<IGeoComModel> parameters, string connectionString)

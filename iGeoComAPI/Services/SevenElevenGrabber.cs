@@ -2,6 +2,7 @@
 using iGeoComAPI.Utilities;
 using Microsoft.Extensions.Options;
 using iGeoComAPI.Options;
+using iGeoComAPI.Repository;
 
 namespace iGeoComAPI.Services
 {
@@ -13,7 +14,8 @@ namespace iGeoComAPI.Services
         private readonly JsonFunction _json;
         private readonly IOptions<SevenElevenOptions> _options;
         private readonly MyLogger _logger;
-        private readonly MapRepository _hkMap;
+        private readonly IGeoComGrabRepository _iGeoComGrabRepository;
+        private readonly IDataAccess dataAccess;
 
         /*
         public SevenElevenGrabber(HttpClient client, IOptions<SevenElevenOptions> options)
@@ -23,17 +25,17 @@ namespace iGeoComAPI.Services
         }
         */
 
-        public SevenElevenGrabber(ConnectClient httpClient, JsonFunction json, IOptions<SevenElevenOptions> options, MyLogger logger, IOptions<NorthEastOptions> absOptions, MapRepository hkMap) : base (httpClient, absOptions, json)
+        public SevenElevenGrabber(ConnectClient httpClient, JsonFunction json, IOptions<SevenElevenOptions> options, MyLogger logger, IOptions<NorthEastOptions> absOptions, IGeoComGrabRepository iGeoComGrabRepository, IDataAccess dataAccess) : base (httpClient, absOptions, json, dataAccess)
         {
             _httpClient = httpClient;
             _json = json;
             _options = options;
             _logger = logger;
-            _hkMap = hkMap;
+            _iGeoComGrabRepository = iGeoComGrabRepository;
         }
 
         //HttpClient _HttpClient = new HttpClient();
-        public async Task<List<IGeoComGrabModel>?> GetWebSiteItems()
+        public override async Task<List<IGeoComGrabModel>?> GetWebSiteItems()
         {
             try
             {
@@ -43,16 +45,25 @@ namespace iGeoComAPI.Services
                 var zhConnectHttp = await _httpClient.GetAsync(_options.Value.ZhUrl);
                 var zhSerializedResult = _json.Dserialize<List<SevenElevenModel>>(zhConnectHttp);
                 var mergeResult = await MergeEnAndZh(enSerializedResult, zhSerializedResult);
-              
-               
+                var result =await this.GetNorthEastAndMapInfo(mergeResult);
                 // _memoryCache.Set("iGeoCom", mergeResult, TimeSpan.FromHours(2));
-                return mergeResult;
+                return result;
             }
             catch (Exception ex)
             {
                 throw;
             }
 
+        }
+
+        public override List<IGeoComGrabModel> MergeResult(List<SevenElevenModel> enInput, List<SevenElevenModel> zhInput)
+        {
+            foreach(SevenElevenModel result in enInput)
+            {
+                Console.WriteLine(result.Address);
+            }
+            List<IGeoComGrabModel> resultList = new List<IGeoComGrabModel>();
+            return resultList;
         }
 
         public async Task<List<IGeoComGrabModel>> MergeEnAndZh(List<SevenElevenModel>? enResult, List<SevenElevenModel>? zhResult)
@@ -69,19 +80,9 @@ namespace iGeoComAPI.Services
                     {
                         IGeoComGrabModel sevenElevenIGeoCom = new IGeoComGrabModel();
                         sevenElevenIGeoCom.E_Address = shopEn.Address;
-                        sevenElevenIGeoCom.E_District = shopEn.District;
                         var matchesEn = _rgx.Matches(shopEn.LatLng!);
                         sevenElevenIGeoCom.Latitude = Convert.ToDouble(matchesEn[0].Value);
                         sevenElevenIGeoCom.Longitude = Convert.ToDouble(matchesEn[2].Value);
-                        var mapResult = await _hkMap.GetRegion(sevenElevenIGeoCom.Longitude, sevenElevenIGeoCom.Latitude);
-                        sevenElevenIGeoCom.E_Region = mapResult.Region;
-                        sevenElevenIGeoCom.E_area = mapResult.Area2_Enam;
-                        NorthEastModel eastNorth = await this.getNorthEastNorth(sevenElevenIGeoCom.Latitude, sevenElevenIGeoCom.Longitude);
-                        if(eastNorth != null)
-                        {
-                            sevenElevenIGeoCom.Easting = eastNorth.hkE;
-                            sevenElevenIGeoCom.Northing = eastNorth.hkN;
-                        }
                         sevenElevenIGeoCom.Class = "CMF";
                         sevenElevenIGeoCom.Type = "CVS";
                         if (shopEn.Opening_24 == "1")
@@ -108,20 +109,6 @@ namespace iGeoComAPI.Services
                                     {
                                         sevenElevenIGeoCom.C_floor = cFloor[0].Value; 
                                     }
-                                    if (sevenElevenIGeoCom.E_Region == "KLN")
-                                    {
-                                        sevenElevenIGeoCom.C_Region = "九龍";
-                                    }
-                                    else if (sevenElevenIGeoCom.E_Region == "HK")
-                                    {
-                                        sevenElevenIGeoCom.C_Region = "香港"; 
-                                    }
-                                    else
-                                    {
-                                        sevenElevenIGeoCom.C_Region = "新界";
-                                    }
-                                    sevenElevenIGeoCom.C_District = shopZh.District;
-                                    sevenElevenIGeoCom.C_area = mapResult.Area2_Cnam;
                                     continue;
                                 }
                             }
@@ -138,6 +125,7 @@ namespace iGeoComAPI.Services
             }
 
         }
+
 
         //public List<IGeoComGrabModel> FindAdded(List<IGeoComGrabModel> newData, List<IGeoComRepository> previousData)
         //{

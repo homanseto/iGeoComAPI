@@ -1,6 +1,5 @@
 global using iGeoComAPI.Data;
 global using Microsoft.EntityFrameworkCore;
-global using HKMap.Repository;
 using iGeoComAPI.Services;
 using iGeoComAPI.Utilities;
 using Serilog;
@@ -63,13 +62,12 @@ builder.Services.AddSingleton<CatholicOrgGrabber>();
 builder.Services.AddSingleton<ChinaMobileGrabber>();
 builder.Services.AddSingleton<ConnectClient>();
 builder.Services.AddSingleton<JsonFunction>();
-builder.Services.AddSingleton<IDataAccess, DataAccess>();
+builder.Services.AddSingleton<IDataAccess,DataAccess>();
 builder.Services.AddSingleton<PuppeteerConnection>();
 builder.Services.AddSingleton<MyLogger>();
 builder.Services.AddSingleton<LatLngFunction>();
 builder.Services.AddSingleton<IGeoComRepository>();
 builder.Services.AddSingleton<IGeoComGrabRepository>();
-builder.Services.AddScoped<MapRepository>();
 builder.Services.AddMemoryCache();
 MyConfigServiceCollection.AddConfig(builder.Services, _configuration);
 builder.Services.AddOptions(); //IOptions<T>

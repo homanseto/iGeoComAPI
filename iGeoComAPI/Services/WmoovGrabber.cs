@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 
 namespace iGeoComAPI.Services
 {
-    public class WmoovGrabber:AbstractGrabber
+    public class WmoovGrabber
     {
         private PuppeteerConnection _puppeteerConnection;
         private IOptions<WmoovOptions> _options;
@@ -38,8 +38,15 @@ namespace iGeoComAPI.Services
 
 
 
+        //public WmoovGrabber(PuppeteerConnection puppeteerConnection, IOptions<WmoovOptions> options, IMemoryCache memoryCache,
+        //    IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json) : base(httpClient, absOptions, json)
+        //{
+        //    _puppeteerConnection = puppeteerConnection;
+        //    _options = options;
+        //    _memoryCache = memoryCache;
+        //}
         public WmoovGrabber(PuppeteerConnection puppeteerConnection, IOptions<WmoovOptions> options, IMemoryCache memoryCache,
-            IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json) : base(httpClient, absOptions, json)
+    IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json) 
         {
             _puppeteerConnection = puppeteerConnection;
             _options = options;
@@ -59,12 +66,6 @@ namespace iGeoComAPI.Services
                 infoResult.ChineseName = shop.Name;
                 infoResult.Latitude = Convert.ToDouble(shop.Latitude);
                 infoResult.Longitude = Convert.ToDouble(shop.Longitude);
-                NorthEastModel eastNorth = await this.getNorthEastNorth(infoResult.Latitude, infoResult.Longitude);
-                if (eastNorth != null)
-                {
-                    infoResult.Easting = eastNorth.hkE;
-                    infoResult.Northing = eastNorth.hkN;
-                }
                 infoResult.C_Address = shop.Address.Replace(" ", "");
                 infoResult.Class = "CUF";
                 infoResult.Type = "TNC";

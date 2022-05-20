@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 
 namespace iGeoComAPI.Services
 {
-    public class ChinaMobileGrabber:AbstractGrabber
+    public class ChinaMobileGrabber
     {
         private PuppeteerConnection _puppeteerConnection;
         private IOptions<ChinaMobileOptions> _options;
@@ -27,9 +27,16 @@ namespace iGeoComAPI.Services
         private string waitSelectorId = ".innerpage-content";
         private string waitSelectorInfo = "head";
 
+        //public ChinaMobileGrabber(PuppeteerConnection puppeteerConnection, IOptions<ChinaMobileOptions> options, ILogger<ChinaMobileGrabber> logger,
+        //    IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json) : base(httpClient, absOptions, json)
+        //{
+        //    _puppeteerConnection = puppeteerConnection;
+        //    _options = options;
+        //    _logger = logger;
+        //}
         public ChinaMobileGrabber(PuppeteerConnection puppeteerConnection, IOptions<ChinaMobileOptions> options, ILogger<ChinaMobileGrabber> logger,
-            IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json) : base(httpClient, absOptions, json)
-        {
+    IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json)
+        { 
             _puppeteerConnection = puppeteerConnection;
             _options = options;
             _logger = logger;
@@ -85,12 +92,6 @@ namespace iGeoComAPI.Services
                         var matchesEn = _LatLngrgx.Matches(shopEn.LatLng!);
                         ChinaMobileIGeoCom.Latitude = Convert.ToDouble(matchesEn[0].Value);
                         ChinaMobileIGeoCom.Longitude = Convert.ToDouble(matchesEn[2].Value);
-                        NorthEastModel eastNorth = await this.getNorthEastNorth(ChinaMobileIGeoCom.Latitude, ChinaMobileIGeoCom.Longitude);
-                        if (eastNorth != null)
-                        {
-                            ChinaMobileIGeoCom.Easting = eastNorth.hkE;
-                            ChinaMobileIGeoCom.Northing = eastNorth.hkN;
-                        }
                         ChinaMobileIGeoCom.GrabId = $"chinamobile_{shopEn.Id}";
                         foreach (ChinaMobileModel shopZh in zhResult)
                         {

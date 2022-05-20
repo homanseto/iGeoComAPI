@@ -41,5 +41,12 @@ namespace iGeoComAPI.Repository
               _dataAccess.SaveGrabbedData<IGeoComGrabModel>(query, result);
 
         }
+        public async Task<HKMapInfo> MapInfoFunction(double lng, double lat)
+
+        {
+            string query = $"MAP_FUNCTION {lng}, {lat}";
+            var result = await _dataAccess.LoadSingleData<HKMapInfo>(query);
+            return result;
+        }
     }
 }

@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 
 namespace iGeoComAPI.Services
 {
-    public class AmbulanceDepotGrabber:AbstractGrabber
+    public class AmbulanceDepotGrabber
     {
         private PuppeteerConnection _puppeteerConnection;
         private IOptions<AmbulanceDepotOptions> _options;
@@ -30,8 +30,16 @@ namespace iGeoComAPI.Services
                                  }";
         private string waitSelector = ".navigation";
 
+        //public AmbulanceDepotGrabber(PuppeteerConnection puppeteerConnection, IOptions<AmbulanceDepotOptions> options, ILogger<AmbulanceDepotGrabber> logger, LatLngFunction function,
+        //    IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json) : base(httpClient, absOptions, json)
+        //{
+        //    _puppeteerConnection = puppeteerConnection;
+        //    _options = options;
+        //    _logger = logger;
+        //    _function = function;
+        //}
         public AmbulanceDepotGrabber(PuppeteerConnection puppeteerConnection, IOptions<AmbulanceDepotOptions> options, ILogger<AmbulanceDepotGrabber> logger, LatLngFunction function,
-            IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json) : base(httpClient, absOptions, json)
+    IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json)
         {
             _puppeteerConnection = puppeteerConnection;
             _options = options;
@@ -48,6 +56,8 @@ namespace iGeoComAPI.Services
             var mergeResult = await MergeEnAndZh(enResultList, zhResultList);
             return mergeResult;
         }
+
+       
 
         public async Task<List<IGeoComGrabModel>> MergeEnAndZh(List<AmbulanceDepotModel> enResult, List<AmbulanceDepotModel> zhResult)
         {
@@ -80,12 +90,6 @@ namespace iGeoComAPI.Services
                             AmbulanceDepotIGeoCom.Latitude = latlng.Latitude;
                             AmbulanceDepotIGeoCom.Longitude = latlng.Longtitude;
                         }
-                    }
-                    NorthEastModel eastNorth = await this.getNorthEastNorth(AmbulanceDepotIGeoCom.Latitude, AmbulanceDepotIGeoCom.Longitude);
-                    if (eastNorth != null)
-                    {
-                        AmbulanceDepotIGeoCom.Easting = eastNorth.hkE;
-                        AmbulanceDepotIGeoCom.Northing = eastNorth.hkN;
                     }
                     AmbulanceDepotIGeoComList.Add(AmbulanceDepotIGeoCom);
                 }

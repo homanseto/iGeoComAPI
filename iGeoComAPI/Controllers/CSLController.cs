@@ -11,12 +11,12 @@ namespace iGeoComAPI.Controllers
     {
         private ILogger<CSLController> _logger;
         private CSLGrabber _cslGrabber;
-        private DataAccess _dataAccess;
+        private IDataAccess _dataAccess;
 
         CSLModel csl1010Model = new CSLModel();
        // IGeoComModel igeoComModel = new IGeoComModel();
 
-        public CSLController(CSLGrabber cslGrabber, ILogger<CSLController> logger, DataAccess dataAccess)
+        public CSLController(CSLGrabber cslGrabber, ILogger<CSLController> logger, IDataAccess dataAccess)
         {
             _cslGrabber = cslGrabber;
             _logger = logger;
@@ -25,9 +25,7 @@ namespace iGeoComAPI.Controllers
 
         [HttpGet]
         public async Task Get()
-        {
-            
-            
+        { 
             await _cslGrabber.GetWebSiteItems();
         }
     }

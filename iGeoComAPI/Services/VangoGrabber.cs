@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 
 namespace iGeoComAPI.Services
 {
-    public class VangoGrabber :AbstractGrabber
+    public class VangoGrabber 
     {
         private ConnectClient _httpClient;
         private JsonFunction _json;
@@ -14,7 +14,15 @@ namespace iGeoComAPI.Services
         private IMemoryCache _memoryCache;
         private ILogger<VangoGrabber> _logger;
 
-        public VangoGrabber(ConnectClient httpClient, JsonFunction json, IOptions<VangoOptions> options, IMemoryCache memoryCache, ILogger<VangoGrabber> logger, IOptions<NorthEastOptions> absOptions) :base(httpClient, absOptions, json)
+        //public VangoGrabber(ConnectClient httpClient, JsonFunction json, IOptions<VangoOptions> options, IMemoryCache memoryCache, ILogger<VangoGrabber> logger, IOptions<NorthEastOptions> absOptions) :base(httpClient, absOptions, json)
+        //{
+        //    _httpClient = httpClient;
+        //    _json = json;
+        //    _options = options;
+        //    _memoryCache = memoryCache;
+        //    _logger = logger;
+        //}\
+        public VangoGrabber(ConnectClient httpClient, JsonFunction json, IOptions<VangoOptions> options, IMemoryCache memoryCache, ILogger<VangoGrabber> logger, IOptions<NorthEastOptions> absOptions) 
         {
             _httpClient = httpClient;
             _json = json;
@@ -70,12 +78,6 @@ namespace iGeoComAPI.Services
                     }
                     VangoIGeoCom.Latitude = Convert.ToDouble(shop.address_geo_lat);
                     VangoIGeoCom.Longitude = Convert.ToDouble(shop.address_geo_lng);
-                    NorthEastModel eastNorth = await this.getNorthEastNorth(VangoIGeoCom.Latitude, VangoIGeoCom.Longitude);
-                    if(eastNorth != null)
-                    {
-                        VangoIGeoCom.Northing = eastNorth.hkN;
-                        VangoIGeoCom.Easting = eastNorth.hkE;
-                    }
                     VangoIGeoCom.Class = "CMF";
                     VangoIGeoCom.Type = "CVS";
                     VangoIGeoCom.Source = "27";
