@@ -14,12 +14,14 @@ namespace iGeoComAPI.Controllers
         private readonly ILogger<VangoController> _logger;
         private readonly VangoGrabber _vangoGrabber;
         private IGeoComGrabRepository _iGeoComGrabRepository;
+        private IGeoComRepository _iGeoComRepository;
 
-        public VangoController(VangoGrabber vangoGrabber, ILogger<VangoController> logger, IGeoComGrabRepository iGeoComGrabRepository)
+        public VangoController(VangoGrabber vangoGrabber, ILogger<VangoController> logger, IGeoComGrabRepository iGeoComGrabRepository, IGeoComRepository iGeoComRepository)
         {
             _vangoGrabber = vangoGrabber;
             _logger = logger;
             _iGeoComGrabRepository = iGeoComGrabRepository;
+            _iGeoComRepository = iGeoComRepository;
         }
 
         [HttpGet]
@@ -46,6 +48,25 @@ namespace iGeoComAPI.Controllers
                 string name = this.GetType().Name.Replace("Controller", "").ToLower();
                 var result = await _iGeoComGrabRepository.GetShopsByName(name);
                 return CsvFile.Download(result, name);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+
+        }
+
+        [HttpGet("delta/download")]
+        public async Task<IActionResult> GetDelta()
+        {
+            try
+            {
+                string name = this.GetType().Name.Replace("Controller", "").ToLower();
+
+                var previousResult = await _iGeoComRepository.GetShops("vango");
+                var newResult = await _iGeoComGrabRepository.GetShopsByName(name);
+                var result = Comparator.GetComparedResult(newResult, previousResult, "eAddress");
+                return CsvFile.Download(result, $"{name}_delta");
             }
             catch (Exception ex)
             {

@@ -64,15 +64,10 @@ namespace iGeoComAPI.Controllers
             try
             {
                 string name = this.GetType().Name.Replace("Controller", "").ToLower();
+
                 var previousResult = await _iGeoComRepository.GetShops("wellcome sup");
                 var newResult = await _iGeoComGrabRepository.GetShopsByName(name);
-                var removedResult = _wellcomeGrabber.FindRemoved(previousResult, newResult);
-                var addedResult = _wellcomeGrabber.FindAdded(newResult, previousResult);
-                var leftResult = _wellcomeGrabber.LeftIntersection(newResult, addedResult);
-                var rightResult = _wellcomeGrabber.RightIntersection(previousResult, removedResult);
-                var orgModified = _wellcomeGrabber.orgModified(rightResult, leftResult);
-                var newModified = _wellcomeGrabber.newModified(leftResult, rightResult);
-                var result = _wellcomeGrabber.MergeResults(addedResult, removedResult, newModified, orgModified);
+                var result = Comparator.GetComparedResult(newResult, previousResult);
                 return CsvFile.Download(result, $"{name}_delta");
             }
             catch (Exception ex)

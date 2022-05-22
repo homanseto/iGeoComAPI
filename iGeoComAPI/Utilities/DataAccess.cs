@@ -22,7 +22,7 @@ namespace iGeoComAPI.Utilities
 
             if (_env.Value.Environment == "Development" || _env.Value.Environment == "Production")
             {
-                using (SqlConnection connection = new SqlConnection(_options.Value.Default_3DM))
+                using (SqlConnection connection = new SqlConnection(_options.Value.DefaultConnection))
                 {
                     var rows = await connection.QueryAsync<T>(sql, param);
 
@@ -45,7 +45,7 @@ namespace iGeoComAPI.Utilities
         public async Task<T> LoadSingleData<T>(string sql)
         {
 
-             using (SqlConnection connection = new SqlConnection(_options.Value.Default_3DM))
+             using (SqlConnection connection = new SqlConnection(_options.Value.DefaultConnection))
                 {
                     var info = await connection.QuerySingleOrDefaultAsync<T>(sql);
 
@@ -59,7 +59,7 @@ namespace iGeoComAPI.Utilities
 
             if (_env.Value.Environment == "Development" || _env.Value.Environment == "Production")
             {
-                using (SqlConnection connection = new SqlConnection(_options.Value.Default_3DM))
+                using (SqlConnection connection = new SqlConnection(_options.Value.DefaultConnection))
                 {
                     foreach (var param in parameters)
                     {

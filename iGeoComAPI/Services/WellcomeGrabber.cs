@@ -21,14 +21,6 @@ namespace iGeoComAPI.Services
         private string waitSelector = ".table-responsive";
         private string _regLagLngRegex = "([^|]*)";
 
-        //public WellcomeGrabber(PuppeteerConnection puppeteerConnection, IOptions<WellcomeOptions> options, IMemoryCache memoryCache, ILogger<WellcomeGrabber> logger,
-        //    IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json) : base(httpClient, absOptions, json)
-        //{
-        //    _puppeteerConnection = puppeteerConnection;
-        //    _options = options;
-        //    _memoryCache = memoryCache;
-        //    _logger = logger;
-        //}
         public WellcomeGrabber(PuppeteerConnection puppeteerConnection, IOptions<WellcomeOptions> options, IMemoryCache memoryCache, ILogger<WellcomeGrabber> logger,
     IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json) 
         {
@@ -69,9 +61,6 @@ namespace iGeoComAPI.Services
                     WellcomeIGeoCom.Longitude = Convert.ToDouble(matchesEn[2].Value);
                     WellcomeIGeoCom.Tel_No = shopEn.Phone!;
                     WellcomeIGeoCom.Web_Site = _options.Value.BaseUrl!;
-                    WellcomeIGeoCom.Class = "CMF";
-                    WellcomeIGeoCom.Type = "SMK";
-                    WellcomeIGeoCom.Source = "27";
                     WellcomeIGeoCom.GrabId = $"wellcome_{shopEn.LatLng}{shopEn.Phone}_{index}".Replace(" ", "").Replace("|", "").Replace(".", "");
                     foreach (var shopZh in zhResult)
                     {
@@ -81,11 +70,6 @@ namespace iGeoComAPI.Services
                             if (matchesEn[0].Value == matchesZh[0].Value && matchesEn[2].Value == matchesZh[2].Value && WellcomeIGeoCom.Tel_No == shopZh.Phone)
                             {
                                 WellcomeIGeoCom.C_Address = shopZh.Address!.Replace(" ", "");
-                                var cFloor = Regexs.ExtractC_Floor().Matches(WellcomeIGeoCom.C_Address);
-                                if (cFloor.Count > 0 && cFloor != null)
-                                {
-                                    WellcomeIGeoCom.C_floor = cFloor[0].Value;
-                                }
                                 WellcomeIGeoCom.ChineseName = $"惠康超級市場-{shopZh.Name}";
                                 continue;
                             }
@@ -131,8 +115,8 @@ namespace iGeoComAPI.Services
                     AddedShop.C_Address = newData[i].C_Address;
                     AddedShop.Tel_No = newData[i].Tel_No;
                     AddedShop.Web_Site = newData[i].Web_Site;
-                    AddedShop.Latitude = newData[i].Latitude;
-                    AddedShop.Longitude = newData[i].Longitude;
+                    //AddedShop.Latitude = newData[i].Latitude;
+                    //AddedShop.Longitude = newData[i].Longitude;
 
                     AddedWellcomeIGeoComList.Add(AddedShop);
                 }
@@ -223,7 +207,7 @@ namespace iGeoComAPI.Services
             return LeftIntersectionIGeoComList;
         }
 
-        public List<IGeoComModel> RightIntersection(List<IGeoComModel> previousData, List<IGeoComDeltaModel> removed)
+        public List<IGeoComModel> RightIntersection(List<IGeoComGrabModel> previousData, List<IGeoComDeltaModel> removed)
         {
             int previousLength = previousData.Count;
             int removedLength = removed.Count;
@@ -277,8 +261,8 @@ namespace iGeoComAPI.Services
                     AddedShop.C_Address = left[i].C_Address;
                     AddedShop.Tel_No = left[i].Tel_No;
                     AddedShop.Web_Site = left[i].Web_Site;
-                    AddedShop.Latitude = left[i].Latitude;
-                    AddedShop.Longitude = left[i].Longitude;
+                    //AddedShop.Latitude = left[i].Latitude;
+                    //AddedShop.Longitude = left[i].Longitude;
                     ModifiedIGeoComList.Add(AddedShop);
                 }
 
@@ -359,13 +343,6 @@ namespace iGeoComAPI.Services
                 }
             }
             var results = mergeAddedAndRemoved.Concat(DeltaChange).ToList();
-            /*
-            foreach(var result in results)
-            {
-                result?.E_Address?.Replace(",", "");
-                result?.C_Address?.Replace(",", "");
-            }
-            */
             Console.WriteLine(results.Count);
             return results;
         }

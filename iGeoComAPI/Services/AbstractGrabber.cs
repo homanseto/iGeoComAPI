@@ -29,27 +29,32 @@ namespace iGeoComAPI.Services
         }
 
 
-        public async Task<List<IGeoComGrabModel>?> GetNorthEastAndMapInfo(List<IGeoComGrabModel> shopList)
+        public async Task<List<IGeoComGrabModel>?> GetShopInfo(List<IGeoComGrabModel> shopList)
         {
             List<IGeoComGrabModel> resultList = new List<IGeoComGrabModel>();
             foreach (IGeoComGrabModel shop in shopList)
             {
                 var northEast = await getNorthEast(shop.Latitude, shop.Longitude);
-                var mapInfo = await MapInfoFunction(shop.Longitude, shop.Latitude);
+                //var mapInfo = await MapInfoFunction(shop.Longitude, shop.Latitude);
                 if(northEast != null)
                 {
                     shop.Easting = northEast.hkE;
                     shop.Northing = northEast.hkN;
                 }
-                if(mapInfo != null)
-                {
-                    shop.E_area = mapInfo.Area2_Enam;
-                    shop.C_area = mapInfo.Area2_Cnam;
-                    shop.C_District = mapInfo.ChineseName;
-                    shop.E_District = mapInfo.EnglishName;
-                    shop.E_Region = mapInfo.E_Region;
-                    shop.C_Region = mapInfo.C_Region;
-                }
+                shop.C_floor = getCFloor(shop.C_Address);
+                //if(mapInfo != null)
+                //{
+                //    shop.E_area = mapInfo.Area2_Enam;
+                //    shop.C_area = mapInfo.Area2_Cnam;
+                //    shop.C_District = mapInfo.ChineseName;
+                //    shop.E_District = mapInfo.EnglishName;
+                //    shop.E_Region = mapInfo.E_Region;
+                //    shop.C_Region = mapInfo.C_Region;
+                //}
+                //if (cFloor.Count > 0 && cFloor != null)
+                //{
+                //    sevenElevenIGeoCom.C_floor = cFloor[0].Value;
+                //}
                 resultList.Add(shop);
             }
             return resultList;
@@ -78,16 +83,16 @@ namespace iGeoComAPI.Services
             return result;
         }
 
-        //public async Task<bool> Execute()
-        //{
-        //    var step1Result = MergeEnAndZh();
-        //    step1Result for->
-        //}
+        public string getCFloor(string cAddress = "")
+        {
+            string cFloor = "";
+            var cFloorObjects = Regexs.ExtractC_Floor().Matches(cAddress.Replace(" ",""));
+            if (cFloorObjects.Count > 0 && cFloorObjects != null)
+            {
+                cFloor = cFloorObjects[0].Value.ToString();
+            }
+            return cFloor;
+        }
 
-        //public abstract async Task<List<IGeoComGrabModel>> MergeResult(List<T>? enResult, List<T>? zhResult = null)
-        //{
-
-        //}
-        //public async Task<Ma>
     }
 }

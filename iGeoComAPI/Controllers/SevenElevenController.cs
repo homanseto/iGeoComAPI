@@ -15,16 +15,18 @@ namespace iGeoComAPI.Controllers
         private readonly MyLogger logger;
         private readonly SevenElevenGrabber sevenElevenGrabber;
         private readonly IGeoComGrabRepository iGeoComGrabRepository;
+        private readonly IGeoComRepository iGeoComRepository;
         private readonly DataContext dataContext;
         SevenElevenModel sevenElevenModel = new SevenElevenModel();
         //IGeoComGrabModel igeoComGrabModel = new IGeoComGrabModel();
 
-        public SevenElevenController(SevenElevenGrabber sevenElevenGrabber, MyLogger logger, IGeoComGrabRepository iGeoComGrabRepository, DataContext dataContext)
+        public SevenElevenController(SevenElevenGrabber sevenElevenGrabber, MyLogger logger, IGeoComGrabRepository iGeoComGrabRepository, DataContext dataContext, IGeoComRepository iGeoComRepository)
         {
             this.sevenElevenGrabber = sevenElevenGrabber;
             this.logger = logger;
             this.iGeoComGrabRepository = iGeoComGrabRepository;
             this.dataContext = dataContext;
+            this.iGeoComRepository = iGeoComRepository;
         }
 
         [HttpGet]
@@ -52,6 +54,25 @@ namespace iGeoComAPI.Controllers
                 string name = this.GetType().Name.Replace("Controller", "").ToLower();
                 var result = await this.iGeoComGrabRepository.GetShopsByName(name);
                 return CsvFile.Download(result, name);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+
+        }
+
+        [HttpGet("delta/download")]
+        public async Task<IActionResult> GetDelta()
+        {
+            try
+            {
+                string name = this.GetType().Name.Replace("Controller", "").ToLower();
+
+                var previousResult = await this.iGeoComRepository.GetShops("7-eleven");
+                var newResult = await this.iGeoComGrabRepository.GetShopsByName(name);
+                var result = Comparator.GetComparedResult(newResult, previousResult, "tel");
+                return CsvFile.Download(result, $"{name}_delta");
             }
             catch (Exception ex)
             {

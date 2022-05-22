@@ -45,7 +45,7 @@ namespace iGeoComAPI.Services
                 var zhConnectHttp = await _httpClient.GetAsync(_options.Value.ZhUrl);
                 var zhSerializedResult = _json.Dserialize<List<SevenElevenModel>>(zhConnectHttp);
                 var mergeResult = await MergeEnAndZh(enSerializedResult, zhSerializedResult);
-                var result =await this.GetNorthEastAndMapInfo(mergeResult);
+                var result =await this.GetShopInfo(mergeResult);
                 // _memoryCache.Set("iGeoCom", mergeResult, TimeSpan.FromHours(2));
                 return result;
             }
@@ -83,7 +83,6 @@ namespace iGeoComAPI.Services
                         var matchesEn = _rgx.Matches(shopEn.LatLng!);
                         sevenElevenIGeoCom.Latitude = Convert.ToDouble(matchesEn[0].Value);
                         sevenElevenIGeoCom.Longitude = Convert.ToDouble(matchesEn[2].Value);
-                        sevenElevenIGeoCom.Class = "CMF";
                         sevenElevenIGeoCom.Type = "CVS";
                         if (shopEn.Opening_24 == "1")
                         {
@@ -104,11 +103,6 @@ namespace iGeoComAPI.Services
                                 if (matchesEn[0].Value == matchesZh[0].Value && matchesEn[2].Value == matchesZh[2].Value)
                                 {
                                     sevenElevenIGeoCom.C_Address = shopZh.Address.Replace(" ", "");
-                                    var cFloor = Regexs.ExtractC_Floor().Matches(sevenElevenIGeoCom.C_Address);
-                                    if (cFloor.Count > 0 && cFloor != null)
-                                    {
-                                        sevenElevenIGeoCom.C_floor = cFloor[0].Value; 
-                                    }
                                     continue;
                                 }
                             }
