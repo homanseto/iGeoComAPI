@@ -63,9 +63,10 @@ namespace iGeoComAPI.Controllers
             {
                 string name = this.GetType().Name.Replace("Controller", "").ToLower();
 
-                var previousResult = await _iGeoComRepository.GetShops("vango");
-                var newResult = await _iGeoComGrabRepository.GetShopsByName(name);
-                var result = Comparator.GetComparedResult(newResult, previousResult, "eAddress");
+                var previousResult = await _iGeoComRepository.GetShops(3);
+                //var newResult = await _iGeoComGrabRepository.GetShopsByName(name);
+                var newResult = await _iGeoComGrabRepository.GetShopsByShopId(3);
+                var result = Comparator.GetComparedResult(newResult, previousResult, "vango");
                 return CsvFile.Download(result, $"{name}_delta");
             }
             catch (Exception ex)
@@ -74,6 +75,25 @@ namespace iGeoComAPI.Controllers
             }
 
         }
+
+        //[HttpGet("delta/download")]
+        //public async Task<IActionResult> GetDelta()
+        //{
+        //    try
+        //    {
+        //        string name = this.GetType().Name.Replace("Controller", "").ToLower();
+
+        //        var previousResult = await _iGeoComRepository.GetShops("vango");
+        //        var newResult = await _iGeoComGrabRepository.GetShopsByName(name);
+        //        var result = Comparator.GetComparedResult(newResult, previousResult, "eAddress");
+        //        return CsvFile.Download(result, $"{name}_delta");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, ex.Message);
+        //    }
+
+        //}
 
         [HttpPost]
         public async Task<IActionResult> Post()

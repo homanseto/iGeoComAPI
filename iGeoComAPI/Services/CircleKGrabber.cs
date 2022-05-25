@@ -9,12 +9,14 @@ using System.Reflection;
 
 namespace iGeoComAPI.Services
 {
-    public class CircleKGrabber 
+    public class CircleKGrabber : AbstractGrabber
     {
         private PuppeteerConnection _puppeteerConnection;
         private JsonFunction _json;
         private IOptions<CircleKOptions> _options;
         private ILogger<CircleKGrabber> _logger;
+        private readonly IDataAccess dataAccess;
+
         private string infoCode = @"() =>{
                                  const selector = document.querySelector('td.ff_parent_table > script').textContent;
                                  return selector;
@@ -23,16 +25,8 @@ namespace iGeoComAPI.Services
 
 
 
-        //public CircleKGrabber(PuppeteerConnection puppeteerConnection, IOptions<CircleKOptions> options, ILogger<CircleKGrabber> logger,
-        //    IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json) : base(httpClient, absOptions, json)
-        //{
-        //    _puppeteerConnection = puppeteerConnection;
-        //    _json = json;
-        //    _options = options;
-        //    _logger = logger;
-        //}
         public CircleKGrabber(PuppeteerConnection puppeteerConnection, IOptions<CircleKOptions> options, ILogger<CircleKGrabber> logger,
-    IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json)
+            IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json, IDataAccess dataAccess) : base(httpClient, absOptions, json, dataAccess)
         {
             _puppeteerConnection = puppeteerConnection;
             _json = json;
@@ -40,7 +34,7 @@ namespace iGeoComAPI.Services
             _logger = logger;
         }
 
-        public async Task<List<IGeoComGrabModel>> GetWebSiteItems()
+        public override async Task<List<IGeoComGrabModel>> GetWebSiteItems()
         {
             var rawDataEng = await _puppeteerConnection.PuppeteerGrabber<string>(_options.Value.EnUrl, infoCode, waitSelector);
             var rawDataZh = await _puppeteerConnection.PuppeteerGrabber<string>(_options.Value.ZhUrl, infoCode, waitSelector);
@@ -52,8 +46,9 @@ namespace iGeoComAPI.Services
             string storeStringZh = _rgxStoreList.Match(rawDataZh).Groups[1].Value;
             var enSerializedDistrictResult = _json.Dserialize<Dictionary<string, List<CircleKModel>>>(storeStringEng);
             var zhSerializedDistrictResult = _json.Dserialize<Dictionary<string, List<CircleKModel>>>(storeStringZh);
-           return await MergeEnAndZhAsync(enSerializedDistrictResult, zhSerializedDistrictResult);
-
+            var mergeResult = MergeEnAndZhAsync(enSerializedDistrictResult, zhSerializedDistrictResult);
+            var result = await this.GetShopInfo(mergeResult);
+            return result;
         }
 
         //public async Task Testing(CircleKRegionFilter input)
@@ -65,7 +60,7 @@ namespace iGeoComAPI.Services
         //    }
         //}
 
-        public async Task<List<IGeoComGrabModel>> MergeEnAndZhAsync(Dictionary<string, List<CircleKModel>> emResult, Dictionary<string, List<CircleKModel>> zhResult)
+        public  List<IGeoComGrabModel> MergeEnAndZhAsync(Dictionary<string, List<CircleKModel>> emResult, Dictionary<string, List<CircleKModel>> zhResult)
         {
             List<IGeoComGrabModel> CircleKIGeoComList = new List<IGeoComGrabModel>();
             foreach (KeyValuePair<string, List<CircleKModel>> enEntry in emResult)
@@ -74,10 +69,11 @@ namespace iGeoComAPI.Services
                 {
                     IGeoComGrabModel circleKIGeoCom = new IGeoComGrabModel();
                     circleKIGeoCom.E_Region = en.zone;
-                    circleKIGeoCom.E_District = en.location;
                     circleKIGeoCom.Latitude = Convert.ToDouble(en.latitude);
                     circleKIGeoCom.Longitude = Convert.ToDouble(en.longitude);
-
+                    circleKIGeoCom.Shop = 2;
+                    circleKIGeoCom.Type = "CVS";
+                    circleKIGeoCom.Class = "CMF";
                     circleKIGeoCom.GrabId = $"circleK_{en.store_no}";
                     circleKIGeoCom.E_Address = en.address;
                     if(en.operation_hour.ToLower() == "24 hours")
@@ -96,14 +92,7 @@ namespace iGeoComAPI.Services
                         {
                             if (en.store_no == zh.store_no)
                             {
-                                circleKIGeoCom.C_District = zh.location;
                                 circleKIGeoCom.C_Address = zh.address.Replace(" ", "");
-                                var cFloor = Regexs.ExtractC_Floor().Matches(circleKIGeoCom.C_Address);
-                                if (cFloor.Count > 0 && cFloor != null)
-                                {
-                                    circleKIGeoCom.C_floor = cFloor[0].Value;
-                                }
-                                circleKIGeoCom.C_Region = zh.zone;
                                
                             }
                         }

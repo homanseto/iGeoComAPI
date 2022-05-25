@@ -1,5 +1,4 @@
-global using iGeoComAPI.Data;
-global using Microsoft.EntityFrameworkCore;
+//global using iGeoComAPI.Data;
 using iGeoComAPI.Services;
 using iGeoComAPI.Utilities;
 using Serilog;
@@ -23,17 +22,17 @@ builder.Logging.AddSerilog(logger);
 
 builder.Services.AddControllers();
 
-builder.Services.AddDbContext<DataContext>(options =>
-{
-        if (_environment.EnvironmentName == "Development" || _environment.EnvironmentName == "Production")
-        {
-            options.UseSqlServer(_configuration.GetConnectionString("Default_3DM"));
-        }
-        else
-        {
-            options.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"));
-        }
-});
+//builder.Services.AddDbContext<DataContext>(options =>
+//{
+//        if (_environment.EnvironmentName == "Development" || _environment.EnvironmentName == "Production")
+//        {
+//            options.UseSqlServer(_configuration.GetConnectionString("Default_3DM"));
+//        }
+//        else
+//        {
+//            options.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"));
+//        }
+//});
 var folder = Environment.SpecialFolder.LocalApplicationData;
 var path = Environment.GetFolderPath(folder);
 Console.WriteLine(path);
@@ -44,7 +43,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddLazyCache();
 //builder.Services.AddHttpClient();
 builder.Services.AddSingleton<SevenElevenGrabber>();
-builder.Services.AddSingleton< CaltexGrabber>();
+builder.Services.AddSingleton<CaltexGrabber>();
 builder.Services.AddSingleton<ParknShopGrabber>();
 builder.Services.AddSingleton<AeonGrabber>();
 builder.Services.AddSingleton<AromeNMaximsCakesGrabber>();

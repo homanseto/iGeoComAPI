@@ -35,26 +35,28 @@ namespace iGeoComAPI.Services
             foreach (IGeoComGrabModel shop in shopList)
             {
                 var northEast = await getNorthEast(shop.Latitude, shop.Longitude);
-                //var mapInfo = await MapInfoFunction(shop.Longitude, shop.Latitude);
-                if(northEast != null)
+                var mapInfo = await MapInfoFunction(shop.Longitude, shop.Latitude);
+                if (northEast != null)
                 {
                     shop.Easting = northEast.hkE;
                     shop.Northing = northEast.hkN;
                 }
                 shop.C_floor = getCFloor(shop.C_Address);
-                //if(mapInfo != null)
-                //{
-                //    shop.E_area = mapInfo.Area2_Enam;
-                //    shop.C_area = mapInfo.Area2_Cnam;
-                //    shop.C_District = mapInfo.ChineseName;
-                //    shop.E_District = mapInfo.EnglishName;
-                //    shop.E_Region = mapInfo.E_Region;
-                //    shop.C_Region = mapInfo.C_Region;
-                //}
-                //if (cFloor.Count > 0 && cFloor != null)
-                //{
-                //    sevenElevenIGeoCom.C_floor = cFloor[0].Value;
-                //}
+                shop.E_floor = getEFloor(shop.E_Address);
+                if(shop.Source == "")
+                {
+                    shop.Source = "27";
+                }
+                if (mapInfo != null)
+                {
+                    shop.E_area = mapInfo.Area2_Enam;
+                    shop.C_area = mapInfo.Area2_Cnam;
+                    shop.C_District = mapInfo.ChineseName;
+                    shop.E_District = mapInfo.EnglishName;
+                    shop.E_Region = mapInfo.E_Region;
+                    shop.C_Region = mapInfo.C_Region;
+                }
+
                 resultList.Add(shop);
             }
             return resultList;
@@ -92,6 +94,17 @@ namespace iGeoComAPI.Services
                 cFloor = cFloorObjects[0].Value.ToString();
             }
             return cFloor;
+        }
+
+        public string getEFloor(string eAddress = "")
+        {
+            string eFloor = "";
+            var eFloorObjects = Regexs.ExtractE_Floor().Matches(eAddress.Replace(" ", ""));
+            if (eFloorObjects.Count > 0 && eFloorObjects != null)
+            {
+                eFloor = eFloorObjects[0].Value.ToString();
+            }
+            return eFloor;
         }
 
     }

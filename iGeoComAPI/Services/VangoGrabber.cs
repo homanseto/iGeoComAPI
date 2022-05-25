@@ -6,23 +6,16 @@ using Microsoft.Extensions.Options;
 
 namespace iGeoComAPI.Services
 {
-    public class VangoGrabber 
+    public class VangoGrabber :AbstractGrabber
     {
         private ConnectClient _httpClient;
         private JsonFunction _json;
         private IOptions<VangoOptions> _options;
         private IMemoryCache _memoryCache;
         private ILogger<VangoGrabber> _logger;
+        private readonly IDataAccess dataAccess;
 
-        //public VangoGrabber(ConnectClient httpClient, JsonFunction json, IOptions<VangoOptions> options, IMemoryCache memoryCache, ILogger<VangoGrabber> logger, IOptions<NorthEastOptions> absOptions) :base(httpClient, absOptions, json)
-        //{
-        //    _httpClient = httpClient;
-        //    _json = json;
-        //    _options = options;
-        //    _memoryCache = memoryCache;
-        //    _logger = logger;
-        //}\
-        public VangoGrabber(ConnectClient httpClient, JsonFunction json, IOptions<VangoOptions> options, IMemoryCache memoryCache, ILogger<VangoGrabber> logger, IOptions<NorthEastOptions> absOptions) 
+        public VangoGrabber(ConnectClient httpClient, JsonFunction json, IOptions<VangoOptions> options, IMemoryCache memoryCache, ILogger<VangoGrabber> logger, IOptions<NorthEastOptions> absOptions, IDataAccess dataAccess) : base(httpClient, absOptions, json, dataAccess)
         {
             _httpClient = httpClient;
             _json = json;
@@ -31,7 +24,8 @@ namespace iGeoComAPI.Services
             _logger = logger;
         }
 
-        public async Task<List<IGeoComGrabModel>?> GetWebSiteItems()
+
+        public override async Task<List<IGeoComGrabModel>?> GetWebSiteItems()
         {
             _logger.LogInformation("start grabbing Vango rowdata");
             var hkQuery = new Dictionary<string, string>()
@@ -52,15 +46,16 @@ namespace iGeoComAPI.Services
             var vangoHkResult =  _json.Dserialize<List<VangoModel>>(hkConnectHttp);
             var vangoKlnResult = _json.Dserialize<List<VangoModel>>(klnConnectHttp);
             var vangoNtResult =  _json.Dserialize<List<VangoModel>>(ntConnectHttp);
-            var hkResult = await Parsing(vangoHkResult, "hk");
-            var klnResult = await Parsing(vangoKlnResult, "kln");
-            var ntResult = await Parsing(vangoNtResult, "nt");
-            List<IGeoComGrabModel> VangoResult = hkResult.Concat(klnResult).Concat(ntResult).ToList();
-            return VangoResult;
+            var hkResult =  Parsing(vangoHkResult, "hk");
+            var klnResult = Parsing(vangoKlnResult, "kln");
+            var ntResult = Parsing(vangoNtResult, "nt");
+            List<IGeoComGrabModel> mergeResult = hkResult.Concat(klnResult).Concat(ntResult).ToList();
+            var result = await this.GetShopInfo(mergeResult);
+            return result;
             // _memoryCache.Set("iGeoCom", mergeResult, TimeSpan.FromHours(2));
         }
 
-        public async Task<List<IGeoComGrabModel>> Parsing(List<VangoModel>? grabResult, string region)
+        public List<IGeoComGrabModel> Parsing(List<VangoModel>? grabResult, string region)
         {
             List<IGeoComGrabModel> VangoIGeoComList = new List<IGeoComGrabModel>();
             if (grabResult != null)
@@ -81,23 +76,9 @@ namespace iGeoComAPI.Services
                     VangoIGeoCom.Class = "CMF";
                     VangoIGeoCom.Type = "CVS";
                     VangoIGeoCom.Source = "27";
+                    VangoIGeoCom.Shop = 3;
                     VangoIGeoCom.Web_Site = _options.Value.BaseUrl;
                     VangoIGeoCom.GrabId = $"{shop.store_number}_{shop.storename}{shop.address_geo_lat}";
-                    if (region != null & region == "hk")
-                    {
-                        VangoIGeoCom.C_Region = "香港";
-                        VangoIGeoCom.E_Region = "HK";
-                    }
-                    else if (region != null & region == "kln")
-                    {
-                        VangoIGeoCom.C_Region = "九龍";
-                        VangoIGeoCom.E_Region = "KLN";
-                    }
-                    else
-                    {
-                        VangoIGeoCom.C_Region = "新界";
-                        VangoIGeoCom.E_Region = "NT";
-                    }
                     VangoIGeoCom.Tel_No = $"{shop.telephone} {shop.telephone2} {shop.telephone3}";
                     VangoIGeoComList.Add(VangoIGeoCom);
                 }

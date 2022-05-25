@@ -6,12 +6,14 @@ using Microsoft.Extensions.Options;
 
 namespace iGeoComAPI.Services
 {
-    public class ParknShopGrabber
+    public class ParknShopGrabber : AbstractGrabber
     {
         private PuppeteerConnection _puppeteerConnection;
         private IOptions<ParknShopOptions> _options;
         private IMemoryCache _memoryCache;
         private ILogger<ParknShopGrabber> _logger;
+        private readonly IDataAccess dataAccess;
+
         private string infoCode = @"() =>{
                                  const selectors = Array.from(document.querySelectorAll('.result-list > .shop-list > .iscroll-object > .scroll > .location-info'));
                                  return selectors.map(v => {return {BrandName: v.getAttribute('data-brandname').trim(), Region: v.getAttribute('data-region').trim(),
@@ -22,34 +24,28 @@ namespace iGeoComAPI.Services
                                  }";
         private string waitSelector = ".result-list";
 
-        //public ParknShopGrabber(PuppeteerConnection puppeteerConnection, IOptions<ParknShopOptions> options, IMemoryCache memoryCache, ILogger<ParknShopGrabber> logger,
-        //    IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json) : base(httpClient, absOptions, json)
-        //{
-        //    _puppeteerConnection = puppeteerConnection;
-        //    _options = options;
-        //    _memoryCache = memoryCache;
-        //    _logger = logger;
-        //}
         public ParknShopGrabber(PuppeteerConnection puppeteerConnection, IOptions<ParknShopOptions> options, IMemoryCache memoryCache, ILogger<ParknShopGrabber> logger,
-    IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json) 
+            IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json, IDataAccess dataAccess) : base(httpClient, absOptions, json, dataAccess)
         {
             _puppeteerConnection = puppeteerConnection;
             _options = options;
             _memoryCache = memoryCache;
             _logger = logger;
         }
-        public async Task<List<IGeoComGrabModel>?> GetWebSiteItems()
+
+        public override async Task<List<IGeoComGrabModel>?> GetWebSiteItems()
         {
             var enResult = await _puppeteerConnection.PuppeteerGrabber<ParknShopModel[]>(_options.Value.EnUrl, infoCode, waitSelector);
             var zhResult = await _puppeteerConnection.PuppeteerGrabber<ParknShopModel[]>(_options.Value.ZhUrl, infoCode, waitSelector);
             var enResultList = enResult.ToList();
             var zhResultList = zhResult.ToList();
-            var mergeResult = await MergeEnAndZh(enResultList, zhResultList);
+            var mergeResult = MergeEnAndZh(enResultList, zhResultList);
+            var result = await this.GetShopInfo(mergeResult);
             //_memoryCache.Set("iGeoCom", mergeResult, TimeSpan.FromHours(2));
-            return mergeResult;
+            return result;
         }
 
-        public async Task<List<IGeoComGrabModel>> MergeEnAndZh(List<ParknShopModel> enResult, List<ParknShopModel> zhResult)
+        public List<IGeoComGrabModel> MergeEnAndZh(List<ParknShopModel> enResult, List<ParknShopModel> zhResult)
         {
             try
             {
@@ -62,36 +58,29 @@ namespace iGeoComAPI.Services
                     IGeoComGrabModel ParknShopIGeoCom = new IGeoComGrabModel();
                     ParknShopIGeoCom.E_Address = shopEn.Address;
                     ParknShopIGeoCom.EnglishName = $"{shopEn.BrandName}-{shopEn.Name}";
-                    ParknShopIGeoCom.E_Region = shopEn.Region;
                     ParknShopIGeoCom.E_District = shopEn.District;
                     ParknShopIGeoCom.Latitude = Convert.ToDouble(shopEn.Latitude);
                     ParknShopIGeoCom.Longitude = Convert.ToDouble(shopEn.Longitude);
                     ParknShopIGeoCom.Tel_No = shopEn.Phone;
+                    ParknShopIGeoCom.Type = "CVS";
                     ParknShopIGeoCom.Class = "CMF";
-                    ParknShopIGeoCom.Type = "SMK";
-                    ParknShopIGeoCom.Source = "27";
+                    ParknShopIGeoCom.Shop = 5;
                     ParknShopIGeoCom.Web_Site = _options.Value.BaseUrl;
-                    ParknShopIGeoCom.GrabId = $"parknshop_{shopEn.BrandName}{shopEn.Latitude}{shopEn.Longitude}{shopEn.Phone}_{index}".Replace(".", "").Replace(" ", "");
+                    ParknShopIGeoCom.GrabId = $"parknshop{shopEn.BrandName}{index}";
                     foreach (var shopZh in zhResult)
                     {
-                        if (shopEn.Latitude == shopZh.Latitude && shopEn.Longitude == shopZh.Longitude && shopEn.Phone == shopZh.Phone)
+                        if (shopEn.Latitude == shopZh.Latitude && shopEn.Longitude == shopZh.Longitude && shopEn.Phone == shopZh.Phone && shopEn.BrandName == shopZh.BrandName)
                         {
                             ParknShopIGeoCom.ChineseName = $"{shopZh.BrandName}-{shopZh.Name}";
-                            ParknShopIGeoCom.C_Region = shopZh.Region;
                             ParknShopIGeoCom.C_Address = shopZh.Address.Replace(" ", "");
-                            var cFloor = Regexs.ExtractC_Floor().Matches(ParknShopIGeoCom.C_Address);
-                            if (cFloor.Count > 0 && cFloor != null)
-                            {
-                                ParknShopIGeoCom.C_floor = cFloor[0].Value;
-                            }
-                            ParknShopIGeoCom.C_District = shopZh.District;
                             
-                            continue;
+                            break;
                         }
                     }
                     ParknShopIGeoComList.Add(ParknShopIGeoCom);
                 }
-                return ParknShopIGeoComList.Where(shop => shop.E_District != "MACAU").ToList();
+                List<IGeoComGrabModel> ReplacedDuplicated = ParknShopIGeoComList.GroupBy(x => x.E_Address).Select(x => x.First()).GroupBy(x => x.C_Address).Select(x => x.First()).ToList();
+                return ReplacedDuplicated.Where(shop => shop.E_District.ToLower() != "macau").ToList();
             }catch (Exception ex)
             {
                 _logger.LogError(ex.Message, "fail to merge ParknShop En and Zh");

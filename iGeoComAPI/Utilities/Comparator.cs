@@ -4,18 +4,15 @@ namespace iGeoComAPI.Utilities
 {
     public static class Comparator
     {
-        enum ComparedList {EnglishName, ChineseName,E_Address,C_Address,Tel_No, Fax_No, WebSite };
-
-
         public static List<IGeoComDeltaModel> GetComparedResult(List<IGeoComGrabModel> newData, List<IGeoComGrabModel> previousData, string without = "")
         {
             var removedResult = CompareShop(previousData, newData, "removed", without);
             var addedResult = CompareShop(newData, previousData, "added", without);
             var newIntersectResult = Intersection(newData, addedResult, without);
             var previousIntersectResult = Intersection(previousData, removedResult, without);
-            var orgModified = CompareShop(newIntersectResult, previousIntersectResult, "new_modified", without);
-            var newModified = CompareShop(previousIntersectResult, newIntersectResult, "old_modified", without);
-            var result = MergeResults(addedResult, removedResult, newModified, orgModified, without);
+            var newModified = CompareShop(newIntersectResult, previousIntersectResult, "new_modified", without);
+            var orgModified = CompareShop(previousIntersectResult, newIntersectResult, "old_modified", without);
+            var result = MergeResults(addedResult, removedResult, orgModified, newModified, without);
             return result;
         }
         public static List<IGeoComDeltaModel> CompareShop(List<IGeoComGrabModel> left, List<IGeoComGrabModel> right, string status, string without ="")
@@ -33,34 +30,36 @@ namespace iGeoComAPI.Utilities
                         for (j = 0; j < rightLength; j++)
                             if (status.Contains("modified"))
                             {
-                                if (left[i].E_Address?.ToLower().Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Trim() == right[j].E_Address?.ToLower().Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Trim() &&
-                               left[i].C_Address?.Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Trim() == right[j].C_Address?.Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Trim()
+                                if (Regexs.TrimAllAndAdjustSpace(left[i].E_Address)?.ToLower().Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].E_Address)?.ToLower().Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Replace("\t", "").Trim() &&
+                               Regexs.TrimAllAndAdjustSpace(left[i].C_Address)?.Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].C_Address)?.Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Replace("\t", "").Trim()
                                 )
                                     break;
                             }
                             else
                             {
-
-                                if (left[i].E_Address?.ToLower().Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Trim() == right[j].E_Address?.ToLower().Replace(" ", "").Replace(",", "").Replace(".", "").Replace("-", "").Trim() |
-                                   left[i].C_Address?.Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Trim() == right[j].C_Address?.Replace(" ", "").Replace(",", "").Replace(".", "").Replace("-", "").Trim()
+                                if (Regexs.TrimAllAndAdjustSpace(left[i].E_Address)?.ToLower().Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].E_Address)?.ToLower().Replace(" ", "").Replace(",", "").Replace(".", "").Replace("-", "").Replace("\t", "").Trim() |
+                                   Regexs.TrimAllAndAdjustSpace(left[i].C_Address)?.Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].C_Address)?.Replace(" ", "").Replace(",", "").Replace(".", "").Replace("-", "").Replace("\t", "").Trim()
                                     )
                                     break;
                             }
                     }
-                    else if(without == "eAddress"){
+                    else if(without == "vango"){
                         for (j = 0; j < rightLength; j++)
                             if (status.Contains("modified"))
                             {
-                                if (left[i].Tel_No?.Replace(" ", "").Replace("-", "") == right[j].Tel_No?.Replace(" ", "").Replace("-", "") &&
-                               left[i].C_Address?.Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Trim() == right[j].C_Address?.Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Trim()
+                                if (Regexs.TrimAllAndAdjustSpace(left[i].Tel_No)?.Replace(" ", "").Replace("-", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].Tel_No)?.Replace(" ", "").Replace("-", "").Replace("\t", "").Trim() &&
+                               Regexs.TrimAllAndAdjustSpace(left[i].C_Address)?.Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].C_Address)?.Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Replace("\t", "").Trim()&&
+                               Regexs.TrimAllAndAdjustSpace(left[i].ChineseName)?.ToLower().Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].ChineseName)?.ToLower().Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Replace("\t", "").Trim()
+
                                 )
                                     break;
                             }
                             else
                             {
 
-                                if (left[i].Tel_No?.Replace(" ", "").Replace("-", "") == right[j].Tel_No?.Replace(" ", "").Replace("-", "") |
-                                   left[i].C_Address?.Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Trim() == right[j].C_Address?.Replace(" ", "").Replace(",", "").Replace(".", "").Replace("-", "").Trim()
+                                if (Regexs.TrimAllAndAdjustSpace(left[i].Tel_No)?.Replace(" ", "").Replace("-", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].Tel_No)?.Replace(" ", "").Replace("-", "").Replace("\t", "").Trim() |
+                                   Regexs.TrimAllAndAdjustSpace(left[i].C_Address)?.Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].C_Address)?.Replace(" ", "").Replace(",", "").Replace(".", "").Replace("-", "").Replace("\t", "").Trim()|
+                                   Regexs.TrimAllAndAdjustSpace(left[i].ChineseName)?.ToLower().Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].ChineseName)?.ToLower().Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Replace("\t", "").Trim()
                                     )
                                     break;
                             }
@@ -70,18 +69,18 @@ namespace iGeoComAPI.Utilities
                         for (j = 0; j < rightLength; j++)
                             if (status.Contains("modified"))
                             {
-                                if (left[i].E_Address?.ToLower().Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Trim() == right[j].E_Address?.ToLower().Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Trim() &&
-                               left[i].Tel_No?.Replace(" ", "").Replace("-", "") == right[j].Tel_No?.Replace(" ", "").Replace("-", "") &&
-                               left[i].C_Address?.Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Trim() == right[j].C_Address?.Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Trim()
+                                if (Regexs.TrimAllAndAdjustSpace(left[i].E_Address)?.ToLower().Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].E_Address)?.ToLower().Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Replace("\t", "").Trim() &&
+                               Regexs.TrimAllAndAdjustSpace(left[i].Tel_No)?.Replace(" ", "").Replace("-", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].Tel_No)?.Replace(" ", "").Replace("-", "").Replace("\t", "").Trim() &&
+                               Regexs.TrimAllAndAdjustSpace(left[i].C_Address)?.Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].C_Address)?.Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Replace("\t", "").Trim()
                                 )
                                     break;
                             }
                             else
                             {
 
-                                if (left[i].E_Address?.ToLower().Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Trim() == right[j].E_Address?.ToLower().Replace(" ", "").Replace(",", "").Replace(".", "").Replace("-", "").Trim() |
-                                   left[i].Tel_No?.Replace(" ", "").Replace("-", "") == right[j].Tel_No?.Replace(" ", "").Replace("-", "") |
-                                   left[i].C_Address?.Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Trim() == right[j].C_Address?.Replace(" ", "").Replace(",", "").Replace(".", "").Replace("-", "").Trim()
+                                if (Regexs.TrimAllAndAdjustSpace(left[i].E_Address)?.ToLower().Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].E_Address)?.ToLower().Replace(" ", "").Replace(",", "").Replace(".", "").Replace("-", "").Replace("\t", "").Trim() |
+                                   Regexs.TrimAllAndAdjustSpace(left[i].Tel_No)?.Replace(" ", "").Replace("-", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].Tel_No)?.Replace(" ", "").Replace("-", "").Replace("\t", "").Trim() |
+                                   Regexs.TrimAllAndAdjustSpace(left[i].C_Address)?.Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].C_Address)?.Replace(" ", "").Replace(",", "").Replace(".", "").Replace("-", "").Replace("\t", "").Trim()
                                     )
                                     break;
                             }
@@ -112,17 +111,18 @@ namespace iGeoComAPI.Utilities
                 {
                     for (j = 0; j < rightLength; j++)
 
-                        if (left[i].E_Address?.ToLower().Replace(" ", "").Replace(",", "").Trim() == right[j].E_Address?.ToLower().Replace(" ", "").Replace(",", "").Trim() |
-                           left[i].C_Address?.Replace(" ", "").Replace(",", "").Trim() == right[j].C_Address?.Replace(" ", "").Replace(",", "").Trim()
+                        if (left[i].Compare_E_Address == right[i].Com |
+                           Regexs.TrimAllAndAdjustSpace(left[i].C_Address)?.Replace(" ", "").Replace(",", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].C_Address)?.Replace(" ", "").Replace(",", "").Replace("\t", "").Trim()
                             )
                             break;
                 }
-                else if (without == "eAddress")
+                else if (without == "vango")
                 {
                     for (j = 0; j < rightLength; j++)
 
-                        if (left[i].Tel_No?.Replace(" ", "").Replace("-", "") == right[j].Tel_No?.Replace(" ", "").Replace("-", "") |
-                           left[i].C_Address?.Replace(" ", "").Replace(",", "").Trim() == right[j].C_Address?.Replace(" ", "").Replace(",", "").Trim()
+                        if (Regexs.TrimAllAndAdjustSpace(left[i].Tel_No)?.Replace(" ", "").Replace("-", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].Tel_No)?.Replace(" ", "").Replace("-", "").Replace("\t", "").Trim() |
+                           Regexs.TrimAllAndAdjustSpace(left[i].C_Address)?.Replace(" ", "").Replace(",", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].C_Address)?.Replace(" ", "").Replace(",", "").Replace("\t", "").Trim()|
+                           Regexs.TrimAllAndAdjustSpace(left[i].ChineseName)?.ToLower().Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].ChineseName)?.ToLower().Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Replace("\t", "").Trim()
                             )
                             break;
                 }
@@ -130,9 +130,9 @@ namespace iGeoComAPI.Utilities
                 {
                     for (j = 0; j < rightLength; j++)
 
-                        if (left[i].E_Address?.ToLower().Replace(" ", "").Replace(",", "").Trim() == right[j].E_Address?.ToLower().Replace(" ", "").Replace(",", "").Trim() |
-                           left[i].Tel_No?.Replace(" ", "").Replace("-", "") == right[j].Tel_No?.Replace(" ", "").Replace("-", "") |
-                           left[i].C_Address?.Replace(" ", "").Replace(",", "").Trim() == right[j].C_Address?.Replace(" ", "").Replace(",", "").Trim()
+                        if (Regexs.TrimAllAndAdjustSpace(left[i].E_Address)?.ToLower().Replace(" ", "").Replace(",", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].E_Address)?.ToLower().Replace(" ", "").Replace(",", "").Replace("\t", "").Trim() |
+                           Regexs.TrimAllAndAdjustSpace(left[i].Tel_No)?.Replace(" ", "").Replace("-", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].Tel_No)?.Replace(" ", "").Replace("-", "").Replace("\t", "").Trim() |
+                           Regexs.TrimAllAndAdjustSpace(left[i].C_Address)?.Replace(" ", "").Replace(",", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].C_Address)?.Replace(" ", "").Replace(",", "").Replace("\t", "").Trim()
                             )
                             break;
                 }
@@ -144,30 +144,6 @@ namespace iGeoComAPI.Utilities
             }
             return IntersectionIGeoComList;
         }
-        //public static List<IGeoComGrabModel> Modified(List<IGeoComGrabModel> left, List<IGeoComGrabModel> right)
-        //{
-        //    int leftLength = left.Count;
-        //    int rightLength = right.Count;
-        //    List<IGeoComGrabModel> IntersectionIGeoComList = new List<IGeoComGrabModel>();
-
-        //    for (int i = 0; i < leftLength; i++)
-        //    {
-        //        int j;
-        //        for (j = 0; j < rightLength; j++)
-
-        //            if (left[i].E_Address?.ToLower().Replace(" ", "").Replace(",", "").Trim() == right[j].E_Address?.ToLower().Replace(" ", "").Replace(",", "").Trim() &&
-        //               left[i].Tel_No?.Replace(" ", "").Replace("-", "").Replace(",", "") == right[j].Tel_No?.Replace(" ", "").Replace("-", "").Replace(",", "") &&
-        //               left[i].C_Address?.Replace(" ", "").Replace(",", "").Trim() == right[j].C_Address?.Replace(" ", "").Replace(",", "").Trim()
-        //                )
-        //                break;
-        //        if (j == rightLength)
-        //        {
-        //            IntersectionIGeoComList.Add(left[i]);
-        //        }
-
-        //    }
-        //    return IntersectionIGeoComList;
-        //}
 
         public static List<IGeoComDeltaModel> MergeResults(List<IGeoComDeltaModel> added, List<IGeoComDeltaModel> removed, List<IGeoComDeltaModel> newDelta, List<IGeoComDeltaModel> orgDelta, string without = "")
         {
@@ -181,18 +157,20 @@ namespace iGeoComAPI.Utilities
                 {
                     if (without == "tel")
                     {
-                       if (v.E_Address?.ToLower().Replace(" ", "").Replace(",", "").Trim() == item.E_Address?.ToLower().Replace(" ", "").Replace(",", "").Trim() |
-                       v.C_Address?.Replace(" ", "").Replace(",", "").Trim() == item.C_Address?.Replace(" ", "").Replace(",", "").Trim()
+                       if (Regexs.TrimAllAndAdjustSpace(v.E_Address)?.ToLower().Replace(" ", "").Replace(",", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(item.E_Address)?.ToLower().Replace(" ", "").Replace(",", "").Replace("\t", "").Trim() |
+                       Regexs.TrimAllAndAdjustSpace(v.C_Address)?.Replace(" ", "").Replace(",", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(item.C_Address)?.Replace(" ", "").Replace(",", "").Replace("\t", "").Trim()
                         )
                         {
                             DeltaChange.Add(item);
                         }
                     }
-                    else if (without == "eAddress")
+                    else if (without == "vango")
                     {
 
-                        if (v.Tel_No?.Replace(" ", "").Replace("-", "") == item.Tel_No?.Replace(" ", "").Replace("-", "") |
-                        v.C_Address?.Replace(" ", "").Replace(",", "").Trim() == item.C_Address?.Replace(" ", "").Replace(",", "").Trim()
+                        if (Regexs.TrimAllAndAdjustSpace(v.Tel_No)?.Replace(" ", "").Replace("-", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(item.Tel_No)?.Replace(" ", "").Replace("-", "").Replace("\t", "").Trim() |
+                        Regexs.TrimAllAndAdjustSpace(v.C_Address)?.Replace(" ", "").Replace(",", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(item.C_Address)?.Replace(" ", "").Replace(",", "").Replace("\t", "").Trim()|
+                        Regexs.TrimAllAndAdjustSpace(v.ChineseName)?.ToLower().Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Trim() == Regexs.TrimAllAndAdjustSpace(item.ChineseName)?.ToLower().Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Replace("\t", "").Trim()
+
                         )
                         {
                             DeltaChange.Add(item);
@@ -200,9 +178,9 @@ namespace iGeoComAPI.Utilities
                     }
                     else
                     {
-                       if (v.E_Address?.ToLower().Replace(" ", "").Replace(",", "").Trim() == item.E_Address?.ToLower().Replace(" ", "").Replace(",", "").Trim() |
-                       v.Tel_No?.Replace(" ", "").Replace("-", "") == item.Tel_No?.Replace(" ", "").Replace("-", "") |
-                       v.C_Address?.Replace(" ", "").Replace(",", "").Trim() == item.C_Address?.Replace(" ", "").Replace(",", "").Trim()
+                       if (Regexs.TrimAllAndAdjustSpace(v.E_Address)?.ToLower().Replace(" ", "").Replace(",", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(item.E_Address)?.ToLower().Replace(" ", "").Replace(",", "").Replace("\t", "").Trim() |
+                       Regexs.TrimAllAndAdjustSpace(v.Tel_No)?.Replace(" ", "").Replace("-", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(item.Tel_No)?.Replace(" ", "").Replace("-", "").Replace("\t", "").Trim() |
+                       Regexs.TrimAllAndAdjustSpace(v.C_Address)?.Replace(" ", "").Replace(",", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(item.C_Address)?.Replace(" ", "").Replace(",", "").Replace("\t", "").Trim()
                         )
                         {
                             DeltaChange.Add(item);
@@ -211,7 +189,6 @@ namespace iGeoComAPI.Utilities
                 }
             }
             var results = mergeAddedAndRemoved.Concat(DeltaChange).ToList();
-            Console.WriteLine(results.Count);
             return results;
         }
 
@@ -244,16 +221,7 @@ namespace iGeoComAPI.Utilities
            newShop.Fax_No = data[num].Fax_No;
            newShop.Web_Site = data[num].Web_Site;
            newShop.Rev_Date = data[num].Rev_Date;
-            return newShop;
-
+           return newShop;
         }
-
-
-        public static List<IGeoComDeltaModel> deltaShop()
-        {
-            List<IGeoComDeltaModel> result = new List<IGeoComDeltaModel>();
-            return result;
-        }
-
     }
 }

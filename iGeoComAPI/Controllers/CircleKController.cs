@@ -15,13 +15,15 @@ namespace iGeoComAPI.Controllers
         private ILogger<CircleKController> _logger;
         private CircleKGrabber _circleKGrabber;
         private readonly IGeoComGrabRepository _iGeoComGrabRepository;
+        private readonly IGeoComRepository _iGeoComRepository;
 
 
-        public CircleKController(CircleKGrabber circleKGrabber, ILogger<CircleKController> logger, IGeoComGrabRepository iGeoComGrabRepository)
+        public CircleKController(CircleKGrabber circleKGrabber, ILogger<CircleKController> logger, IGeoComGrabRepository iGeoComGrabRepository, IGeoComRepository iGeoComRepository)
         {
             _circleKGrabber = circleKGrabber;
             _logger = logger;
             _iGeoComGrabRepository = iGeoComGrabRepository;
+            _iGeoComRepository = iGeoComRepository;
         }
         [HttpGet]
         public async Task<IActionResult> Get()
@@ -47,6 +49,26 @@ namespace iGeoComAPI.Controllers
                 string name = this.GetType().Name.Replace("Controller", "").ToLower();
                 var result = await _iGeoComGrabRepository.GetShopsByName(name);
                 return CsvFile.Download(result, name);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+
+        }
+
+        [HttpGet("delta/download")]
+        public async Task<IActionResult> GetDelta()
+        {
+            try
+            {
+                string name = this.GetType().Name.Replace("Controller", "").ToLower();
+
+                var previousResult = await _iGeoComRepository.GetShops(2);
+                //var newResult = await this.iGeoComGrabRepository.GetShopsByName(name);
+                var newResult = await _iGeoComGrabRepository.GetShopsByShopId(2);
+                var result = Comparator.GetComparedResult(newResult, previousResult,"tel");
+                return CsvFile.Download(result, $"{name}_delta");
             }
             catch (Exception ex)
             {

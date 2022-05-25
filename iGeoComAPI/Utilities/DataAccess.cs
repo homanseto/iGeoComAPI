@@ -22,7 +22,7 @@ namespace iGeoComAPI.Utilities
 
             if (_env.Value.Environment == "Development" || _env.Value.Environment == "Production")
             {
-                using (SqlConnection connection = new SqlConnection(_options.Value.DefaultConnection))
+                using (SqlConnection connection = new SqlConnection(_options.Value.Default_3DM))
                 {
                     var rows = await connection.QueryAsync<T>(sql, param);
 
@@ -45,7 +45,7 @@ namespace iGeoComAPI.Utilities
         public async Task<T> LoadSingleData<T>(string sql)
         {
 
-             using (SqlConnection connection = new SqlConnection(_options.Value.DefaultConnection))
+             using (SqlConnection connection = new SqlConnection(_options.Value.Default_3DM))
                 {
                     var info = await connection.QuerySingleOrDefaultAsync<T>(sql);
 
@@ -59,7 +59,7 @@ namespace iGeoComAPI.Utilities
 
             if (_env.Value.Environment == "Development" || _env.Value.Environment == "Production")
             {
-                using (SqlConnection connection = new SqlConnection(_options.Value.DefaultConnection))
+                using (SqlConnection connection = new SqlConnection(_options.Value.Default_3DM))
                 {
                     foreach (var param in parameters)
                     {
@@ -81,7 +81,7 @@ namespace iGeoComAPI.Utilities
 
         public async Task DeleteDataFromDataBase<T>(string sql)
         {
-            using (SqlConnection connection = new SqlConnection(_options.Value.DefaultConnection))
+            using (SqlConnection connection = new SqlConnection(_options.Value.Default_3DM))
             {
                 await connection.QueryAsync<T>(sql);
             }

@@ -16,16 +16,14 @@ namespace iGeoComAPI.Controllers
         private readonly SevenElevenGrabber sevenElevenGrabber;
         private readonly IGeoComGrabRepository iGeoComGrabRepository;
         private readonly IGeoComRepository iGeoComRepository;
-        private readonly DataContext dataContext;
         SevenElevenModel sevenElevenModel = new SevenElevenModel();
         //IGeoComGrabModel igeoComGrabModel = new IGeoComGrabModel();
 
-        public SevenElevenController(SevenElevenGrabber sevenElevenGrabber, MyLogger logger, IGeoComGrabRepository iGeoComGrabRepository, DataContext dataContext, IGeoComRepository iGeoComRepository)
+        public SevenElevenController(SevenElevenGrabber sevenElevenGrabber, MyLogger logger, IGeoComGrabRepository iGeoComGrabRepository, IGeoComRepository iGeoComRepository)
         {
             this.sevenElevenGrabber = sevenElevenGrabber;
             this.logger = logger;
             this.iGeoComGrabRepository = iGeoComGrabRepository;
-            this.dataContext = dataContext;
             this.iGeoComRepository = iGeoComRepository;
         }
 
@@ -35,8 +33,8 @@ namespace iGeoComAPI.Controllers
             try
             {
                 string name = this.GetType().Name.Replace("Controller", "").ToLower();
-                //var result = await this.iGeoComGrabRepository.GetShopsByName(name);
-                var result = await dataContext.IGeoComGrabModels.ToListAsync();
+                var result = await this.iGeoComGrabRepository.GetShopsByName(name);
+                //var result = await dataContext.IGeoComGrabModels.ToListAsync();
                 if (result == null)
                     return NotFound();
                 return Ok(result);
@@ -47,7 +45,7 @@ namespace iGeoComAPI.Controllers
             }
         }
         [HttpGet("download")]
-        public async Task<ActionResult<FileStreamResult>> GetDownload()
+        public async Task<ActionResult> GetDownload()
         {
             try
             {
@@ -69,8 +67,9 @@ namespace iGeoComAPI.Controllers
             {
                 string name = this.GetType().Name.Replace("Controller", "").ToLower();
 
-                var previousResult = await this.iGeoComRepository.GetShops("7-eleven");
-                var newResult = await this.iGeoComGrabRepository.GetShopsByName(name);
+                var previousResult = await this.iGeoComRepository.GetShops(1);
+                //var newResult = await this.iGeoComGrabRepository.GetShopsByName(name);
+                var newResult = await this.iGeoComGrabRepository.GetShopsByShopId(1);
                 var result = Comparator.GetComparedResult(newResult, previousResult, "tel");
                 return CsvFile.Download(result, $"{name}_delta");
             }
@@ -88,9 +87,9 @@ namespace iGeoComAPI.Controllers
             var GrabbedResult = await this.sevenElevenGrabber.GetWebSiteItems();
             if (GrabbedResult == null)
                 return BadRequest("Cannot insert grabbed data");
-            //this.iGeoComGrabRepository.CreateShops(GrabbedResult);
-            this.dataContext.IGeoComGrabModels.AddRange(GrabbedResult);
-            await this.dataContext.SaveChangesAsync();
+            this.iGeoComGrabRepository.CreateShops(GrabbedResult);
+            //this.dataContext.IGeoComGrabModels.AddRange(GrabbedResult);
+            //await this.dataContext.SaveChangesAsync();
             return Ok(GrabbedResult);
         }
         //[HttpDelete("{id}")]

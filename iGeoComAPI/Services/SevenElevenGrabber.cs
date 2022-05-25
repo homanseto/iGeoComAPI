@@ -44,7 +44,7 @@ namespace iGeoComAPI.Services
                 var enSerializedResult =  _json.Dserialize<List<SevenElevenModel>>(enConnectHttp);
                 var zhConnectHttp = await _httpClient.GetAsync(_options.Value.ZhUrl);
                 var zhSerializedResult = _json.Dserialize<List<SevenElevenModel>>(zhConnectHttp);
-                var mergeResult = await MergeEnAndZh(enSerializedResult, zhSerializedResult);
+                var mergeResult = MergeEnAndZh(enSerializedResult, zhSerializedResult);
                 var result =await this.GetShopInfo(mergeResult);
                 // _memoryCache.Set("iGeoCom", mergeResult, TimeSpan.FromHours(2));
                 return result;
@@ -66,7 +66,7 @@ namespace iGeoComAPI.Services
             return resultList;
         }
 
-        public async Task<List<IGeoComGrabModel>> MergeEnAndZh(List<SevenElevenModel>? enResult, List<SevenElevenModel>? zhResult)
+        public List<IGeoComGrabModel> MergeEnAndZh(List<SevenElevenModel>? enResult, List<SevenElevenModel>? zhResult)
         {
             var _rgx = Regexs.ExtractInfo(SevenElevenModel.RegLatLngRegex);
             List<IGeoComGrabModel> SevenElevenIGeoComList = new List<IGeoComGrabModel>();
@@ -76,14 +76,19 @@ namespace iGeoComAPI.Services
                 if (enResult != null && zhResult != null)
                 {
                     //Parallel.ForEach(enResult, new ParallelOptions() { MaxDegreeOfParallelism = 10 }, (shopEn) =>
-                    foreach (SevenElevenModel shopEn in enResult)
+                    foreach (var item in enResult.Select((value, i) => new { i, value }))
                     {
+                        var shopEn = item.value;
+                        var index = item.i;
                         IGeoComGrabModel sevenElevenIGeoCom = new IGeoComGrabModel();
                         sevenElevenIGeoCom.E_Address = shopEn.Address;
                         var matchesEn = _rgx.Matches(shopEn.LatLng!);
                         sevenElevenIGeoCom.Latitude = Convert.ToDouble(matchesEn[0].Value);
                         sevenElevenIGeoCom.Longitude = Convert.ToDouble(matchesEn[2].Value);
                         sevenElevenIGeoCom.Type = "CVS";
+                        sevenElevenIGeoCom.Class = "CMF";
+                        sevenElevenIGeoCom.E_District = shopEn.District;
+                        sevenElevenIGeoCom.Shop = 1;
                         if (shopEn.Opening_24 == "1")
                         {
                             sevenElevenIGeoCom.Subcat = " ";
@@ -92,17 +97,18 @@ namespace iGeoComAPI.Services
                         {
                             sevenElevenIGeoCom.Subcat = "NON24R";
                         }
-                        sevenElevenIGeoCom.GrabId = $"seveneleven_{shopEn.Address?.Replace(" ", "").Replace("/", "").Replace(",", "").Replace(".", "")}";
-                        sevenElevenIGeoCom.Web_Site = _options.Value.BaseUrl;
 
+                        sevenElevenIGeoCom.Web_Site = _options.Value.BaseUrl;
+                        sevenElevenIGeoCom.GrabId = $"{this.GetType().Name.Replace("Grabber", "").ToLower()}{sevenElevenIGeoCom.Latitude}{sevenElevenIGeoCom.Longitude}{shopEn.Opening_Weekday}{shopEn.Daily_Cafe}".Replace("-","").Replace(" ","");
                         foreach (SevenElevenModel shopZh in zhResult)
                         {
                             var matchesZh = _rgx.Matches(shopZh.LatLng!);
                             if (matchesZh.Count > 0 && matchesZh != null)
                             {
-                                if (matchesEn[0].Value == matchesZh[0].Value && matchesEn[2].Value == matchesZh[2].Value)
+                                if (matchesEn[0].Value == matchesZh[0].Value && matchesEn[2].Value == matchesZh[2].Value && shopEn.Opening_Weekday == shopZh.Opening_Weekday && shopEn.Daily_Cafe == shopZh.Daily_Cafe)
                                 {
                                     sevenElevenIGeoCom.C_Address = shopZh.Address.Replace(" ", "");
+                                    
                                     continue;
                                 }
                             }
@@ -111,7 +117,7 @@ namespace iGeoComAPI.Services
 
                     }
                 }
-                return SevenElevenIGeoComList.Where(shop => shop.E_District.ToLower() != "macau").ToList();
+               return SevenElevenIGeoComList.Where(shop => shop.E_District.ToLower() != "macau").ToList();
             }
             catch (Exception ex)
             {

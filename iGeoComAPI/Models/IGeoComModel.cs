@@ -5,7 +5,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace iGeoComAPI.Models
 {
-    [Keyless]
     public class IGeoComModel
     {
         //public enum Types
@@ -39,7 +38,45 @@ namespace iGeoComAPI.Models
         public string Tel_No { get; set; } = String.Empty;
         public string Fax_No { get; set; } = String.Empty;
         public string Web_Site { get; set; } = String.Empty;
+        public int Shop { get; set; }
         public DateTime Rev_Date { get; set; } = DateTime.Now;
+
+        public string Compare_E_Address
+        {
+            get
+            {
+                return Regexs.TrimAllAndAdjustSpace(this.E_Address.ToLower().Replace(" ", "").Replace(",", "").Replace("\t", "").Trim());
+            }
+        }
+
+        public string Compare_C_Address
+        {
+            get
+            {
+                return Regexs.TrimAllAndAdjustSpace(this.C_Address.ToLower().Replace(" ", "").Replace(",", "").Replace("\t", "").Trim());
+            }
+        }
+        public string Compare_ChineseName
+        {
+            get
+            {
+                return Regexs.TrimAllAndAdjustSpace(this.ChineseName.ToLower().Replace(" ", "").Replace(",", "").Replace("\t", "").Trim());
+            }
+        }
+        public string Compare_EnglishName
+        {
+            get
+            {
+                return Regexs.TrimAllAndAdjustSpace(this.EnglishName.ToLower().Replace(" ", "").Replace(",", "").Replace("\t", "").Trim());
+            }
+        }
+        public string Compare_Tel
+        {
+            get
+            {
+                return Regexs.TrimAllAndAdjustSpace(this.Tel_No.Replace(" ", "").Replace("-", "").Replace("\t", "").Trim());
+            }
+        }
     }
 
 }
