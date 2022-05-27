@@ -6,25 +6,16 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace iGeoComAPI.Services
 {
-    public class CaltexGrabber
+    public class CaltexGrabber: AbstractGrabber
     {
         private ConnectClient _httpClient;
         private JsonFunction _json;
         private IOptions<CaltexOptions> _options;
         private IMemoryCache _memoryCache;
         private ILogger<CaltexGrabber> _logger;
+        private readonly IDataAccess dataAccess;
 
-
-        //public CaltexGrabber(ConnectClient httpClient, JsonFunction json, IOptions<CaltexOptions> options, IMemoryCache memoryCache, ILogger<CaltexGrabber> logger, IOptions<NorthEastOptions> absOptions) : base(httpClient, absOptions, json)
-        //{
-        //    _httpClient = httpClient;
-        //    _json = json;
-        //    _options = options;
-        //    _memoryCache = memoryCache;
-        //    _logger = logger;
-        //}
-
-        public CaltexGrabber(ConnectClient httpClient, JsonFunction json, IOptions<CaltexOptions> options, IMemoryCache memoryCache, ILogger<CaltexGrabber> logger, IOptions<NorthEastOptions> absOptions)
+        public CaltexGrabber(ConnectClient httpClient, JsonFunction json, IOptions<CaltexOptions> options, IMemoryCache memoryCache, ILogger<CaltexGrabber> logger, IOptions<NorthEastOptions> absOptions, IDataAccess dataAccess) : base(httpClient, absOptions, json, dataAccess)
         {
             _httpClient = httpClient;
             _json = json;
@@ -32,7 +23,9 @@ namespace iGeoComAPI.Services
             _memoryCache = memoryCache;
             _logger = logger;
         }
-        public async Task<List<IGeoComGrabModel>?> GetWebSiteItems()
+
+
+        public override async Task<List<IGeoComGrabModel>?> GetWebSiteItems()
         {
             _logger.LogInformation("start grabbing Caltex rowdata");
             var zhQuery = new Dictionary<string, string>()
@@ -49,12 +42,13 @@ namespace iGeoComAPI.Services
             var zhConnectHttp = await _httpClient.GetAsync(_options.Value.Url, enQuery);
             var enSerializedResult =  _json.Dserialize<List<CaltexModel>>(enConnectHttp);
             var zhSerializedResult =  _json.Dserialize<List<CaltexModel>>(zhConnectHttp);
-            var mergeResult = await MergeEnAndZh(enSerializedResult, zhSerializedResult);
+            var mergeResult = MergeEnAndZh(enSerializedResult, zhSerializedResult);
+            var result = await this.GetShopInfo(mergeResult);
             // _memoryCache.Set("iGeoCom", mergeResult, TimeSpan.FromHours(2));
-            return mergeResult;
+            return result;
         }
 
-        public async  Task<List<IGeoComGrabModel>> MergeEnAndZh(List<CaltexModel>? enResult, List<CaltexModel>? zhResult)
+        public List<IGeoComGrabModel> MergeEnAndZh(List<CaltexModel>? enResult, List<CaltexModel>? zhResult)
         {
             List<IGeoComGrabModel> CaltexIGeoComList = new List<IGeoComGrabModel>();
             try
@@ -74,7 +68,7 @@ namespace iGeoComAPI.Services
                         CaltexIGeoCom.Web_Site = _options.Value.BaseUrl;
                         CaltexIGeoCom.Class = "UTI";
                         CaltexIGeoCom.Type = "PFS";
-                        CaltexIGeoCom.Source = "27";
+                        CaltexIGeoCom.Shop = 7;
                         foreach (var zh in zhResult)
                         {
                             if (en.PhoneNumber == zh.PhoneNumber)
@@ -82,10 +76,6 @@ namespace iGeoComAPI.Services
                                 CaltexIGeoCom.ChineseName = $"加德士-{zh.Name!.Trim()}";
                                 CaltexIGeoCom.C_Address = zh.Street!.Trim().Replace(" ", ""); 
                                 var cFloor = Regexs.ExtractC_Floor().Matches(CaltexIGeoCom.C_Address);
-                                if (cFloor.Count > 0 && cFloor != null)
-                                {
-                                    CaltexIGeoCom.C_floor = cFloor[0].Value;
-                                }
                                 continue;
                             }
                         }

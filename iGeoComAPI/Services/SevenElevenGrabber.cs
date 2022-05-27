@@ -89,6 +89,8 @@ namespace iGeoComAPI.Services
                         sevenElevenIGeoCom.Class = "CMF";
                         sevenElevenIGeoCom.E_District = shopEn.District;
                         sevenElevenIGeoCom.Shop = 1;
+                        sevenElevenIGeoCom.ChineseName = "7-11便利店";
+                        sevenElevenIGeoCom.EnglishName = "7-Eleven";
                         if (shopEn.Opening_24 == "1")
                         {
                             sevenElevenIGeoCom.Subcat = " ";

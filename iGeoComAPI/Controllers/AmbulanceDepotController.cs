@@ -14,14 +14,16 @@ namespace iGeoComAPI.Controllers
         private readonly ILogger<AmbulanceDepotController> _logger;
         private readonly AmbulanceDepotGrabber _ambulanceDepotGrabber;
         private readonly IGeoComGrabRepository _iGeoComGrabRepository;
+        private readonly IGeoComRepository _iGeoComRepository;
 
         AmbulanceDepotModel ambulanceDepotModel = new AmbulanceDepotModel();
 
-        public AmbulanceDepotController(AmbulanceDepotGrabber ambulanceDepotGrabber, ILogger<AmbulanceDepotController> logger, IGeoComGrabRepository iGeoComGrabRepository)
+        public AmbulanceDepotController(AmbulanceDepotGrabber ambulanceDepotGrabber, ILogger<AmbulanceDepotController> logger, IGeoComGrabRepository iGeoComGrabRepository, IGeoComRepository iGeoComRepository)
         {
             _ambulanceDepotGrabber = ambulanceDepotGrabber;
             _logger = logger;
             _iGeoComGrabRepository = iGeoComGrabRepository;
+            _iGeoComRepository = iGeoComRepository;
 
         }
 
@@ -31,10 +33,12 @@ namespace iGeoComAPI.Controllers
         {
             try
             {
-                string name = this.GetType().Name.Replace("Controller", "").ToLower();
-                var result = await _iGeoComGrabRepository.GetShopsByName(name);
-                if (result == null)
-                    return NotFound();
+                //string name = this.GetType().Name.Replace("Controller", "").ToLower();
+                //var result = await _iGeoComGrabRepository.GetShopsByName(name);
+                //if (result == null)
+                //    return NotFound();
+                var result = await _ambulanceDepotGrabber.GetWebSiteItems();
+
                 return Ok(result);
             }
             catch (Exception ex)
@@ -50,6 +54,26 @@ namespace iGeoComAPI.Controllers
                 string name = this.GetType().Name.Replace("Controller", "").ToLower();
                 var result = await _iGeoComGrabRepository.GetShopsByName(name);
                 return CsvFile.Download(result, name);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+
+        }
+
+        [HttpGet("delta/download")]
+        public async Task<IActionResult> GetDelta()
+        {
+            try
+            {
+                string name = this.GetType().Name.Replace("Controller", "").ToLower();
+
+                var previousResult = await _iGeoComRepository.GetShops(9);
+                //var newResult = await _iGeoComGrabRepository.GetShopsByName(name);
+                var newResult = await _iGeoComGrabRepository.GetShopsByShopId(9);
+                var result = Comparator.GetComparedResult(newResult, previousResult, "ambulance");
+                return CsvFile.Download(result, $"{name}_delta");
             }
             catch (Exception ex)
             {

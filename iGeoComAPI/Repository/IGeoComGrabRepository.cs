@@ -11,6 +11,14 @@ namespace iGeoComAPI.Repository
             _dataAccess = dataAccess;
         }
 
+        public async Task<List<IGeoComGrabModel>> GetShops()
+        {
+
+            string query = "SELECT * FROM igeocomTable";
+            var result = await _dataAccess.LoadData<IGeoComGrabModel>(query, new {});
+            return result;
+        }
+
         public async Task<List<IGeoComGrabModel>> GetShopsByShopId(int id)
         {
             

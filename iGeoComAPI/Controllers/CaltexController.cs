@@ -15,15 +15,15 @@ namespace iGeoComAPI.Controllers
         private  ILogger<CaltexController> _logger;
         private CaltexGrabber _caltexGrabber;
         private IGeoComGrabRepository _iGeoComGrabRepository;
+        private readonly IGeoComRepository _iGeoComRepository;
 
-        IGeoComGrabModel igeoComGrabModel = new IGeoComGrabModel();
-        CaltexModel caltexModel = new CaltexModel();
 
-        public CaltexController(CaltexGrabber caltexGrabber, ILogger<CaltexController> logger, IGeoComGrabRepository iGeoComGrabRepository)
+        public CaltexController(CaltexGrabber caltexGrabber, ILogger<CaltexController> logger, IGeoComGrabRepository iGeoComGrabRepository, IGeoComRepository iGeoComRepository)
         {
             _caltexGrabber = caltexGrabber;
             _logger = logger;
             _iGeoComGrabRepository = iGeoComGrabRepository;
+            _iGeoComRepository = iGeoComRepository;
         }
 
         [HttpGet]
@@ -56,6 +56,25 @@ namespace iGeoComAPI.Controllers
                 return StatusCode(500, ex.Message);
             }
 
+        }
+
+        [HttpGet("delta/download")]
+        public async Task<IActionResult> GetDelta()
+        {
+            try
+            {
+                string name = this.GetType().Name.Replace("Controller", "").ToLower();
+
+                var previousResult = await _iGeoComRepository.GetShops(7);
+                //var newResult = await _iGeoComGrabRepository.GetShopsByName(name);
+                var newResult = await _iGeoComGrabRepository.GetShopsByShopId(7);
+                var result = Comparator.GetComparedResult(newResult, previousResult);
+                return CsvFile.Download(result, $"{name}_delta");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         [HttpPost]

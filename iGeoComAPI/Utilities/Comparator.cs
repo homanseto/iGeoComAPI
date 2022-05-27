@@ -30,16 +30,14 @@ namespace iGeoComAPI.Utilities
                         for (j = 0; j < rightLength; j++)
                             if (status.Contains("modified"))
                             {
-                                if (Regexs.TrimAllAndAdjustSpace(left[i].E_Address)?.ToLower().Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].E_Address)?.ToLower().Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Replace("\t", "").Trim() &&
-                               Regexs.TrimAllAndAdjustSpace(left[i].C_Address)?.Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].C_Address)?.Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Replace("\t", "").Trim()
-                                )
+                                if (left[i].Compare_E_Address == right[j].Compare_E_Address &&
+                                    left[i].Compare_C_Address == right[j].Compare_C_Address)
                                     break;
                             }
                             else
                             {
-                                if (Regexs.TrimAllAndAdjustSpace(left[i].E_Address)?.ToLower().Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].E_Address)?.ToLower().Replace(" ", "").Replace(",", "").Replace(".", "").Replace("-", "").Replace("\t", "").Trim() |
-                                   Regexs.TrimAllAndAdjustSpace(left[i].C_Address)?.Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].C_Address)?.Replace(" ", "").Replace(",", "").Replace(".", "").Replace("-", "").Replace("\t", "").Trim()
-                                    )
+                                if (left[i].Compare_E_Address == right[j].Compare_E_Address |
+                                    left[i].Compare_C_Address == right[j].Compare_C_Address)
                                     break;
                             }
                     }
@@ -47,20 +45,43 @@ namespace iGeoComAPI.Utilities
                         for (j = 0; j < rightLength; j++)
                             if (status.Contains("modified"))
                             {
-                                if (Regexs.TrimAllAndAdjustSpace(left[i].Tel_No)?.Replace(" ", "").Replace("-", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].Tel_No)?.Replace(" ", "").Replace("-", "").Replace("\t", "").Trim() &&
-                               Regexs.TrimAllAndAdjustSpace(left[i].C_Address)?.Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].C_Address)?.Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Replace("\t", "").Trim()&&
-                               Regexs.TrimAllAndAdjustSpace(left[i].ChineseName)?.ToLower().Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].ChineseName)?.ToLower().Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Replace("\t", "").Trim()
-
-                                )
+                                if (left[i].Compare_Tel == right[j].Compare_Tel &&
+                                    left[i].Compare_C_Address == right[j].Compare_C_Address
+                                    )
                                     break;
                             }
                             else
                             {
-
-                                if (Regexs.TrimAllAndAdjustSpace(left[i].Tel_No)?.Replace(" ", "").Replace("-", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].Tel_No)?.Replace(" ", "").Replace("-", "").Replace("\t", "").Trim() |
-                                   Regexs.TrimAllAndAdjustSpace(left[i].C_Address)?.Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].C_Address)?.Replace(" ", "").Replace(",", "").Replace(".", "").Replace("-", "").Replace("\t", "").Trim()|
-                                   Regexs.TrimAllAndAdjustSpace(left[i].ChineseName)?.ToLower().Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].ChineseName)?.ToLower().Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Replace("\t", "").Trim()
+                                if (String.IsNullOrEmpty(left[i].Compare_Tel) && String.IsNullOrEmpty(right[j].Compare_Tel))
+                                {
+                                    if (
+                                    left[i].Compare_C_Address == right[j].Compare_C_Address 
                                     )
+                                        break;
+                                }
+                                else
+                                {
+                                    if (
+                                        left[i].Compare_C_Address == right[j].Compare_C_Address |
+                                        left[i].Compare_Tel == right[j].Compare_Tel
+                                        )
+                                        break;
+                                }
+                            }
+                    }
+                    else if(without == "ambulance")
+                    {
+                        for (j = 0; j < rightLength; j++)
+                            if (status.Contains("modified"))
+                            {
+                                if (left[i].Compare_ChineseName == right[j].Compare_ChineseName &&
+                                    left[i].Compare_EnglishName == right[j].Compare_EnglishName)
+                                    break;
+                            }
+                            else
+                            {
+                                if (left[i].Compare_ChineseName == right[j].Compare_ChineseName |
+                                    left[i].Compare_EnglishName == right[j].Compare_EnglishName)
                                     break;
                             }
                     }
@@ -69,20 +90,28 @@ namespace iGeoComAPI.Utilities
                         for (j = 0; j < rightLength; j++)
                             if (status.Contains("modified"))
                             {
-                                if (Regexs.TrimAllAndAdjustSpace(left[i].E_Address)?.ToLower().Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].E_Address)?.ToLower().Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Replace("\t", "").Trim() &&
-                               Regexs.TrimAllAndAdjustSpace(left[i].Tel_No)?.Replace(" ", "").Replace("-", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].Tel_No)?.Replace(" ", "").Replace("-", "").Replace("\t", "").Trim() &&
-                               Regexs.TrimAllAndAdjustSpace(left[i].C_Address)?.Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].C_Address)?.Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Replace("\t", "").Trim()
-                                )
+                                if (left[i].Compare_E_Address == right[j].Compare_E_Address &&
+                                    left[i].Compare_C_Address == right[j].Compare_C_Address &&
+                                    left[i].Compare_Tel == right[j].Compare_Tel
+                                    )
                                     break;
                             }
                             else
                             {
+                                if( String.IsNullOrEmpty(left[i].Compare_Tel) && String.IsNullOrEmpty(right[j].Compare_Tel))
+                                {
+                                    if (left[i].Compare_E_Address == right[j].Compare_E_Address |
+                                        left[i].Compare_C_Address == right[j].Compare_C_Address) 
+                                        break;
+                                }
+                                else
+                                {
+                                    if (left[i].Compare_E_Address == right[j].Compare_E_Address |
+                                        left[i].Compare_C_Address == right[j].Compare_C_Address |
+                                        left[i].Compare_Tel == right[j].Compare_Tel)
+                                        break;
+                                }
 
-                                if (Regexs.TrimAllAndAdjustSpace(left[i].E_Address)?.ToLower().Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].E_Address)?.ToLower().Replace(" ", "").Replace(",", "").Replace(".", "").Replace("-", "").Replace("\t", "").Trim() |
-                                   Regexs.TrimAllAndAdjustSpace(left[i].Tel_No)?.Replace(" ", "").Replace("-", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].Tel_No)?.Replace(" ", "").Replace("-", "").Replace("\t", "").Trim() |
-                                   Regexs.TrimAllAndAdjustSpace(left[i].C_Address)?.Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].C_Address)?.Replace(" ", "").Replace(",", "").Replace(".", "").Replace("-", "").Replace("\t", "").Trim()
-                                    )
-                                    break;
                             }
                     }
 
@@ -111,8 +140,8 @@ namespace iGeoComAPI.Utilities
                 {
                     for (j = 0; j < rightLength; j++)
 
-                        if (left[i].Compare_E_Address == right[i].Com |
-                           Regexs.TrimAllAndAdjustSpace(left[i].C_Address)?.Replace(" ", "").Replace(",", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].C_Address)?.Replace(" ", "").Replace(",", "").Replace("\t", "").Trim()
+                        if (left[i].Compare_E_Address ==  right[j].Compare_E_Address |
+                            left[i].Compare_C_Address == right[j].Compare_C_Address
                             )
                             break;
                 }
@@ -120,21 +149,44 @@ namespace iGeoComAPI.Utilities
                 {
                     for (j = 0; j < rightLength; j++)
 
-                        if (Regexs.TrimAllAndAdjustSpace(left[i].Tel_No)?.Replace(" ", "").Replace("-", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].Tel_No)?.Replace(" ", "").Replace("-", "").Replace("\t", "").Trim() |
-                           Regexs.TrimAllAndAdjustSpace(left[i].C_Address)?.Replace(" ", "").Replace(",", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].C_Address)?.Replace(" ", "").Replace(",", "").Replace("\t", "").Trim()|
-                           Regexs.TrimAllAndAdjustSpace(left[i].ChineseName)?.ToLower().Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].ChineseName)?.ToLower().Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Replace("\t", "").Trim()
-                            )
-                            break;
+                        if (String.IsNullOrEmpty(left[i].Compare_Tel) && String.IsNullOrEmpty(right[j].Compare_Tel))
+                        {
+                            if (left[i].Compare_C_Address == right[j].Compare_C_Address )
+                                break;
+                        }
+                        else
+                        {
+                            if (left[i].Compare_C_Address == right[j].Compare_C_Address |
+                                left[i].Compare_Tel == right[j].Compare_Tel)
+                                break;
+                        }
+
+                }
+                else if (without == "ambulance")
+                {
+                    for (j = 0; j < rightLength; j++)
+
+                            if (left[i].Compare_ChineseName == right[j].Compare_ChineseName |
+                                left[i].Compare_EnglishName == right[j].Compare_EnglishName)
+                                break;
                 }
                 else
                 {
                     for (j = 0; j < rightLength; j++)
 
-                        if (Regexs.TrimAllAndAdjustSpace(left[i].E_Address)?.ToLower().Replace(" ", "").Replace(",", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].E_Address)?.ToLower().Replace(" ", "").Replace(",", "").Replace("\t", "").Trim() |
-                           Regexs.TrimAllAndAdjustSpace(left[i].Tel_No)?.Replace(" ", "").Replace("-", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].Tel_No)?.Replace(" ", "").Replace("-", "").Replace("\t", "").Trim() |
-                           Regexs.TrimAllAndAdjustSpace(left[i].C_Address)?.Replace(" ", "").Replace(",", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(right[j].C_Address)?.Replace(" ", "").Replace(",", "").Replace("\t", "").Trim()
-                            )
-                            break;
+                        if (String.IsNullOrEmpty(left[i].Tel_No) && String.IsNullOrEmpty(right[j].Tel_No))
+                        {
+                            if (left[i].Compare_E_Address == right[j].Compare_E_Address |
+                                left[i].Compare_C_Address == right[j].Compare_C_Address)
+                                break;
+                        }
+                        else
+                        {
+                            if (left[i].Compare_E_Address == right[j].Compare_E_Address |
+                                left[i].Compare_C_Address == right[j].Compare_C_Address |
+                                left[i].Compare_Tel == right[j].Compare_Tel)
+                                break;
+                        }
                 }
                 if (j == rightLength)
                 {
@@ -157,9 +209,8 @@ namespace iGeoComAPI.Utilities
                 {
                     if (without == "tel")
                     {
-                       if (Regexs.TrimAllAndAdjustSpace(v.E_Address)?.ToLower().Replace(" ", "").Replace(",", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(item.E_Address)?.ToLower().Replace(" ", "").Replace(",", "").Replace("\t", "").Trim() |
-                       Regexs.TrimAllAndAdjustSpace(v.C_Address)?.Replace(" ", "").Replace(",", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(item.C_Address)?.Replace(" ", "").Replace(",", "").Replace("\t", "").Trim()
-                        )
+                       if (v.Compare_E_Address == item.Compare_E_Address |
+                           v.Compare_C_Address == item.Compare_C_Address)
                         {
                             DeltaChange.Add(item);
                         }
@@ -167,23 +218,47 @@ namespace iGeoComAPI.Utilities
                     else if (without == "vango")
                     {
 
-                        if (Regexs.TrimAllAndAdjustSpace(v.Tel_No)?.Replace(" ", "").Replace("-", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(item.Tel_No)?.Replace(" ", "").Replace("-", "").Replace("\t", "").Trim() |
-                        Regexs.TrimAllAndAdjustSpace(v.C_Address)?.Replace(" ", "").Replace(",", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(item.C_Address)?.Replace(" ", "").Replace(",", "").Replace("\t", "").Trim()|
-                        Regexs.TrimAllAndAdjustSpace(v.ChineseName)?.ToLower().Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Trim() == Regexs.TrimAllAndAdjustSpace(item.ChineseName)?.ToLower().Replace(" ", "").Replace(",", "").Replace("-", "").Replace(".", "").Replace("\t", "").Trim()
-
-                        )
+                        if (String.IsNullOrEmpty(v.Tel_No) && String.IsNullOrEmpty(item.Tel_No))
                         {
-                            DeltaChange.Add(item);
+                            if (v.Compare_C_Address == item.Compare_C_Address)
+                            {
+                                DeltaChange.Add(item);
+                            }
                         }
+                        else
+                        {
+                            if (v.Compare_C_Address == item.Compare_C_Address |
+                                v.Compare_Tel == item.Compare_Tel)
+                            {
+                                DeltaChange.Add(item);
+                            }
+                        }
+
+                    }
+                    else if (without == "ambulance")
+                    {
+                            if (v.Compare_ChineseName == item.Compare_ChineseName |
+                                v.Compare_EnglishName == item.Compare_EnglishName)
+                                break;
                     }
                     else
                     {
-                       if (Regexs.TrimAllAndAdjustSpace(v.E_Address)?.ToLower().Replace(" ", "").Replace(",", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(item.E_Address)?.ToLower().Replace(" ", "").Replace(",", "").Replace("\t", "").Trim() |
-                       Regexs.TrimAllAndAdjustSpace(v.Tel_No)?.Replace(" ", "").Replace("-", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(item.Tel_No)?.Replace(" ", "").Replace("-", "").Replace("\t", "").Trim() |
-                       Regexs.TrimAllAndAdjustSpace(v.C_Address)?.Replace(" ", "").Replace(",", "").Replace("\t", "").Trim() == Regexs.TrimAllAndAdjustSpace(item.C_Address)?.Replace(" ", "").Replace(",", "").Replace("\t", "").Trim()
-                        )
+                        if (String.IsNullOrEmpty(v.Compare_Tel) && String.IsNullOrEmpty(item.Compare_Tel))
                         {
-                            DeltaChange.Add(item);
+                            if (v.Compare_C_Address == item.Compare_C_Address |
+                                v.Compare_E_Address == item.Compare_E_Address)
+                            {
+                                DeltaChange.Add(item);
+                            }
+                        }
+                        else
+                        {
+                            if (v.Compare_C_Address == item.Compare_C_Address |
+                                v.Compare_E_Address == item.Compare_E_Address |
+                                v.Compare_Tel == item.Compare_Tel)
+                            {
+                                DeltaChange.Add(item);
+                            }
                         }
                     }
                 }

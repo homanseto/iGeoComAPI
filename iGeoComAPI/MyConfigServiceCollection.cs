@@ -30,6 +30,8 @@ namespace iGeoComAPI
             services.Configure<ChinaMobileOptions>(config.GetSection(ChinaMobileOptions.SectionName));
             services.Configure<NorthEastOptions>(config.GetSection(NorthEastOptions.SectionName));
             services.Configure<GoogleMapOptions>(config.GetSection(GoogleMapOptions.SectionName));
+            services.Configure<LinkHkOptions>(config.GetSection(LinkHkOptions.SectionName));
+            services.Configure<MarketPlaceOptions>(config.GetSection(MarketPlaceOptions.SectionName));
             return services;
         }
     }

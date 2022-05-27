@@ -45,7 +45,7 @@ namespace iGeoComAPI.Models
         {
             get
             {
-                return Regexs.TrimAllAndAdjustSpace(this.E_Address.ToLower().Replace(" ", "").Replace(",", "").Replace("\t", "").Trim());
+                return Regexs.TrimAllAndAdjustSpace(this.E_Address.ToLower().Replace(" ", "").Replace(",", "").Replace(".", "").Replace("/", "").Replace("\t", "").Trim());
             }
         }
 
@@ -53,7 +53,7 @@ namespace iGeoComAPI.Models
         {
             get
             {
-                return Regexs.TrimAllAndAdjustSpace(this.C_Address.ToLower().Replace(" ", "").Replace(",", "").Replace("\t", "").Trim());
+                return Regexs.TrimAllAndAdjustSpace(this.C_Address.ToLower().Replace(" ", "").Replace(",", "").Replace(".", "").Replace("/", "").Replace("\t", "").Trim());
             }
         }
         public string Compare_ChineseName
@@ -74,7 +74,7 @@ namespace iGeoComAPI.Models
         {
             get
             {
-                return Regexs.TrimAllAndAdjustSpace(this.Tel_No.Replace(" ", "").Replace("-", "").Replace("\t", "").Trim());
+                return Regexs.TrimAllAndAdjustSpace(this.Tel_No.Replace(" ", "").Replace("-", "").Replace("\t", "").Replace("+", "").Trim());
             }
         }
     }

@@ -76,7 +76,9 @@ namespace iGeoComAPI.Services
                     circleKIGeoCom.Class = "CMF";
                     circleKIGeoCom.GrabId = $"circleK_{en.store_no}";
                     circleKIGeoCom.E_Address = en.address;
-                    if(en.operation_hour.ToLower() == "24 hours")
+                    circleKIGeoCom.ChineseName = "OK便利店";
+                    circleKIGeoCom.EnglishName = "Circle K";
+                    if (en.operation_hour.ToLower() == "24 hours")
                     {
                         circleKIGeoCom.Subcat = " ";
                     }

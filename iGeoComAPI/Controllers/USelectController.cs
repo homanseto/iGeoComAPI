@@ -14,11 +14,14 @@ namespace iGeoComAPI.Controllers
         private readonly ILogger<USelectController> _logger;
         private readonly USelectGrabber _uSelectGrabber;
         private readonly IGeoComGrabRepository _iGeoComGrabRepository;
-        public USelectController(USelectGrabber uSelectGrabber, ILogger<USelectController> logger, IGeoComGrabRepository iGeoComGrabRepository)
+        private readonly IGeoComRepository _iGeoComRepository;
+
+        public USelectController(USelectGrabber uSelectGrabber, ILogger<USelectController> logger, IGeoComGrabRepository iGeoComGrabRepository, IGeoComRepository iGeoComRepository)
         {
             _uSelectGrabber = uSelectGrabber;
             _logger = logger;
             _iGeoComGrabRepository = iGeoComGrabRepository;
+            _iGeoComRepository = iGeoComRepository;
         }
 
         [HttpGet]
@@ -52,6 +55,26 @@ namespace iGeoComAPI.Controllers
             }
 
         }
+
+        [HttpGet("delta/download")]
+        public async Task<IActionResult> GetDelta()
+        {
+            try
+            {
+                string name = this.GetType().Name.Replace("Controller", "").ToLower();
+
+                var previousResult = await _iGeoComRepository.GetShops(6);
+                //var newResult = await _iGeoComGrabRepository.GetShopsByName(name);
+                var newResult = await _iGeoComGrabRepository.GetShopsByShopId(6);
+                var result = Comparator.GetComparedResult(newResult, previousResult);
+                return CsvFile.Download(result, $"{name}_delta");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
 
         [HttpPost]
         public async Task<IActionResult> Post()

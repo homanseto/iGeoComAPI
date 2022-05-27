@@ -42,7 +42,23 @@ namespace iGeoComAPI.Controllers
                 var result = await _iGeoComGrabRepository.GetShopsByType(type);
                 if (result == null)
                     return BadRequest("type not found.");
-                return Ok(CsvFile.Download(result, type));
+                return CsvFile.Download(result, "All");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpGet("download")]
+        public async Task<IActionResult> GetDownloadAll()
+        {
+            try
+            {
+                var result = await _iGeoComGrabRepository.GetShops();
+                if (result == null)
+                    return BadRequest("type not found.");
+                return CsvFile.Download(result, "allshop");
             }
             catch (Exception ex)
             {

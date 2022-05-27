@@ -6,23 +6,16 @@ using Microsoft.Extensions.Options;
 
 namespace iGeoComAPI.Services
 {
-    public class USelectGrabber
+    public class USelectGrabber: AbstractGrabber
     {
         private ConnectClient _httpClient;
         private JsonFunction _json;
         private IOptions<USelectOptions> _options;
         private IMemoryCache _memoryCache;
         private ILogger<USelectGrabber> _logger;
+        private readonly IDataAccess dataAccess;
 
-        //public USelectGrabber(ConnectClient httpClient, JsonFunction json, IOptions<USelectOptions> options, IMemoryCache memoryCache, ILogger<USelectGrabber> logger, IOptions<NorthEastOptions> absOptions) : base(httpClient, absOptions, json)
-        //{
-        //    _httpClient = httpClient;
-        //    _json = json;
-        //    _options = options;
-        //    _memoryCache = memoryCache;
-        //    _logger = logger;
-        //}
-        public USelectGrabber(ConnectClient httpClient, JsonFunction json, IOptions<USelectOptions> options, IMemoryCache memoryCache, ILogger<USelectGrabber> logger, IOptions<NorthEastOptions> absOptions)
+        public USelectGrabber(ConnectClient httpClient, JsonFunction json, IOptions<USelectOptions> options, IMemoryCache memoryCache, ILogger<USelectGrabber> logger, IOptions<NorthEastOptions> absOptions, IDataAccess dataAccess) : base(httpClient, absOptions, json, dataAccess)
         {
             _httpClient = httpClient;
             _json = json;
@@ -31,7 +24,8 @@ namespace iGeoComAPI.Services
             _logger = logger;
         }
 
-        public async Task<List<IGeoComGrabModel>?> GetWebSiteItems()
+
+        public override async Task<List<IGeoComGrabModel>?> GetWebSiteItems()
         {
             _logger.LogInformation("start grabbing Vango rowdata");
             var selectQuery = new Dictionary<string, string>()
@@ -52,15 +46,16 @@ namespace iGeoComAPI.Services
             var selectResult = _json.Dserialize<List<USelectModel>>(selectConnectHttp);
             var selectFoodResult = _json.Dserialize<List<USelectModel>>(selectFoodConnectHttp);
             var selectMiniResult = _json.Dserialize<List<USelectModel>>(selectMiniConnectHttp);
-            var parsingSelectResult = await Parsing(selectResult);
-            var parsingSelectFoodResult = await Parsing(selectFoodResult);
-            var parsingSelectMiniResult = await Parsing(selectMiniResult);
+            var parsingSelectResult = Parsing(selectResult);
+            var parsingSelectFoodResult =  Parsing(selectFoodResult);
+            var parsingSelectMiniResult = Parsing(selectMiniResult);
             List<IGeoComGrabModel> USelectResult = parsingSelectResult.Concat(parsingSelectFoodResult).Concat(parsingSelectMiniResult).ToList();
-            return USelectResult;
+            var result =await this.GetShopInfo(USelectResult);
+            return result;
             // _memoryCache.Set("iGeoCom", mergeResult, TimeSpan.FromHours(2));
         }
 
-        public async  Task<List<IGeoComGrabModel>> Parsing(List<USelectModel>? grabResult)
+        public List<IGeoComGrabModel> Parsing(List<USelectModel>? grabResult)
         {
             try
             {
@@ -73,17 +68,13 @@ namespace iGeoComAPI.Services
                         USelectIGeoCom.ChineseName = $"{shop.store_number}-{shop.storename}";
                         USelectIGeoCom.EnglishName = $"{shop.store_number}-{shop.storename_en}";
                         USelectIGeoCom.C_Address = shop.address_description.Replace(" ", "");
-                        var cFloor = Regexs.ExtractC_Floor().Matches(USelectIGeoCom.C_Address);
-                        if (cFloor.Count > 0 && cFloor != null)
-                        {
-                            USelectIGeoCom.C_floor = cFloor[0].Value;
-                        }
                         USelectIGeoCom.E_Address = shop.address_description_en;
                         USelectIGeoCom.Latitude = Convert.ToDouble(shop.address_geo_lat);
                         USelectIGeoCom.Longitude = Convert.ToDouble(shop.address_geo_lng);
                         USelectIGeoCom.Class = "CMF";
                         USelectIGeoCom.Type = "SMK";
                         USelectIGeoCom.Source = "27";
+                        USelectIGeoCom.Shop = 6;
                         USelectIGeoCom.Web_Site = _options.Value.BaseUrl;
                         USelectIGeoCom.GrabId = $"{shop.store_number}_{shop.storename}{shop.address_geo_lat}";
                         USelectIGeoCom.Tel_No = $"{shop.telephone} {shop.telephone2} {shop.telephone3}";

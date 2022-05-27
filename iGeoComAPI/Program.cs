@@ -59,6 +59,8 @@ builder.Services.AddSingleton<CSLGrabber>();
 builder.Services.AddSingleton<CheungKongGrabber>();
 builder.Services.AddSingleton<CatholicOrgGrabber>();
 builder.Services.AddSingleton<ChinaMobileGrabber>();
+builder.Services.AddSingleton<MarketPlaceGrabber>();
+builder.Services.AddSingleton<LinkHkGrabber>();
 builder.Services.AddSingleton<ConnectClient>();
 builder.Services.AddSingleton<JsonFunction>();
 builder.Services.AddSingleton<IDataAccess,DataAccess>();

@@ -16,5 +16,10 @@
         {
             get { return "(.*)(?=!)"; }
         }
+
+        public static string containLetter
+        {
+            get { return "[a-zA-Z]"; }
+        }
     }
 }

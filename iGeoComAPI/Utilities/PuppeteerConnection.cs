@@ -36,28 +36,36 @@ namespace iGeoComAPI.Utilities
 
         public async Task<string> GetUrl(string url)
         {
-            var timeout = (int)TimeSpan.FromSeconds(5).TotalMilliseconds;
-            var options = new NavigationOptions { Timeout = timeout };
-            BrowserFetcher browserFetcher = new BrowserFetcher();
-            await browserFetcher.DownloadAsync(BrowserFetcher.DefaultChromiumRevision);
-            using (var browser = await Puppeteer.LaunchAsync(new LaunchOptions
+            try
             {
-                Headless = false,
-                IgnoreHTTPSErrors = true
-            })) using (var page = await browser.NewPageAsync())
-            {
-                new NavigationOptions().WaitUntil = new[]
-               {
+                var timeout = (int)TimeSpan.FromSeconds(5).TotalMilliseconds;
+                var options = new NavigationOptions { Timeout = timeout };
+                BrowserFetcher browserFetcher = new BrowserFetcher();
+                await browserFetcher.DownloadAsync(BrowserFetcher.DefaultChromiumRevision);
+                using (var browser = await Puppeteer.LaunchAsync(new LaunchOptions
+                {
+                    Headless = false,
+                    IgnoreHTTPSErrors = true
+                })) using (var page = await browser.NewPageAsync())
+                {
+                    new NavigationOptions().WaitUntil = new[]
+                   {
                     WaitUntilNavigation.Load,
                     WaitUntilNavigation.DOMContentLoaded,
                     WaitUntilNavigation.Networkidle0,
                     WaitUntilNavigation.Networkidle2
                 };
-                await page.GoToAsync(url);
-                await page.WaitForTimeoutAsync(timeout);
-                var link = page.Url;
-                return link;
+                    await page.GoToAsync(url);
+                    await page.WaitForTimeoutAsync(timeout);
+                    var link = page.Url;
+                    return link;
+                }
+            }catch(Exception ex)
+            {
+                
+                return string.Empty;
             }
+
         }
     }
 }
