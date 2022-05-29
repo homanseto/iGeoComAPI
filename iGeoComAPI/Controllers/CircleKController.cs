@@ -48,7 +48,7 @@ namespace iGeoComAPI.Controllers
             {
                 string name = this.GetType().Name.Replace("Controller", "").ToLower();
                 var result = await _iGeoComGrabRepository.GetShopsByName(name);
-                return CsvFile.Download(result, name);
+                return Utilities.File.Download(result, name);
             }
             catch (Exception ex)
             {
@@ -68,7 +68,7 @@ namespace iGeoComAPI.Controllers
                 //var newResult = await this.iGeoComGrabRepository.GetShopsByName(name);
                 var newResult = await _iGeoComGrabRepository.GetShopsByShopId(2);
                 var result = Comparator.GetComparedResult(newResult, previousResult,"tel");
-                return CsvFile.Download(result, $"{name}_delta");
+                return Utilities.File.Download(result, $"{name}_delta");
             }
             catch (Exception ex)
             {

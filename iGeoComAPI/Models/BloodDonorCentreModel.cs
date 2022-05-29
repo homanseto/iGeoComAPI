@@ -12,7 +12,7 @@
         }  
         public static string RegLagLngRegex
         {
-            get { return "([^,]*)"; }
+            get { return "[^,]*"; }
         }
         public static string ExtraList
         {
@@ -21,6 +21,6 @@
         public static string ReplaceExtraInfoWithWorkingHour { 
         get { return @"(^.+LatLng\(|\),.*location_map_pop_title fs_20"">|<a class=""marker_detail_link fs_12"".*<div class=""location_addr"">|<\/div><div class=""location_openhour"">|<\/div><div class=""location_addtocalander"">.*)";
             }
-        } 
+        }
     }
 }

@@ -15,6 +15,36 @@ namespace iGeoComAPI.Utilities
             var result = MergeResults(addedResult, removedResult, orgModified, newModified, without);
             return result;
         }
+
+        public static List<IGeoComDeltaModel> GetAdded(List<IGeoComGrabModel> newData, List<IGeoComGrabModel> previousData, string without = "")
+        {
+            var addedResult = CompareShop(newData, previousData, "added", without);
+            return addedResult;
+        }
+
+        public static List<IGeoComDeltaModel> GetRemoved(List<IGeoComGrabModel> newData, List<IGeoComGrabModel> previousData, string without = "")
+        {
+            var removedResult = CompareShop(previousData, newData, "removed", without);
+            return removedResult;
+        }
+
+        public static List<IGeoComDeltaModel> GetDelta(List<IGeoComGrabModel> newData, List<IGeoComGrabModel> previousData, string without = "")
+        {
+            var removedResult = CompareShop(previousData, newData, "removed", without);
+            var addedResult = CompareShop(newData, previousData, "added", without);
+            var newIntersectResult = Intersection(newData, addedResult, without);
+            var previousIntersectResult = Intersection(previousData, removedResult, without);
+            var newModified = CompareShop(newIntersectResult, previousIntersectResult, "new_modified", without);
+            var orgModified = CompareShop(previousIntersectResult, newIntersectResult, "old_modified", without);
+            List<IGeoComDeltaModel> emptyAdded = new List<IGeoComDeltaModel>();
+            List<IGeoComDeltaModel> emptyRemoved = new List<IGeoComDeltaModel>();
+            var result = MergeResults(emptyAdded, emptyRemoved, orgModified, newModified, without);
+            return result;
+        }
+
+
+
+
         public static List<IGeoComDeltaModel> CompareShop(List<IGeoComGrabModel> left, List<IGeoComGrabModel> right, string status, string without ="")
         {
             int leftLength = left.Count;
@@ -197,7 +227,7 @@ namespace iGeoComAPI.Utilities
             return IntersectionIGeoComList;
         }
 
-        public static List<IGeoComDeltaModel> MergeResults(List<IGeoComDeltaModel> added, List<IGeoComDeltaModel> removed, List<IGeoComDeltaModel> newDelta, List<IGeoComDeltaModel> orgDelta, string without = "")
+        public static List<IGeoComDeltaModel> MergeResults(List<IGeoComDeltaModel> added , List<IGeoComDeltaModel> removed, List<IGeoComDeltaModel> newDelta, List<IGeoComDeltaModel> orgDelta, string without = "")
         {
             List<IGeoComDeltaModel> DeltaChange = new List<IGeoComDeltaModel>();
             List<IGeoComDeltaModel> mergeAddedAndRemoved = added.Concat(removed).ToList();

@@ -51,7 +51,7 @@ namespace iGeoComAPI.Controllers
                 //var newResult = await this.iGeoComGrabRepository.GetShopsByName(name);
                 var newResult = await _iGeoComGrabRepository.GetShopsByShopId(8);
                 var result = Comparator.GetComparedResult(newResult, previousResult);
-                return CsvFile.Download(result, $"{name}_delta");
+                return Utilities.File.Download(result, $"{name}_delta");
             }
             catch (Exception ex)
             {

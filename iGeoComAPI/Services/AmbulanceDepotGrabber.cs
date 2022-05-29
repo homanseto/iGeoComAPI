@@ -72,6 +72,8 @@ namespace iGeoComAPI.Services
                     AmbulanceDepotIGeoCom.Class = "GOV";
                     AmbulanceDepotIGeoCom.Type = "FSN";
                     AmbulanceDepotIGeoCom.Shop = 9;
+                    AmbulanceDepotIGeoCom.Source = "22";
+                    AmbulanceDepotIGeoCom.Web_Site = _options.Value.BaseUrl;
                     AmbulanceDepotIGeoCom.GrabId = $"ambulanceDepot_{shopEn.Fax}{index}".Replace(" ","");
                     foreach (var shopZh in zhResult)
                     {

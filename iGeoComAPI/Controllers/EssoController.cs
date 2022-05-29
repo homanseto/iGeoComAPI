@@ -4,25 +4,25 @@ using iGeoComAPI.Utilities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace iGeoComAPI.Models
+namespace iGeoComAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AromeNMaximsCakesController : ControllerBase
+    public class EssoController : ControllerBase
     {
-        private ILogger<AromeNMaximsCakesController> _logger;
-        private AromeNMaximsCakesGrabber _aromeNMaximsCakesGrabber;
+        private ILogger<EssoController> _logger;
+        private EssoGrabber _essoGrabber;
+        private readonly IGeoComRepository _iGeoComRepository;
         private readonly IGeoComGrabRepository _iGeoComGrabRepository;
 
-        //IGeoComModel igeoComModel = new IGeoComModel();
 
 
-        public AromeNMaximsCakesController(AromeNMaximsCakesGrabber aromeNMaximsCakesGrabber, ILogger<AromeNMaximsCakesController> logger, IGeoComGrabRepository iGeoComGrabRepository)
+        public EssoController(EssoGrabber essoGrabber, ILogger<EssoController> logger, IGeoComRepository iGeoComRepository, IGeoComGrabRepository iGeoComGrabRepository)
         {
-            _aromeNMaximsCakesGrabber = aromeNMaximsCakesGrabber;
+            _essoGrabber = essoGrabber;
             _logger = logger;
+            _iGeoComRepository = iGeoComRepository;
             _iGeoComGrabRepository = iGeoComGrabRepository;
-
         }
 
         [HttpGet]
@@ -31,9 +31,7 @@ namespace iGeoComAPI.Models
             try
             {
                 string name = this.GetType().Name.Replace("Controller", "").ToLower();
-                var result = await _iGeoComGrabRepository.GetShopsByName(name);
-                if (result == null)
-                    return NotFound();
+                var result = await _essoGrabber.GetWebSiteItems();
                 return Ok(result);
             }
             catch (Exception ex)
@@ -41,14 +39,19 @@ namespace iGeoComAPI.Models
                 return StatusCode(500, ex.Message);
             }
         }
-        [HttpGet("download")]
-        public async Task<IActionResult> GetDownload()
+
+        [HttpGet("delta/download")]
+        public async Task<IActionResult> GetDelta()
         {
             try
             {
                 string name = this.GetType().Name.Replace("Controller", "").ToLower();
-                var result = await _iGeoComGrabRepository.GetShopsByName(name);
-                return Utilities.File.Download(result, name);
+
+                var previousResult = await _iGeoComRepository.GetShops(10);
+                //var newResult = await _iGeoComGrabRepository.GetShopsByName(name);
+                var newResult = await _iGeoComGrabRepository.GetShopsByShopId(10);
+                var result = Comparator.GetComparedResult(newResult, previousResult, "tel");
+                return Utilities.File.Download(result, $"{name}_delta");
             }
             catch (Exception ex)
             {
@@ -60,7 +63,7 @@ namespace iGeoComAPI.Models
         [HttpPost]
         public async Task<IActionResult> Post()
         {
-            var GrabbedResult = await _aromeNMaximsCakesGrabber.GetWebSiteItems();
+            var GrabbedResult = await _essoGrabber.GetWebSiteItems();
             _iGeoComGrabRepository.CreateShops(GrabbedResult);
             return Ok(GrabbedResult);
         }

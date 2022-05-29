@@ -27,13 +27,14 @@ namespace iGeoComAPI.Services
             _logger = logger;
         }
 
-        public async Task<string?> GetWebSiteItems()
+        public async Task<List<IGeoComGrabModel?>> GetWebSiteItems()
         {
             var enScript = await _puppeteerConnection.PuppeteerGrabber<string>(_options.Value.EnUrl, infoCode, waitSelector);
             var zhScript = await _puppeteerConnection.PuppeteerGrabber<string>(_options.Value.ZhUrl, infoCode, waitSelector);
             var extractEnResult = Extract1stLevelData(enScript);
             var extractZhResult = Extract1stLevelData(zhScript);
-            return enScript;
+            var mergeResult = MergeEnAndZh(extractEnResult, extractZhResult);
+            return mergeResult;
         }
 
         public List<BloodDonorCentreModel> Extract1stLevelData(string info)
@@ -49,16 +50,12 @@ namespace iGeoComAPI.Services
                 {
                     BloodDonorCentreModel bloodDonorCentre = new BloodDonorCentreModel();
                     List<string> replacedResult = Regex.Replace(item, BloodDonorCentreModel.ReplaceExtraInfo, "/split/").Split("/split/").ToList();
-                    if(ReferenceEquals != null)
+                    if(!String.IsNullOrEmpty(item))
                     {
                         bloodDonorCentre.Name = replacedResult[2];
                         bloodDonorCentre.Address = replacedResult[3];
                         bloodDonorCentre.LatLng = replacedResult[1];
-                        /*
-                        var matchesEn = _rgx.Matches(shopEn.LatLng!);
-                        bloodDonorCentre.Latitude = matchesEn[0].Value;
-                        bloodDonorCentre.Longitude = matchesEn[2].Value;
-                        */
+                        
                         BloodDonorCentreList.Add(bloodDonorCentre);
                     }
                     else
@@ -74,6 +71,54 @@ namespace iGeoComAPI.Services
                 _logger.LogError(ex.Message);
                 throw;
             }
+        }
+
+        public List<IGeoComGrabModel> MergeEnAndZh(List<BloodDonorCentreModel>? enResult, List<BloodDonorCentreModel>? zhResult)
+        {
+            List<IGeoComGrabModel> BloodDonorCentreIGeoComList = new List<IGeoComGrabModel>();
+            var _lagLngRgx = Regexs.ExtractInfo(BloodDonorCentreModel.RegLagLngRegex);
+            try
+            {
+                if (enResult != null && zhResult != null)
+                {
+                    //Parallel.ForEach(enResult, new ParallelOptions() { MaxDegreeOfParallelism = 10 }, (shopEn) =>
+                    foreach (var item in enResult.Select((value, i) => new { i, value }))
+                    {
+                        var shopEn = item.value;
+                        var index = item.i;
+                        IGeoComGrabModel BloodDonorCentreIGeoCom = new IGeoComGrabModel();
+                        BloodDonorCentreIGeoCom.E_Address = shopEn.Address;
+                        var matchesEn = _lagLngRgx.Matches(shopEn.LatLng!);
+                        BloodDonorCentreIGeoCom.Latitude = Convert.ToDouble(matchesEn[0].Value);
+                        BloodDonorCentreIGeoCom.Longitude = Convert.ToDouble(matchesEn[2].Value);
+                        BloodDonorCentreIGeoCom.Type = "BDC";
+                        BloodDonorCentreIGeoCom.Class = "HNC";
+                        BloodDonorCentreIGeoCom.Shop = 11;
+                        BloodDonorCentreIGeoCom.ChineseName = "香港紅十字會";
+                        BloodDonorCentreIGeoCom.EnglishName = "Blood Transfusion";
+                        BloodDonorCentreIGeoCom.Web_Site = _options.Value.BaseUrl;
+                        BloodDonorCentreIGeoCom.GrabId = $"BloodTransfusion{BloodDonorCentreIGeoCom.Latitude}{BloodDonorCentreIGeoCom.Longitude}".Replace(".","").Trim();
+
+                        foreach (BloodDonorCentreModel shopZh in zhResult)
+                        {
+                            
+                            if (shopEn.LatLng == shopZh.LatLng)
+                            {
+                                BloodDonorCentreIGeoCom.C_Address = shopZh.Address.Replace(" ", "");
+
+                                continue;
+                            }
+                        }
+                        BloodDonorCentreIGeoComList.Add(BloodDonorCentreIGeoCom);
+                    }
+                }
+                return BloodDonorCentreIGeoComList;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
         }
     }
 }

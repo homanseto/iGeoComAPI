@@ -32,6 +32,7 @@ namespace iGeoComAPI
             services.Configure<GoogleMapOptions>(config.GetSection(GoogleMapOptions.SectionName));
             services.Configure<LinkHkOptions>(config.GetSection(LinkHkOptions.SectionName));
             services.Configure<MarketPlaceOptions>(config.GetSection(MarketPlaceOptions.SectionName));
+            services.Configure<EssoOptions>(config.GetSection(EssoOptions.SectionName));
             return services;
         }
     }

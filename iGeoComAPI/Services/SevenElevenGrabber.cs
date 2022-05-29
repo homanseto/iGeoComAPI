@@ -127,28 +127,5 @@ namespace iGeoComAPI.Services
             }
 
         }
-
-
-        //public List<IGeoComGrabModel> FindAdded(List<IGeoComGrabModel> newData, List<IGeoComRepository> previousData)
-        //{
-        //    int newDataLength = newData.Count;
-        //    int previousDataLength = previousData.Count;
-        //    List<IGeoComGrabModel> AddedSevenElevenIGeoComList = new List<IGeoComGrabModel>();
-
-        //    for (int i = 0; i < newDataLength; i++)
-        //    {
-        //        int j;
-        //        for (j = 0; j < previousDataLength; j++)
-        //            if (newData[i].E_Address?.Replace(",", "").Replace(" ", "") == previousData[j].E_Address?.Replace(",", "").Replace(" ", "") |
-        //               newData[i].C_Address?.Replace(",", "").Replace(" ", "") == previousData[j].C_Address?.Replace(",", "").Replace(" ", "")
-        //                )
-        //                break;
-        //        if (j == previousDataLength)
-        //        {
-        //            AddedSevenElevenIGeoComList.Add(newData[i]);
-        //        }
-        //    }
-        //    return AddedSevenElevenIGeoComList;
-        //}
     }
 }
