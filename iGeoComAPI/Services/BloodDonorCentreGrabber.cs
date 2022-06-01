@@ -1,5 +1,6 @@
 ﻿using iGeoComAPI.Models;
 using iGeoComAPI.Options;
+using iGeoComAPI.Repository;
 using iGeoComAPI.Utilities;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
@@ -7,11 +8,15 @@ using System.Text.RegularExpressions;
 
 namespace iGeoComAPI.Services
 {
-    public class BloodDonorCentreGrabber
+    public class BloodDonorCentreGrabber: AbstractGrabber
     {
+        private readonly ConnectClient _httpClient;
         private PuppeteerConnection _puppeteerConnection;
         private IOptions<BloodDonorCentreOptions> _options;
         private IMemoryCache _memoryCache;
+        private readonly IGeoComGrabRepository _iGeoComGrabRepository;
+        private readonly IDataAccess dataAccess;
+
         private ILogger<BloodDonorCentreGrabber> _logger;
         private string infoCode = @"() =>{
                                  const selectors = Array.from(document.querySelectorAll(' .pg_content > .page_content > .ppb_render_row > .inner_wrapper > script'));
@@ -19,7 +24,8 @@ namespace iGeoComAPI.Services
                                  }";
         private string waitSelector = ".loaded";
 
-        public BloodDonorCentreGrabber(PuppeteerConnection puppeteerConnection, IOptions<BloodDonorCentreOptions> options, IMemoryCache memoryCache, ILogger<BloodDonorCentreGrabber> logger)
+        public BloodDonorCentreGrabber(PuppeteerConnection puppeteerConnection, IOptions<BloodDonorCentreOptions> options, IMemoryCache memoryCache, ILogger<BloodDonorCentreGrabber> logger,
+    IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json, IDataAccess dataAccess) : base(httpClient, absOptions, json, dataAccess)
         {
             _puppeteerConnection = puppeteerConnection;
             _options = options;
@@ -27,14 +33,15 @@ namespace iGeoComAPI.Services
             _logger = logger;
         }
 
-        public async Task<List<IGeoComGrabModel?>> GetWebSiteItems()
+        public override async Task<List<IGeoComGrabModel>?> GetWebSiteItems()
         {
             var enScript = await _puppeteerConnection.PuppeteerGrabber<string>(_options.Value.EnUrl, infoCode, waitSelector);
             var zhScript = await _puppeteerConnection.PuppeteerGrabber<string>(_options.Value.ZhUrl, infoCode, waitSelector);
             var extractEnResult = Extract1stLevelData(enScript);
             var extractZhResult = Extract1stLevelData(zhScript);
             var mergeResult = MergeEnAndZh(extractEnResult, extractZhResult);
-            return mergeResult;
+            var result = await this.GetShopInfo(mergeResult);
+            return result;
         }
 
         public List<BloodDonorCentreModel> Extract1stLevelData(string info)
@@ -93,7 +100,7 @@ namespace iGeoComAPI.Services
                         BloodDonorCentreIGeoCom.Longitude = Convert.ToDouble(matchesEn[2].Value);
                         BloodDonorCentreIGeoCom.Type = "BDC";
                         BloodDonorCentreIGeoCom.Class = "HNC";
-                        BloodDonorCentreIGeoCom.Shop = 11;
+                        BloodDonorCentreIGeoCom.Shop = 12;
                         BloodDonorCentreIGeoCom.ChineseName = "香港紅十字會";
                         BloodDonorCentreIGeoCom.EnglishName = "Blood Transfusion";
                         BloodDonorCentreIGeoCom.Web_Site = _options.Value.BaseUrl;

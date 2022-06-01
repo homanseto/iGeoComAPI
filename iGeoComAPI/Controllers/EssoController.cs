@@ -47,10 +47,10 @@ namespace iGeoComAPI.Controllers
             {
                 string name = this.GetType().Name.Replace("Controller", "").ToLower();
 
-                var previousResult = await _iGeoComRepository.GetShops(10);
+                var previousResult = await _iGeoComRepository.GetShops(11);
                 //var newResult = await _iGeoComGrabRepository.GetShopsByName(name);
-                var newResult = await _iGeoComGrabRepository.GetShopsByShopId(10);
-                var result = Comparator.GetComparedResult(newResult, previousResult, "tel");
+                var newResult = await _iGeoComGrabRepository.GetShopsByShopId(11);
+                var result = Comparator.GetComparedResult(newResult, previousResult);
                 return Utilities.File.Download(result, $"{name}_delta");
             }
             catch (Exception ex)

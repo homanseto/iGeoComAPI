@@ -43,8 +43,9 @@ namespace iGeoComAPI.Services
                 var dseEnResult = _json.Dserialize<EssoLocations>(enGrabResult);
                 var dseZhResult = _json.Dserialize<EssoLocations>(zhGrabResult);
                 var mergeresult = MergeEnAndZh(dseEnResult.locations, dseZhResult.locations);
+                var result = await this.GetShopInfo(mergeresult);
 
-                return mergeresult;
+                return result;
             }
             catch (Exception ex)
             {
@@ -70,7 +71,7 @@ namespace iGeoComAPI.Services
                         EssoIGeoCom.Longitude = shopEn.Longitude;
                         EssoIGeoCom.Type = "PFS";
                         EssoIGeoCom.Class = "UTI";
-                        EssoIGeoCom.Shop = 10;
+                        EssoIGeoCom.Shop = 11;
                         EssoIGeoCom.ChineseName = $"{shopEn.brandName}-{shopEn.locationName}";
                         if (shopEn.Open24Hours == true)
                         {
@@ -88,7 +89,7 @@ namespace iGeoComAPI.Services
                         phoneList += num;
                         }
                         EssoIGeoCom.Tel_No = phoneList;
-                        EssoIGeoCom.GrabId = $"asso-{shopEn.locationID}";
+                        EssoIGeoCom.GrabId = $"esso-{shopEn.locationID}";
                         foreach (EssoModel shopZh in zhResult)
                         {
 
