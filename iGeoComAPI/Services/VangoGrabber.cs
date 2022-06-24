@@ -66,11 +66,6 @@ namespace iGeoComAPI.Services
                     VangoIGeoCom.ChineseName = $"{shop.store_number}-{shop.storename}";
                     VangoIGeoCom.EnglishName = $"{shop.store_number}-{shop.storename}";
                     VangoIGeoCom.C_Address = shop.address_description.Replace(" ", "");
-                    var cFloor = Regexs.ExtractC_Floor().Matches(VangoIGeoCom.C_Address);
-                    if (cFloor.Count > 0 && cFloor != null)
-                    {
-                        VangoIGeoCom.C_floor = cFloor[0].Value;
-                    }
                     VangoIGeoCom.Latitude = Convert.ToDouble(shop.address_geo_lat);
                     VangoIGeoCom.Longitude = Convert.ToDouble(shop.address_geo_lng);
                     VangoIGeoCom.Class = "CMF";

@@ -62,7 +62,7 @@ namespace iGeoComAPI.Services
                     ParknShopIGeoCom.Latitude = Convert.ToDouble(shopEn.Latitude);
                     ParknShopIGeoCom.Longitude = Convert.ToDouble(shopEn.Longitude);
                     ParknShopIGeoCom.Tel_No = shopEn.Phone;
-                    ParknShopIGeoCom.Type = "CVS";
+                    ParknShopIGeoCom.Type = "SMK";
                     ParknShopIGeoCom.Class = "CMF";
                     ParknShopIGeoCom.Shop = 5;
                     ParknShopIGeoCom.Web_Site = _options.Value.BaseUrl;
@@ -73,7 +73,6 @@ namespace iGeoComAPI.Services
                         {
                             ParknShopIGeoCom.ChineseName = $"{shopZh.BrandName}-{shopZh.Name}";
                             ParknShopIGeoCom.C_Address = shopZh.Address.Replace(" ", "");
-                            
                             break;
                         }
                     }

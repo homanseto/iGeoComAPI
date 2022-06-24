@@ -21,14 +21,13 @@ namespace iGeoComAPI.Controllers
 
         }
 
-        [HttpGet("{type}")]
-        public async Task<ActionResult<List<IGeoComGrabModel>>> GetShopsByType(string type)
+        [HttpGet("testing")]
+        public ActionResult GetShopsByType()
         {
             try
             {
-                var result = await _iGeoComGrabRepository.GetShopsByType(type);
-                if (result == null)
-                    return NotFound();
+                
+                var result = Comparator2.TestingCompare();
                 return Ok(result);
             }
             catch (Exception ex)
@@ -36,6 +35,22 @@ namespace iGeoComAPI.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+
+        //[HttpGet("{type}")]
+        //public async Task<ActionResult<List<IGeoComGrabModel>>> GetShopsByType(string type)
+        //{
+        //    try
+        //    {
+        //        var result = await _iGeoComGrabRepository.GetShopsByType(type);
+        //        if (result == null)
+        //            return NotFound();
+        //        return Ok(result);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, ex.Message);
+        //    }
+        //}
         [HttpGet("{type}/download")]
         public async Task<ActionResult<FileStreamResult>> GetDownload(string type)
         {

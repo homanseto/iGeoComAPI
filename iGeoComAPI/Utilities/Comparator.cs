@@ -82,7 +82,7 @@ namespace iGeoComAPI.Utilities
                             }
                             else
                             {
-                                if (String.IsNullOrEmpty(left[i].Compare_Tel) && String.IsNullOrEmpty(right[j].Compare_Tel))
+                                if ((String.IsNullOrEmpty(left[i].Compare_Tel) && String.IsNullOrEmpty(right[j].Compare_Tel)) | (left[i].Compare_Tel.Length < 8 && right[j].Compare_Tel.Length < 8))
                                 {
                                     if (
                                     left[i].Compare_C_Address == right[j].Compare_C_Address 
@@ -128,7 +128,7 @@ namespace iGeoComAPI.Utilities
                             }
                             else
                             {
-                                if( String.IsNullOrEmpty(left[i].Compare_Tel) && String.IsNullOrEmpty(right[j].Compare_Tel))
+                                if((String.IsNullOrEmpty(left[i].Compare_Tel) && String.IsNullOrEmpty(right[j].Compare_Tel)) | (left[i].Compare_Tel.Length < 8 && right[j].Compare_Tel.Length < 8))
                                 {
                                     if (left[i].Compare_E_Address == right[j].Compare_E_Address |
                                         left[i].Compare_C_Address == right[j].Compare_C_Address) 
@@ -179,7 +179,7 @@ namespace iGeoComAPI.Utilities
                 {
                     for (j = 0; j < rightLength; j++)
 
-                        if (String.IsNullOrEmpty(left[i].Compare_Tel) && String.IsNullOrEmpty(right[j].Compare_Tel))
+                        if ((String.IsNullOrEmpty(left[i].Compare_Tel) && String.IsNullOrEmpty(right[j].Compare_Tel)) | (left[i].Compare_Tel.Length < 8 && right[j].Compare_Tel.Length < 8))
                         {
                             if (left[i].Compare_C_Address == right[j].Compare_C_Address )
                                 break;
@@ -204,7 +204,7 @@ namespace iGeoComAPI.Utilities
                 {
                     for (j = 0; j < rightLength; j++)
 
-                        if (String.IsNullOrEmpty(left[i].Tel_No) && String.IsNullOrEmpty(right[j].Tel_No))
+                        if ((String.IsNullOrEmpty(left[i].Compare_Tel) && String.IsNullOrEmpty(right[j].Compare_Tel)) | (left[i].Compare_Tel.Length < 8 && right[j].Compare_Tel.Length < 8))
                         {
                             if (left[i].Compare_E_Address == right[j].Compare_E_Address |
                                 left[i].Compare_C_Address == right[j].Compare_C_Address)
@@ -248,7 +248,7 @@ namespace iGeoComAPI.Utilities
                     else if (without == "vango")
                     {
 
-                        if (String.IsNullOrEmpty(v.Tel_No) && String.IsNullOrEmpty(item.Tel_No))
+                        if ((String.IsNullOrEmpty(v.Compare_Tel) && String.IsNullOrEmpty(item.Compare_Tel)) | (v.Compare_Tel.Length < 8 && item.Compare_Tel.Length < 8))
                         {
                             if (v.Compare_C_Address == item.Compare_C_Address)
                             {
@@ -273,7 +273,7 @@ namespace iGeoComAPI.Utilities
                     }
                     else
                     {
-                        if (String.IsNullOrEmpty(v.Compare_Tel) && String.IsNullOrEmpty(item.Compare_Tel))
+                        if ((String.IsNullOrEmpty(v.Compare_Tel) && String.IsNullOrEmpty(item.Compare_Tel)) | (v.Compare_Tel.Length < 8 && item.Compare_Tel.Length < 8))
                         {
                             if (v.Compare_C_Address == item.Compare_C_Address |
                                 v.Compare_E_Address == item.Compare_E_Address)
