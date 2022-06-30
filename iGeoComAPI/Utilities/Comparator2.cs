@@ -7,118 +7,195 @@ namespace iGeoComAPI.Utilities
     public static class Comparator2
     {
 
-        public static List<IGeoComDeltaModel> CompareShop(List<IGeoComGrabModel> left, List<IGeoComGrabModel> right, string status)
-        {
-            List<IGeoComDeltaModel> result = new List<IGeoComDeltaModel>();
-            if(left != null && right != null)
+            public static List<bool> GetShopCompareList<T>(T self, T to, params string[] ignore) where T : class
             {
-                foreach(var lShop in left)
+                if (self != null && to != null)
                 {
-                    foreach(var rShop in right)
+                    Type type = typeof(T);
+                    List<string> ignoreList = new List<string>(ignore);
+                    var compareList = new List<bool>();
+                    foreach (System.Reflection.PropertyInfo pi in type.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance))
                     {
-                        if (lShop.E_Address == rShop.E_Address || lShop.C_Address == rShop.C_Address || lShop.Tel_No == rShop.Tel_No)
+                        if (!ignoreList.Contains(pi.Name))
                         {
-                            result.Add(CreateDeltaModel(lShop, status));
+                            object selfValue = type.GetProperty(pi.Name).GetValue(self, null);
+                            object toValue = type.GetProperty(pi.Name).GetValue(to, null);
+                            int? aaa = null;
+                            int bbb = 1;
+                            if (selfValue != toValue && (selfValue == null || !selfValue.Equals(toValue)))
+                            {
+                                compareList.Add(false);
+                            }
+                            else
+                            {
+                                compareList.Add(true);
+                            }
+                        }
+                    }
+                    return compareList;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+
+            public static List<IGeoComGrabModel> addedOrRemovedList(List<IGeoComGrabModel> left, List<IGeoComGrabModel> right, params string[] ignoreList)
+            {
+                var leftLength = left.Count();
+                var rightLenght = right.Count();
+                var addedOrRemovedList = new List<IGeoComGrabModel>();
+                foreach (var lShop in left)
+                {
+                    int counting = 0;
+                    foreach (var rShop in right)
+                    {
+                        List<bool> exist = GetShopCompareList(lShop, rShop, ignoreList);
+                        if (exist.Contains(true))
+                        {
                             break;
                         }
                         else
                         {
-                            if(lShop.E_Address == rShop.E_Address)
-                            {
-
-                            }
+                            counting++;
                         }
-
+                    }
+                    if (counting == rightLenght)
+                    {
+                        addedOrRemovedList.Add(lShop);
                     }
                 }
+                return addedOrRemovedList;
             }
 
-            return result;
-
-        }
-
-        public class ClassA
-        {
-            public string StringProperty { get; set; } = String.Empty;
-
-            public int IntProperty { get; set; }
-            public string Type { get; set;} = String.Empty;
-            public SubClassA? SubClass { get; set; }
-        }
-
-        public class SubClassA
-        {
-            public bool BoolProperty { get; set; }
-        }
-
-        public class MyComaparer: AbstractValueComparer<string>
-        {
-            public override bool Compare(string obj1, string obj2, ComparisonSettings settings)
+            public static List<IGeoComGrabModel> IntersectionList(List<IGeoComGrabModel> list, List<IGeoComGrabModel> filterList, params string[] ignoreList)
             {
-                return obj1 == obj2; //Implement comparison logic here  
+                var newResult = new List<IGeoComGrabModel>();
+                newResult.AddRange(list);
+                foreach (var item in list)
+                {
+                    foreach (var filter in filterList)
+                    {
+                        List<bool> exist = GetShopCompareList(item, filter, ignoreList);
+                        if (!exist.Contains(false))
+                        {
+                            newResult.Remove(item);
+                            break;
+                        }
+                    }
+                }
+                return newResult;
             }
-        }
 
-
-        public static bool TestingCompare()
-        {
-            var a1 = new ClassA { StringProperty = "String", IntProperty = 1, Type = "A" };
-            var a2 = new ClassA { StringProperty = "String", IntProperty = 2, Type = "B" };
-            var a3 = new ClassA { StringProperty = "String", IntProperty = 4, Type = "C" };
-            var b1 = new ClassA { StringProperty = "String", IntProperty = 3, Type = "A" };
-            var b2 = new ClassA { StringProperty = "String", IntProperty = 2, Type = "B" };
-            var b3 = new ClassA { StringProperty = "String", IntProperty = 5, Type = "C" };
-            var b4 = new ClassA { StringProperty = "String", IntProperty = 6, Type = "D" };
-            var aList = new List<ClassA>();
-            var bList = new List<ClassA>();
-            aList.Add(a1);
-            aList.Add(a2);
-            aList.Add(a3);
-            bList.Add(b1);
-            bList.Add(b2);
-            bList.Add(b3);
-            bList.Add(b4);
-            IEnumerable<Difference> differences;
-            var comparer = new ObjectsComparer.Comparer<List<ClassA>>();
-            var isEqual = comparer.Compare(aList, bList, out differences);
-            var differencesList = differences.ToList();
-            if (!isEqual)
+            public static List<IGeoComGrabModel> ModifiedList(List<IGeoComGrabModel> left, List<IGeoComGrabModel> right, params string[] ignoreList)
             {
-                Console.WriteLine(differencesList);
+                var newResult = new List<IGeoComGrabModel>();
+                foreach (var l in left)
+                {
+                    foreach (var r in right)
+                    {
+                        List<bool> exist = GetShopCompareList(l, r, ignoreList);
+                        if (exist.Contains(true) && exist.Contains(false))
+                        {
+                            newResult.Add(l);
+                            break;
+                        }
+                    }
+                }
+                return newResult;
             }
-            return isEqual;
-        }
 
-        public static IGeoComDeltaModel CreateDeltaModel(IGeoComGrabModel data, string status)
-        {
-            IGeoComDeltaModel newShop = new IGeoComDeltaModel();
-            newShop.status = status;
-            newShop.GeoNameId = data.GeoNameId;
-            newShop.EnglishName = data.EnglishName;
-            newShop.ChineseName = data.ChineseName;
-            newShop.Class = data.Class;
-            newShop.Type = data.Type;
-            newShop.Subcat = data.Subcat;
-            newShop.Easting = data.Easting;
-            newShop.Northing = data.Northing;
-            newShop.Source = data.Source;
-            newShop.E_floor = data.E_floor;
-            newShop.C_floor = data.C_floor;
-            newShop.E_sitename = data.E_sitename;
-            newShop.C_sitename = data.C_sitename;
-            newShop.E_area = data.E_area;
-            newShop.C_area = data.C_area;
-            newShop.C_District = data.C_District;
-            newShop.E_District = data.E_District;
-            newShop.E_Region = data.E_Region;
-            newShop.C_Region = data.C_Region;
-            newShop.E_Address = data.E_Address;
-            newShop.C_Address = data.C_Address;
-            newShop.Tel_No = data.Tel_No;
-            newShop.Fax_No = data.Fax_No;
-            newShop.Web_Site = data.Web_Site;
-            newShop.Rev_Date = data.Rev_Date;
-            return newShop;
+            public static List<IGeoComDeltaModel> GetComparedResult(List<IGeoComGrabModel> newResult, List<IGeoComGrabModel> oldResult, params string[] ignoreList)
+            {
+                var addedList = addedOrRemovedList(newResult, oldResult, ignoreList);
+                var removedList = addedOrRemovedList(oldResult, newResult, ignoreList);
+                var newIntersect = IntersectionList(newResult, addedList, ignoreList);
+                var oldIntersect = IntersectionList(oldResult, removedList, ignoreList);
+                var newModified = ModifiedList(newIntersect, oldIntersect, ignoreList);
+                var oldModified = ModifiedList(oldIntersect, newIntersect, ignoreList);
+                var newModifiedWithState = CreateDeltaModelList(newModified, "new").ToList();
+                var oldModifiedWithState = CreateDeltaModelList(oldModified, "old").ToList();
+                var modilfiedList = new List<IGeoComDeltaModel>();
+                foreach(var (n, i) in newModifiedWithState.Select((n, i) => (n, i)))
+                {
+                    modilfiedList.Add(n);
+                    foreach(var (m,i2) in oldModifiedWithState.Select((m, i2) => (m, i2)))
+                    {
+                        if(i == i2)
+                        {
+                            modilfiedList.Add(m);
+                        }
+                    }
+                }
+                var result = CreateDeltaModelList(addedList, "added").Concat(CreateDeltaModelList(removedList, "removed")).Concat(modilfiedList).ToList();
+                return result;
+            }
+
+            //public static bool PublicInstancePropertiesEqual<T>(T self, T to, params string[] ignore) where T : class
+            //{
+            //    if (self != null && to != null)
+            //    {
+            //        Type type = typeof(T);
+            //        List<string> ignoreList = new List<string>(ignore);
+            //        foreach (System.Reflection.PropertyInfo pi in type.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance))
+            //        {
+            //            if (!ignoreList.Contains(pi.Name))
+            //            {
+            //                object selfValue = type.GetProperty(pi.Name).GetValue(self, null);
+            //                object toValue = type.GetProperty(pi.Name).GetValue(to, null);
+
+            //                if (selfValue != toValue && (selfValue == null || !selfValue.Equals(toValue)))
+            //                {
+            //                    return false;
+            //                }
+            //            }
+            //        }
+            //        return true;
+            //    }
+            //   return self == to;
+            //}
+
+            public static List<IGeoComDeltaModel> CreateDeltaModelList(List<IGeoComGrabModel> list, string status)
+            {
+                var deltaList = new List<IGeoComDeltaModel>();
+                foreach (var item in list)
+                {
+                    var delta = CreateDeltaModel(item, status);
+                    deltaList.Add(delta);
+                }
+                return deltaList;
+            }
+
+            public static IGeoComDeltaModel CreateDeltaModel(IGeoComGrabModel data, string status)
+            {
+                IGeoComDeltaModel newShop = new IGeoComDeltaModel();
+                newShop.status = status;
+                newShop.GeoNameId = data.GeoNameId;
+                newShop.EnglishName = data.EnglishName;
+                newShop.ChineseName = data.ChineseName;
+                newShop.Class = data.Class;
+                newShop.Type = data.Type;
+                newShop.Subcat = data.Subcat;
+                newShop.Easting = data.Easting;
+                newShop.Northing = data.Northing;
+                newShop.Source = data.Source;
+                newShop.E_floor = data.E_floor;
+                newShop.C_floor = data.C_floor;
+                newShop.E_sitename = data.E_sitename;
+                newShop.C_sitename = data.C_sitename;
+                newShop.E_area = data.E_area;
+                newShop.C_area = data.C_area;
+                newShop.C_District = data.C_District;
+                newShop.E_District = data.E_District;
+                newShop.E_Region = data.E_Region;
+                newShop.C_Region = data.C_Region;
+                newShop.E_Address = data.E_Address;
+                newShop.C_Address = data.C_Address;
+                newShop.Tel_No = data.Tel_No;
+                newShop.Fax_No = data.Fax_No;
+                newShop.Web_Site = data.Web_Site;
+                newShop.Rev_Date = data.Rev_Date;
+                return newShop;
+            }
         }
     }
-}

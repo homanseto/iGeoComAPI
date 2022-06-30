@@ -45,7 +45,7 @@ namespace iGeoComAPI.Models
         {
             get
             {
-                return Regexs.TrimAllAndAdjustSpace(this.E_Address.ToLower().Replace(" ", "").Replace(",", "").Replace(".", "").Replace("/", "").Replace("(", "").Replace(")", "").Replace("，", "").Replace("<br/>","").Replace("<br />","").Replace("\t", "").Replace("\\", "").Replace("。", "").Trim());
+                return this.E_Address.ToLower().Replace(" ", "").Replace(",", "").Replace(".", "").Replace("/", "").Replace("(", "").Replace(")", "").Replace("，", "").Replace("<br/>","").Replace("<br />","").Replace("\t", "").Replace("\\", "").Replace("。", "").Trim();
             }
         }
 
@@ -53,28 +53,28 @@ namespace iGeoComAPI.Models
         {
             get
             {
-                return Regexs.TrimAllAndAdjustSpace(this.C_Address.ToLower().Replace(" ", "").Replace(",", "").Replace(".", "").Replace("/", "").Replace("(", "").Replace(")", "").Replace("，","").Replace("<br/>", "").Replace("<br />", "").Replace("\t", "").Replace("\\", "").Replace("。", "").Trim());
+                return this.C_Address.ToLower().Replace(" ", "").Replace(",", "").Replace(".", "").Replace("/", "").Replace("(", "").Replace(")", "").Replace("，","").Replace("<br/>", "").Replace("<br />", "").Replace("\t", "").Replace("\\", "").Replace("。", "").Trim();
             }
         }
         public string Compare_ChineseName
         {
             get
             {
-                return Regexs.TrimAllAndAdjustSpace(this.ChineseName.ToLower().Replace(" ", "").Replace(",", "").Replace("(", "").Replace(")", "").Replace("<br/>", "").Replace("\t", "").Replace("\\", "").Replace("。", "").Trim());
+                return this.ChineseName.ToLower().Replace(" ", "").Replace(",", "").Replace("(", "").Replace(")", "").Replace("<br/>", "").Replace("\t", "").Replace("\\", "").Replace("。", "").Trim();
             }
         }
         public string Compare_EnglishName
         {
             get
             {
-                return Regexs.TrimAllAndAdjustSpace(this.EnglishName.ToLower().Replace(" ", "").Replace(",", "").Replace("(", "").Replace(")", "").Replace("<br/>", "").Replace("\t", "").Replace("\\", "").Replace("。", "").Trim());
+                return this.EnglishName.ToLower().Replace(" ", "").Replace(",", "").Replace("(", "").Replace(")", "").Replace("<br/>", "").Replace("\t", "").Replace("\\", "").Replace("。", "").Trim();
             }
         }
         public string Compare_Tel
         {
             get
             {
-                return Regexs.TrimAllAndAdjustSpace(this.Tel_No.Replace(" ", "").Replace("-", "").Replace("\t", "").Replace("+", "").Replace("(", "").Replace("<br/>", "").Replace(")", "").Replace("\\", "").Replace("。", "").Trim());
+                return this.Tel_No.Replace(" ", "").Replace("-", "").Replace("\t", "").Replace("+", "").Replace("(", "").Replace("<br/>", "").Replace(")", "").Replace("\\", "").Replace("。", "").Trim();
             }
         }
     }

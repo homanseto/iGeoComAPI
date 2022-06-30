@@ -21,14 +21,18 @@ namespace iGeoComAPI.Controllers
 
         }
 
-        [HttpGet("testing")]
-        public ActionResult GetShopsByType()
+        [HttpGet("testing2")]
+        public async Task<ActionResult> Testing()
         {
             try
             {
-                
-                var result = Comparator2.TestingCompare();
-                return Ok(result);
+                var newResult = await _iGeoComGrabRepository.GetShopsByShopId(2);
+                var oldResult = await _iGeoComRepository.GetShops(2);
+                string[] ignoreList = new string[] { "GeoNameId", "EnglishName", "ChineseName", "Class", "Type", "Subcat", "Easting","Northing","Source",
+                    "E_floor", "C_floor", "E_sitename","C_sitename","E_area","C_area","C_Region", "E_Region", "C_District","E_District", "Fax_No", "Tel_No","Web_Site",
+                    "E_Address", "C_Address","Latitude", "Longitude","Shop","Rev_Date","Compare_Tel","GrabId", "Compare_ChineseName", "Compare_EnglishName"};
+                var resultList = Comparator2.GetComparedResult(newResult, oldResult, ignoreList);
+                return Utilities.File.Download(resultList, $"testing_delta");
             }
             catch (Exception ex)
             {
@@ -100,7 +104,7 @@ namespace iGeoComAPI.Controllers
                 var deltaResult2 = Comparator.GetDelta(newResult2, previousResult2, "tel");
                 var previousResult3 = await _iGeoComRepository.GetShops(3);
                 var newResult3 = await _iGeoComGrabRepository.GetShopsByShopId(3);
-                var addResult3 = Comparator.GetAdded(newResult3, previousResult3,"vango");
+                var addResult3 = Comparator.GetAdded(newResult3, previousResult3, "vango");
                 var removeResult3 = Comparator.GetRemoved(newResult3, previousResult3, "vango");
                 var deltaResult3 = Comparator.GetDelta(newResult3, previousResult3, "vango");
                 var previousResult4 = await _iGeoComRepository.GetShops(4);
@@ -140,7 +144,7 @@ namespace iGeoComAPI.Controllers
                 var deltaResult11 = Comparator.GetDelta(newResult11, previousResult11);
                 var previousResult12 = await _iGeoComRepository.GetShops(12);
                 var newResult12 = await _iGeoComGrabRepository.GetShopsByShopId(12);
-                var addResult12 = Comparator.GetAdded(newResult12, previousResult12,"tel");
+                var addResult12 = Comparator.GetAdded(newResult12, previousResult12, "tel");
                 var removeResult12 = Comparator.GetRemoved(newResult12, previousResult12, "tel");
                 var deltaResult12 = Comparator.GetDelta(newResult12, previousResult12, "tel");
                 var addedMerge = add1esult1.Concat(addResult2).Concat(addResult3).Concat(addResult4).Concat(addResult5).Concat(addResult6).Concat(addResult7).Concat(addResult8).Concat(addResult9).Concat(addResult11).Concat(addResult12).ToList();
@@ -179,5 +183,12 @@ namespace iGeoComAPI.Controllers
             }
         }
         */
+
+        //int[] intList = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 69, 23, 4 };
+        //var intLength = intList.Count();
+        //            foreach(int num in intList)
+        //            {
+        //                counting++;
+        //            }
     }
 }
