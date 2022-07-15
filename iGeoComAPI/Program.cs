@@ -24,14 +24,14 @@ builder.Services.AddControllers();
 
 //builder.Services.AddDbContext<DataContext>(options =>
 //{
-//        if (_environment.EnvironmentName == "Development" || _environment.EnvironmentName == "Production")
-//        {
-//            options.UseSqlServer(_configuration.GetConnectionString("Default_3DM"));
-//        }
-//        else
-//        {
-//            options.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"));
-//        }
+//    if (_environment.EnvironmentName == "Development" || _environment.EnvironmentName == "Production")
+//    {
+//        options.UseSqlServer(_configuration.GetConnectionString("Default_3DM"));
+//    }
+//    else
+//    {
+//        options.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"));
+//    }
 //});
 var folder = Environment.SpecialFolder.LocalApplicationData;
 var path = Environment.GetFolderPath(folder);
@@ -42,6 +42,14 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddLazyCache();
 //builder.Services.AddHttpClient();
+builder.Services.AddSingleton<ConnectClient>();
+builder.Services.AddSingleton<JsonFunction>();
+builder.Services.AddSingleton<IDataAccess, DataAccess>();
+builder.Services.AddSingleton<PuppeteerConnection>();
+builder.Services.AddSingleton<MyLogger>();
+builder.Services.AddSingleton<LatLngFunction>();
+builder.Services.AddSingleton<IGeoComRepository>();
+builder.Services.AddSingleton<IGeoComGrabRepository>();
 builder.Services.AddSingleton<SevenElevenGrabber>();
 builder.Services.AddSingleton<CaltexGrabber>();
 builder.Services.AddSingleton<ParknShopGrabber>();
@@ -62,14 +70,9 @@ builder.Services.AddSingleton<ChinaMobileGrabber>();
 builder.Services.AddSingleton<MarketPlaceGrabber>();
 builder.Services.AddSingleton<LinkHkGrabber>();
 builder.Services.AddSingleton<EssoGrabber>();
-builder.Services.AddSingleton<ConnectClient>();
-builder.Services.AddSingleton<JsonFunction>();
-builder.Services.AddSingleton<IDataAccess,DataAccess>();
-builder.Services.AddSingleton<PuppeteerConnection>();
-builder.Services.AddSingleton<MyLogger>();
-builder.Services.AddSingleton<LatLngFunction>();
-builder.Services.AddSingleton<IGeoComRepository>();
-builder.Services.AddSingleton<IGeoComGrabRepository>();
+builder.Services.AddSingleton<ShellGrabber>();
+builder.Services.AddSingleton<EMSDGrabber>();
+builder.Services.AddSingleton<SinopecGrabber>();
 builder.Services.AddMemoryCache();
 MyConfigServiceCollection.AddConfig(builder.Services, _configuration);
 builder.Services.AddOptions(); //IOptions<T>

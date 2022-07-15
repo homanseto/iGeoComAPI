@@ -9,6 +9,8 @@ namespace iGeoComAPI
         public static IServiceCollection AddConfig(
            this IServiceCollection services, IConfiguration config )
         {
+            services.Configure<NorthEastOptions>(config.GetSection(NorthEastOptions.SectionName));
+            services.Configure<GoogleMapOptions>(config.GetSection(GoogleMapOptions.SectionName));
             services.Configure<AeonOptions>(config.GetSection(AeonOptions.SectionName));
             services.Configure<ConnectionStringsOptions>(config.GetSection(ConnectionStringsOptions.SectionName));
             services.Configure<SevenElevenOptions>(config.GetSection(SevenElevenOptions.SectionName));
@@ -28,11 +30,12 @@ namespace iGeoComAPI
             services.Configure<CatholicOrgOptions>(config.GetSection(CatholicOrgOptions.SectionName));
             services.Configure<CheungKongOptions>(config.GetSection(CheungKongOptions.SectionName));
             services.Configure<ChinaMobileOptions>(config.GetSection(ChinaMobileOptions.SectionName));
-            services.Configure<NorthEastOptions>(config.GetSection(NorthEastOptions.SectionName));
-            services.Configure<GoogleMapOptions>(config.GetSection(GoogleMapOptions.SectionName));
             services.Configure<LinkHkOptions>(config.GetSection(LinkHkOptions.SectionName));
             services.Configure<MarketPlaceOptions>(config.GetSection(MarketPlaceOptions.SectionName));
             services.Configure<EssoOptions>(config.GetSection(EssoOptions.SectionName));
+            services.Configure<ShellOptions>(config.GetSection(ShellOptions.SectionName));
+            services.Configure<SinopecOptions>(config.GetSection(SinopecOptions.SectionName));
+            services.Configure<EMSDOptions>(config.GetSection(SinopecOptions.SectionName));
             return services;
         }
     }

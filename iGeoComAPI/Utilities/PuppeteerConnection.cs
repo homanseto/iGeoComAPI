@@ -5,31 +5,38 @@ namespace iGeoComAPI.Utilities
 {
     public class PuppeteerConnection
     {
-        public async Task<T> PuppeteerGrabber<T>(string? url, string? infoCode, string? waitSelector)
+        public async Task<T> PuppeteerGrabber<T>(string? url, string? infoCode, string? waitSelector, Dictionary<string, string>? cookies = null)
         {
             BrowserFetcher browserFetcher = new BrowserFetcher();
+            var lanchOptions = new LaunchOptions();
             await browserFetcher.DownloadAsync(BrowserFetcher.DefaultChromiumRevision);
 
             using (var browser = await Puppeteer.LaunchAsync(new LaunchOptions
             {
                 Headless = false,
                 IgnoreHTTPSErrors = true,
-                /*
-                Args = new[]
-                {
-                    "--proxy-server=http://ehmseto_01:YouMeK100@smoproxy:8080/",
-                    "--no-sandbox",
-                    "--disable-infobars",
-                    "--disable-setuid-sandbox",
-                    "--ignore-certificate-errors",
-                }
-                */
             }))
             using (var page = await browser.NewPageAsync())
             {
-                //await page.SetRequestInterceptionAsync(true);
                 await page.GoToAsync(url);
-                await page.WaitForSelectorAsync(waitSelector);
+                if (cookies != null)
+                {
+                    foreach (var cookie in cookies)
+                    {
+                        await page.SetCookieAsync(new CookieParam
+                        {
+                            Name = cookie.Key,
+                            Value = cookie.Value,
+                        });
+                    }
+                    await page.GoToAsync(url);
+                    await page.WaitForSelectorAsync(waitSelector);
+                    //await page.GetCookiesAsync(url);
+                }
+                else
+                {
+                    await page.WaitForSelectorAsync(waitSelector);
+                }
                 return await page.EvaluateFunctionAsync<T>(infoCode);
             }
         }
@@ -61,8 +68,7 @@ namespace iGeoComAPI.Utilities
                     return link;
                 }
             }catch(Exception ex)
-            {
-                
+            {        
                 return string.Empty;
             }
 

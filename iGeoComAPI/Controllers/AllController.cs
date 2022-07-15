@@ -30,7 +30,7 @@ namespace iGeoComAPI.Controllers
                 var oldResult = await _iGeoComRepository.GetShops(2);
                 string[] ignoreList = new string[] { "GeoNameId", "EnglishName", "ChineseName", "Class", "Type", "Subcat", "Easting","Northing","Source",
                     "E_floor", "C_floor", "E_sitename","C_sitename","E_area","C_area","C_Region", "E_Region", "C_District","E_District", "Fax_No", "Tel_No","Web_Site",
-                    "E_Address", "C_Address","Latitude", "Longitude","Shop","Rev_Date","Compare_Tel","GrabId", "Compare_ChineseName", "Compare_EnglishName"};
+                    "E_Address", "C_Address","Latitude", "Longitude","Shop","Rev_Date","GrabId", "Compare_ChineseName", "Compare_EnglishName","Compare_Tel"};
                 var resultList = Comparator2.GetComparedResult(newResult, oldResult, ignoreList);
                 return Utilities.File.Download(resultList, $"testing_delta");
             }
@@ -39,6 +39,7 @@ namespace iGeoComAPI.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+
 
         //[HttpGet("{type}")]
         //public async Task<ActionResult<List<IGeoComGrabModel>>> GetShopsByType(string type)

@@ -57,24 +57,43 @@ namespace iGeoComAPI.Controllers
         }
 
         [HttpGet("delta/download")]
-        public async Task<IActionResult> GetDelta()
+        public async Task<ActionResult> Testing()
         {
             try
             {
-                string name = this.GetType().Name.Replace("Controller", "").ToLower();
-
-                var previousResult = await _iGeoComRepository.GetShops(3);
-                //var newResult = await _iGeoComGrabRepository.GetShopsByName(name);
                 var newResult = await _iGeoComGrabRepository.GetShopsByShopId(3);
-                var result = Comparator.GetComparedResult(newResult, previousResult, "vango");
-                return Utilities.File.Download(result, $"{name}_delta");
+                var oldResult = await _iGeoComRepository.GetShops(3);
+                string[] ignoreList = new string[] { "GeoNameId", "EnglishName", "ChineseName", "Class", "Type", "Subcat", "Easting","Northing","Source",
+                    "E_floor", "C_floor", "E_sitename","C_sitename","E_area","C_area","C_Region", "E_Region", "C_District","E_District", "Fax_No", "Tel_No","Web_Site",
+                    "E_Address", "C_Address","Latitude", "Longitude","Shop","Rev_Date","GrabId", "Compare_ChineseName", "Compare_EnglishName","Compare_E_Address"};
+                var resultList = Comparator2.GetComparedResult(newResult, oldResult, ignoreList);
+                return Utilities.File.Download(resultList, $"testing_delta");
             }
             catch (Exception ex)
             {
                 return StatusCode(500, ex.Message);
             }
-
         }
+
+        //[HttpGet("delta/download")]
+        //public async Task<IActionResult> GetDelta()
+        //{
+        //    try
+        //    {
+        //        string name = this.GetType().Name.Replace("Controller", "").ToLower();
+
+        //        var previousResult = await _iGeoComRepository.GetShops(3);
+        //        //var newResult = await _iGeoComGrabRepository.GetShopsByName(name);
+        //        var newResult = await _iGeoComGrabRepository.GetShopsByShopId(3);
+        //        var result = Comparator.GetComparedResult(newResult, previousResult, "vango");
+        //        return Utilities.File.Download(result, $"{name}_delta");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, ex.Message);
+        //    }
+
+        //}
 
         //[HttpGet("delta/download")]
         //public async Task<IActionResult> GetDelta()

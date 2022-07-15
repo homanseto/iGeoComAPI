@@ -61,7 +61,7 @@ namespace iGeoComAPI.Services
             }
             return resultList;
         }
-
+        // smo params x,y exp:http://3dmapweb3/3DMWebAPI/api/CoordinateSystem/WGS80To84?x=839662&y=818973
 
         public async Task<NorthEastModel?> getNorthEast(double lat, double lng)
         {
