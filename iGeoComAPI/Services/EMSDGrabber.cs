@@ -27,14 +27,21 @@ namespace iGeoComAPI.Services
         }
         public override async Task<List<IGeoComGrabModel>?> GetWebSiteItems()
         {
-            string[] a = new string[] { "a", "b" };
-           string[][] j = new string[][] { a,a, new string[] { "a", "b" } };
 
             List<IGeoComGrabModel> temp = new List<IGeoComGrabModel>();
             var enConnectHttp = await _httpClient.GetAsync("https://www.emsd.gov.hk/filemanager/LPGFillingStation/en/list_LPGFillingStation_1343.js");
             var rgx = Regexs.ExtractInfo(EMSDModel.records);
             string records = rgx.Match(enConnectHttp).Groups[1].Value;
-            string jsonString = JsonConvert.SerializeObject(records);
+            List<string> extractRecords = records.Split("\"]").ToList();
+            extractRecords.RemoveAt(extractRecords.Count - 1);
+            foreach(var record in extractRecords)
+            {
+                string recordString = record.ToString();
+                recordString = recordString.Substring(1);
+                recordString += "\",";
+                List<string> aList = recordString.Split("\",").ToList();
+                Console.WriteLine(aList);
+            }
             return temp;
         }
     }
