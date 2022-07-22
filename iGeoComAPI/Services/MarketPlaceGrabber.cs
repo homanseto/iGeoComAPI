@@ -14,10 +14,10 @@ namespace iGeoComAPI.Services
         private readonly IDataAccess dataAccess;
 
         private readonly string infoCode = @"() =>{" +
-            @"const selectors = Array.from(document.querySelectorAll('.view-content > .table> tbody > tr'));" +
-            @"return selectors.map(v => {return {id: v.getAttribute('id'),"+
-            @"address: v.querySelector('.views-field-field-address',).textContent.trim(), tel_no: v.querySelector('.views-field-field-telephone').textContent.trim()," +
-            @"name: v.querySelector('.views-field-title > a ').textContent.trim(), openingHour: v.querySelector('.views-field-field-opening-hours').textContent.trim()" +
+            @"const selectors = Array.from(document.querySelectorAll('.geolocation-location'));" +
+            @"return selectors.map(v => {return {id: v.getAttribute('data-scroll-target-id')," +
+            @"address: v.querySelector('.location-content > .views-field-field-address > .field-content').textContent.trim(), tel_no: v.querySelector('.views-field-field-telephone > .field-content').textContent.trim()," +
+            @"name: v.querySelector('.location-title').textContent.trim(), latitude: v.getAttribute('data-lat'), longitude: v.getAttribute('data-lng')" +
             @"}});}";
         private string waitSelector = ".view-content";
 
@@ -32,13 +32,10 @@ namespace iGeoComAPI.Services
 
         public override async Task<List<IGeoComGrabModel>?> GetWebSiteItems()
         {
-            var enResult = await _puppeteerConnection.PuppeteerGrabber<MarketPlaceModel[]>(_options.Value.EnUrl, infoCode, waitSelector);
-            var zhResult = await _puppeteerConnection.PuppeteerGrabber<MarketPlaceModel[]>(_options.Value.ZhUrl, infoCode, waitSelector);
-            var enResultList = enResult.ToList();
-            var zhResultList = zhResult.ToList();
-            var mergeResult = MergeEnAndZh(enResultList, zhResultList);
-            var latlngResult = await FindLatLng(mergeResult);
-            var result = await this.GetShopInfo(latlngResult);
+            var enResult = await _puppeteerConnection.PuppeteerGrabber<List<MarketPlaceModel>>(_options.Value.EnUrl, infoCode, waitSelector);
+            var zhResult = await _puppeteerConnection.PuppeteerGrabber<List<MarketPlaceModel>>(_options.Value.ZhUrl, infoCode, waitSelector);
+            var mergeResult = MergeEnAndZh(enResult, zhResult);
+            var result = await this.GetShopInfo(mergeResult);
             //_memoryCache.Set("iGeoCom", mergeResult, TimeSpan.FromHours(2));
             return result;
         }
@@ -61,6 +58,8 @@ namespace iGeoComAPI.Services
                     MarketPlaceIGeoCom.Tel_No = shopEn.tel_no;
                     MarketPlaceIGeoCom.Type = "SMK";
                     MarketPlaceIGeoCom.Class = "CMF";
+                    MarketPlaceIGeoCom.Latitude = shopEn.latitude;
+                    MarketPlaceIGeoCom.Longitude = shopEn.longitude;
                     MarketPlaceIGeoCom.Shop = 8;
                     foreach (var shopZh in zhResult)
                     {
@@ -81,17 +80,6 @@ namespace iGeoComAPI.Services
                 throw;
             }
 
-        }
-
-        public async Task<List<IGeoComGrabModel>> FindLatLng(List<IGeoComGrabModel> input)
-        {
-            foreach(var inputItem in input)
-            {
-                var latlng = await _function.FindLatLngByAddress($"{inputItem.C_Address}");
-                inputItem.Latitude = latlng.Latitude;
-                inputItem.Longitude = latlng.Longtitude;
-            }
-            return input;
         }
     }
 }

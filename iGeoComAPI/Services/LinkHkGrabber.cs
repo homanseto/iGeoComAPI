@@ -30,7 +30,8 @@ namespace iGeoComAPI.Services
             try
             {
                 var visitUs = await _httpClient.GetAsync(_options.Value.LinkAPI);
-                var visitUsResult = _json.Dserialize<VisitUs>(visitUs);
+                VisitUs visitUsResult = _json.Dserialize<VisitUs>(visitUs);
+                var result = Parsing(visitUsResult);
                 var test = new List<IGeoComGrabModel>();
 
                 return test;
@@ -44,23 +45,86 @@ namespace iGeoComAPI.Services
 
         public async Task<List<IGeoComGrabModel>?> Parsing(VisitUs input)
         {
-            List<ShopCentreLocation> shopCentreList;
             var LinkHkList = new List<IGeoComGrabModel>();
-            string Zhname = "LinkReit";
+            string name = "LinkReit";
             if (input != null)
             {
-                IGeoComGrabModel LinkHk = new IGeoComGrabModel();
-                shopCentreList = input.data.shopCentreLocationList;
-                foreach(var shop in shopCentreList)
+
+                List<MarketLocation> marketList = input.data.marketLocationList;
+                List<ShopCentreLocation> shopCentreList = input.data.shopCentreLocationList;
+                List<CarParkFacilityLocation> carparkList = input.data.carParkFacilityLocationList;
+
+                foreach (var shop in shopCentreList)
                 {
-                    var shopCentreId = new Dictionary<string, string>(){ ["shopCentreId"] = shop.shopCentreId};
+                    IGeoComGrabModel LinkHk = new IGeoComGrabModel();
+                    var shopCentreId = new Dictionary<string, string>() { ["shopCentreId"] = shop.shopCentreId };
                     var shopGrabResult = await _httpClient.GetAsync(_options.Value.LinkMarketAndShopCentralAPI, shopCentreId);
                     var shopResult = _json.Dserialize<ShopCentre>(shopGrabResult);
                     LinkHk.Latitude = shop.latitude;
                     LinkHk.Longitude = shop.longitude;
-                    LinkHk.C_Address = shopResult.data.selectedShopCentre.addressTc;
-                    LinkHk.E_Address = shopResult.data.selectedShopCentre.addressEn;
-                    LinkHk.ChineseName = $"{Zhname}_shopcentre_{shop.shopCentreId}";
+                    if (shopResult != null)
+                    {
+                        LinkHk.C_Address = shopResult.data.selectedShopCentre.addressTc;
+                        LinkHk.E_Address = shopResult.data.selectedShopCentre.addressEn;
+                        LinkHk.EnglishName = shopResult.data.selectedShopCentre.shopCentreNameEn;
+                        LinkHk.ChineseName = shopResult.data.selectedShopCentre.shopCentreNameTc;
+                        LinkHk.GrabId = $"{name}_{shopResult.data.selectedShopCentre.ShopCentreId}";
+                        LinkHk.Class = "CMF";
+                        LinkHk.Type = "MAL";
+                        LinkHk.Web_Site = _options.Value.BaseUrl;
+                    }
+                    LinkHkList.Add(LinkHk);
+                }
+                foreach (var market in marketList)
+                {
+                    IGeoComGrabModel LinkHk = new IGeoComGrabModel();
+                    var marketCode = new Dictionary<string, string>() { ["marketCode"] = market.marketCode };
+                    var marketGrabResult = await _httpClient.GetAsync(_options.Value.LinkMarketAndShopCentralAPI, marketCode);
+                    var marketResult = _json.Dserialize<MarketCode>(marketGrabResult);
+                    LinkHk.Latitude = market.latitude;
+                    LinkHk.Longitude = market.longitude;
+                    if (marketResult != null)
+                    {
+                        LinkHk.C_Address = marketResult.data.selectedMarket.addressTc;
+                        LinkHk.E_Address = marketResult.data.selectedMarket.addressEn;
+                        LinkHk.EnglishName = marketResult.data.selectedMarket.marketNameEn;
+                        LinkHk.ChineseName = marketResult.data.selectedMarket.marketNameTc;
+                        LinkHk.GrabId = $"{name}_{marketResult.data.selectedMarket.marketCode}";
+                        LinkHk.Type = "MKT";
+                        LinkHk.Class = "CMF";
+                        LinkHk.Web_Site = _options.Value.BaseUrl;
+                    }
+                    LinkHkList.Add(LinkHk);
+                }
+
+                foreach (var carpark in carparkList)
+                {
+                    IGeoComGrabModel LinkHk = new IGeoComGrabModel();
+                    var carparkGrabResult = await _httpClient.GetAsync($"{_options.Value.LinkCarParkAPI}{carpark.facilityKey}");
+                    var carparkResult = _json.Dserialize<Parking>(carparkGrabResult);
+                    if (carparkResult != null)
+                    {
+                        if(carparkResult.data.parkinginfo.remarkTc != "此停車場不設時租泊車服務")
+                        {
+                            LinkHk.Latitude = carpark.latitude;
+                            LinkHk.Longitude = carpark.longitude;
+                            LinkHk.C_Address = carparkResult.data.parkinginfo.addressTc;
+                            LinkHk.E_Address = carparkResult.data.parkinginfo.addressEn;
+                            LinkHk.EnglishName = carparkResult.data.parkinginfo.carParkFacilityNameEn;
+                            LinkHk.ChineseName = carparkResult.data.parkinginfo.carParkFacilityNameTc;
+                            LinkHk.Tel_No = carparkResult.data.parkinginfo.telephone;
+                            LinkHk.GrabId = $"{name}_{carparkResult.data.parkinginfo.facilityKey}";
+                            LinkHk.Type = "CPO";
+                            LinkHk.Class = "TRS";
+                            LinkHk.Web_Site = _options.Value.BaseUrl;
+                            LinkHkList.Add(LinkHk);
+                        }
+                        else
+                        {
+                            continue;
+                        }
+
+                    }
                 }
             }
 

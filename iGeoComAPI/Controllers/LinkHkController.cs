@@ -40,5 +40,13 @@ namespace iGeoComAPI.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Post()
+        {
+            var GrabbedResult = await _linkHkGrabber.GetWebSiteItems();
+            //_iGeoComGrabRepository.CreateShops(GrabbedResult);
+            return Ok(GrabbedResult);
+        }
     }
 }

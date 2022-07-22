@@ -70,7 +70,7 @@ namespace iGeoComAPI.Controllers
         public async Task<IActionResult> Post()
         {
             var GrabbedResult = await _aeonGrabber.GetWebSiteItems();
-            _iGeoComGrabRepository.CreateShops(GrabbedResult);
+            //_iGeoComGrabRepository.CreateShops(GrabbedResult);
             return Ok(GrabbedResult);
         }
     }

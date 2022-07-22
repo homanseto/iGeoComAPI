@@ -15,6 +15,7 @@ namespace iGeoComAPI.Utilities
             {
                 Headless = false,
                 IgnoreHTTPSErrors = true,
+                Args = new[] {"--disable-web-security","--disable-features=IsolateOrigins,site-per-process"}
             }))
             using (var page = await browser.NewPageAsync())
             {
@@ -37,6 +38,9 @@ namespace iGeoComAPI.Utilities
                 {
                     await page.WaitForSelectorAsync(waitSelector);
                 }
+                ElementHandle aaa = await page.QuerySelectorAsync(".elementor-custom-embed > iframe");
+                var bbb = await aaa.ContentFrameAsync();
+
                 return await page.EvaluateFunctionAsync<T>(infoCode);
             }
         }
@@ -67,8 +71,9 @@ namespace iGeoComAPI.Utilities
                     var link = page.Url;
                     return link;
                 }
-            }catch(Exception ex)
-            {        
+            }
+            catch (Exception ex)
+            {
                 return string.Empty;
             }
 

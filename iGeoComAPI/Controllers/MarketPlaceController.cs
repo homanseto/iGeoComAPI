@@ -66,7 +66,7 @@ namespace iGeoComAPI.Controllers
             var GrabbedResult = await _marketPlaceGrabber.GetWebSiteItems();
             if (GrabbedResult == null)
                 return BadRequest("Cannot insert grabbed data");
-            _iGeoComGrabRepository.CreateShops(GrabbedResult);
+            //_iGeoComGrabRepository.CreateShops(GrabbedResult);
             return Ok(GrabbedResult);
         }
     }

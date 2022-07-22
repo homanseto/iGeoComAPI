@@ -7,5 +7,7 @@
         public string address { get; set; } = string.Empty;
         public string tel_no { get; set; } = string.Empty;
         public string openingHour { get; set; } = string.Empty;
+        public double latitude { get; set; } 
+        public double longitude { get; set; }
     }
 }

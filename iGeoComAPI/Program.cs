@@ -22,17 +22,6 @@ builder.Logging.AddSerilog(logger);
 
 builder.Services.AddControllers();
 
-//builder.Services.AddDbContext<DataContext>(options =>
-//{
-//    if (_environment.EnvironmentName == "Development" || _environment.EnvironmentName == "Production")
-//    {
-//        options.UseSqlServer(_configuration.GetConnectionString("Default_3DM"));
-//    }
-//    else
-//    {
-//        options.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"));
-//    }
-//});
 var folder = Environment.SpecialFolder.LocalApplicationData;
 var path = Environment.GetFolderPath(folder);
 Console.WriteLine(path);
@@ -54,7 +43,6 @@ builder.Services.AddSingleton<SevenElevenGrabber>();
 builder.Services.AddSingleton<CaltexGrabber>();
 builder.Services.AddSingleton<ParknShopGrabber>();
 builder.Services.AddSingleton<AeonGrabber>();
-builder.Services.AddSingleton<AromeNMaximsCakesGrabber>();
 builder.Services.AddSingleton<AmbulanceDepotGrabber>();
 builder.Services.AddSingleton<BloodDonorCentreGrabber>();
 builder.Services.AddSingleton<WellcomeGrabber>();
@@ -63,7 +51,6 @@ builder.Services.AddSingleton<VangoGrabber>();
 builder.Services.AddSingleton<USelectGrabber>();
 builder.Services.AddSingleton<WmoovGrabber>();
 builder.Services.AddSingleton<BmcpcGrabber>();
-builder.Services.AddSingleton<CSLGrabber>();
 builder.Services.AddSingleton<CheungKongGrabber>();
 builder.Services.AddSingleton<CatholicOrgGrabber>();
 builder.Services.AddSingleton<ChinaMobileGrabber>();
@@ -73,6 +60,13 @@ builder.Services.AddSingleton<EssoGrabber>();
 builder.Services.AddSingleton<ShellGrabber>();
 builder.Services.AddSingleton<EMSDGrabber>();
 builder.Services.AddSingleton<SinopecGrabber>();
+builder.Services.AddSingleton<PetroChinaGrabber>();
+builder.Services.AddSingleton<HkMarketGrabber>();
+builder.Services.AddSingleton<CitySuperGrabber>();
+builder.Services.AddSingleton<FEHDGrabber>();
+builder.Services.AddSingleton<YataGrabber>();
+builder.Services.AddSingleton<ThreesixtyhkGrabber>();
+builder.Services.AddSingleton<PeoplesPlaceGrabber>();
 builder.Services.AddMemoryCache();
 MyConfigServiceCollection.AddConfig(builder.Services, _configuration);
 builder.Services.AddOptions(); //IOptions<T>

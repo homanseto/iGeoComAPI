@@ -23,10 +23,8 @@ namespace iGeoComAPI
             services.Configure<CircleKOptions>(config.GetSection(CircleKOptions.SectionName));
             services.Configure<WmoovOptions>(config.GetSection(WmoovOptions.SectionName));
             services.Configure<AmbulanceDepotOptions>(config.GetSection(AmbulanceDepotOptions.SectionName));
-            services.Configure<AromeNMaximsCakesOptions>(config.GetSection(AromeNMaximsCakesOptions.SectionName));
             services.Configure<BloodDonorCentreOptions>(config.GetSection(BloodDonorCentreOptions.SectionName));
             services.Configure<BmcpcOptions>(config.GetSection(BmcpcOptions.SectionName));
-            services.Configure<CSLOptions>(config.GetSection(CSLOptions.SectionName));
             services.Configure<CatholicOrgOptions>(config.GetSection(CatholicOrgOptions.SectionName));
             services.Configure<CheungKongOptions>(config.GetSection(CheungKongOptions.SectionName));
             services.Configure<ChinaMobileOptions>(config.GetSection(ChinaMobileOptions.SectionName));
@@ -35,7 +33,14 @@ namespace iGeoComAPI
             services.Configure<EssoOptions>(config.GetSection(EssoOptions.SectionName));
             services.Configure<ShellOptions>(config.GetSection(ShellOptions.SectionName));
             services.Configure<SinopecOptions>(config.GetSection(SinopecOptions.SectionName));
-            services.Configure<EMSDOptions>(config.GetSection(SinopecOptions.SectionName));
+            services.Configure<EMSDOptions>(config.GetSection(EMSDOptions.SectionName));
+            services.Configure<PetroChinaOptions>(config.GetSection(PetroChinaOptions.SectionName));
+            services.Configure<HkMarketOptions>(config.GetSection(HkMarketOptions.SectionName));
+            services.Configure<CitySuperOptions>(config.GetSection(CitySuperOptions.SectionName));
+            services.Configure<FEHDOptions>(config.GetSection(FEHDOptions.SectionName));
+            services.Configure<YataOptions>(config.GetSection(YataOptions.SectionName));
+            services.Configure<ThreesixtyhkOptions>(config.GetSection(ThreesixtyhkOptions.SectionName));
+            services.Configure<PeoplesPlaceOptions>(config.GetSection(PeoplesPlaceOptions.SectionName));
             return services;
         }
     }
