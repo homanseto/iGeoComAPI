@@ -67,6 +67,7 @@ builder.Services.AddSingleton<FEHDGrabber>();
 builder.Services.AddSingleton<YataGrabber>();
 builder.Services.AddSingleton<ThreesixtyhkGrabber>();
 builder.Services.AddSingleton<PeoplesPlaceGrabber>();
+builder.Services.AddSingleton<WilsonParkingGrabber>();
 builder.Services.AddMemoryCache();
 MyConfigServiceCollection.AddConfig(builder.Services, _configuration);
 builder.Services.AddOptions(); //IOptions<T>

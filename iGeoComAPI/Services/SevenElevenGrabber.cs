@@ -56,16 +56,6 @@ namespace iGeoComAPI.Services
 
         }
 
-        public override List<IGeoComGrabModel> MergeResult(List<SevenElevenModel> enInput, List<SevenElevenModel> zhInput)
-        {
-            foreach(SevenElevenModel result in enInput)
-            {
-                Console.WriteLine(result.Address);
-            }
-            List<IGeoComGrabModel> resultList = new List<IGeoComGrabModel>();
-            return resultList;
-        }
-
         public List<IGeoComGrabModel> MergeEnAndZh(List<SevenElevenModel>? enResult, List<SevenElevenModel>? zhResult)
         {
             var _rgx = Regexs.ExtractInfo(SevenElevenModel.RegLatLngRegex);

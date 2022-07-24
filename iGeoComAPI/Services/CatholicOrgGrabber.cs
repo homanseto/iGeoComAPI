@@ -14,7 +14,7 @@ namespace iGeoComAPI.Services
                                  const selectors = Array.from(document.querySelectorAll('.su-table-alternate > .su-row > .su-column-size-1-3'));
                                  const hkList = Array.from(selectors[0].querySelectorAll('.menu-churches-hki-container >.mip-drop-nav > option'));
                                  const klnList = Array.from(selectors[1].querySelectorAll('.menu-churches-kol-container >.mip-drop-nav > option'));
-                                 const ntList = Array.from(selectors[2].querySelectorAll('.menu-churches-nt-container>.mip-drop-nav > option'));
+                                 const ntList = Array.from(selectors[2].querySelectorsAll('.menu-churches-nt-container>.mip-drop-nav > option'));
                                  const hkListResult = hkList.map(v =>{return {Region:'HK', Id: v.getAttribute('value ')}});
                                  const klnListResult = hkList.map(v =>{return {Region:'HK', Id: v.getAttribute('value ')}});
                                  const ntListResult = hkList.map(v =>{return {Region:'HK', Id: v.getAttribute('value ')}});

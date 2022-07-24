@@ -41,6 +41,7 @@ namespace iGeoComAPI
             services.Configure<YataOptions>(config.GetSection(YataOptions.SectionName));
             services.Configure<ThreesixtyhkOptions>(config.GetSection(ThreesixtyhkOptions.SectionName));
             services.Configure<PeoplesPlaceOptions>(config.GetSection(PeoplesPlaceOptions.SectionName));
+            services.Configure<WilsonParkingOptions>(config.GetSection(WilsonParkingOptions.SectionName));
             return services;
         }
     }

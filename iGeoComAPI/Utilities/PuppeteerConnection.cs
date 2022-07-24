@@ -15,7 +15,7 @@ namespace iGeoComAPI.Utilities
             {
                 Headless = false,
                 IgnoreHTTPSErrors = true,
-                Args = new[] {"--disable-web-security","--disable-features=IsolateOrigins,site-per-process"}
+                Args = new[] { "--disable-web-security", "--disable-features=IsolateOrigins,site-per-process" }
             }))
             using (var page = await browser.NewPageAsync())
             {
@@ -38,11 +38,41 @@ namespace iGeoComAPI.Utilities
                 {
                     await page.WaitForSelectorAsync(waitSelector);
                 }
-                ElementHandle aaa = await page.QuerySelectorAsync(".elementor-custom-embed > iframe");
-                var bbb = await aaa.ContentFrameAsync();
+                //ElementHandle aaa = await page.QuerySelectorAsync(".elementor-custom-embed > iframe");
+                //var bbb = await aaa.ContentFrameAsync();
+                //var ccc = await bbb.GetExecutionContextAsync();
+                //var ddd = await bbb.GetContentAsync();
+                //var eee = await bbb.EvaluateFunctionAsync("() =>{return document.querySelector('#mapDiv')}");
 
                 return await page.EvaluateFunctionAsync<T>(infoCode);
             }
+        }
+
+        public async Task<string> GetContent(string? url, string? infoCode, string? waitSelector, Dictionary<string, object>? config = null)
+        {
+            BrowserFetcher browserFetcher = new BrowserFetcher();
+            var lanchOptions = new LaunchOptions();
+            await browserFetcher.DownloadAsync(BrowserFetcher.DefaultChromiumRevision);
+
+            using (var browser = await Puppeteer.LaunchAsync(new LaunchOptions
+            {
+                Headless = false,
+                IgnoreHTTPSErrors = true,
+                Args = new[] { "--disable-web-security", "--disable-features=IsolateOrigins,site-per-process" }
+            }))
+            using (var page = await browser.NewPageAsync())
+            {
+                await page.GoToAsync(url);
+
+                await page.WaitForSelectorAsync(waitSelector);
+
+                ElementHandle script = await page.QuerySelectorAsync(infoCode);
+                var frame = await script.ContentFrameAsync();
+                var textResult = await frame.GetContentAsync();
+
+                return textResult;
+            }
+
         }
 
         public async Task<string> GetUrl(string url)

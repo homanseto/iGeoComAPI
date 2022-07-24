@@ -4,6 +4,7 @@ using iGeoComAPI.Utilities;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using PuppeteerSharp;
+using System.Text.RegularExpressions;
 
 namespace iGeoComAPI.Services
 {
@@ -28,6 +29,11 @@ namespace iGeoComAPI.Services
             @"}";
         private string waitSelector2 = ".elementor-custom-embed";
 
+        static Regex ExtractInfo(string input)
+        {
+            Regex reg = new Regex(input);
+            return reg;
+        }
         public PeoplesPlaceGrabber(PuppeteerConnection puppeteerConnection, IOptions<PeoplesPlaceOptions> options, IMemoryCache memoryCache, ILogger<PeoplesPlaceGrabber> logger,
     IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json, IDataAccess dataAccess) : base(httpClient, absOptions, json, dataAccess)
         {
@@ -39,19 +45,61 @@ namespace iGeoComAPI.Services
 
         public override async Task<List<IGeoComGrabModel>?> GetWebSiteItems()
         {
-            //var enHrefList = await _puppeteerConnection.PuppeteerGrabber<List<PeoplesPlaceModel>>(_options.Value.EnUrl, infoCode1, waitSelector1);
-            //var enResult = new List<PeoplesPlaceModel>();
-            //foreach (var enHref in enHrefList)
-            //{
-            //    if (!String.IsNullOrEmpty(enHref.href))
-            //    {
-            //        var en = await _puppeteerConnection.PuppeteerGrabber<string>(enHref.href, infoCode2, waitSelector2);
-            //    }       
-            //}
+            var enHrefList = await _puppeteerConnection.PuppeteerGrabber<List<PeoplesPlaceModel>>(_options.Value.EnUrl, infoCode1, waitSelector1);
+            var enResult = new List<PeoplesPlaceModel>();
+            foreach (var enHref in enHrefList.GetRange(0,3))
+            {
+                if (!String.IsNullOrEmpty(enHref.href))
+                {
+                    var shopInfo = enHref;
+                    var en = await _puppeteerConnection.GetContent(enHref.href, ".elementor-custom-embed > iframe", ".elementor-custom-embed");
+                    shopInfo.latlng = en;
+                    enResult.Add(shopInfo);
+                }
+            }
             //var zhResult = await _puppeteerConnection.PuppeteerGrabber<List<PeoplesPlaceModel>>(_options.Value.ZhUrl, infoCode1, waitSelector1);
-            var test = await _puppeteerConnection.PuppeteerGrabber<ElementHandle>("https://www.peoplesplace.com.hk/Information/%E9%9B%8D%E7%9B%9B%E5%95%86%E5%A0%B4%E2%80%8B/", infoCode2, waitSelector2);
+            var testList = new List<IGeoComGrabModel>();
+            foreach (var shopInfo in enResult)
+            {
+                var test = new IGeoComGrabModel();
+                var extraLatLng = ExtractInfo(PeoplesPlaceModel.ExtraLatLng);
+                var rgxLat = ExtractInfo(PeoplesPlaceModel.ExtraLat);
+                var rgxLng = ExtractInfo(PeoplesPlaceModel.ExtraLng);
+                var regexLatLng = extraLatLng.Match(shopInfo.latlng);
+                string latlng = "";
+                if (regexLatLng.Success)
+                {
+                    if (!String.IsNullOrEmpty(regexLatLng.Groups["value1"].Value))
+                    {
+                        latlng = regexLatLng.Groups["value1"].Value;
+                    }
+                    else if (!String.IsNullOrEmpty(regexLatLng.Groups["value2"].Value))
+                    {
+                        latlng = regexLatLng.Groups["value2"].Value;
+                    }
+                    var extraLat = rgxLat.Match(latlng);
+                    if (extraLat.Success)
+                    {
+                        if (!String.IsNullOrEmpty(extraLat.Groups["lat"].Value))
+                        {
+                            string lat = extraLat.Groups["lat"].Value;
+                            test.Latitude = Convert.ToDouble(lat);
+                        }
+                    }
+                    var extraLng = rgxLng.Match(latlng);
+                    if (extraLng.Success)
+                    {
+                        if (!String.IsNullOrEmpty(extraLng.Groups["lng"].Value))
+                        {
+                            string lng = extraLng.Groups["lng"].Value;
+                            test.Longitude = Convert.ToDouble(lng);
+                        }
+                    }
+                    testList.Add(test);
+                }
+            }
             //var mergeResult = MergeEnAndZh(enResult, zhResult);
-            var result = new List<IGeoComGrabModel>();
+            var result = await this.GetShopInfo(testList);
             //_memoryCache.Set("iGeoCom", mergeResult, TimeSpan.FromHours(2));
             return result;
 
