@@ -48,8 +48,10 @@ namespace iGeoComAPI.Utilities
             }
         }
 
-        public async Task<string> GetContent(string? url, string? infoCode, string? waitSelector, Dictionary<string, object>? config = null)
+        public async Task<string> GetIframaContent(string? url, string? infoCode, string? waitSelector, string? infoCode2, Dictionary<string, object>? config = null)
         {
+            var timeout = (int)TimeSpan.FromSeconds(2).TotalMilliseconds;
+            var options = new NavigationOptions { Timeout = timeout };
             BrowserFetcher browserFetcher = new BrowserFetcher();
             var lanchOptions = new LaunchOptions();
             await browserFetcher.DownloadAsync(BrowserFetcher.DefaultChromiumRevision);
@@ -68,11 +70,9 @@ namespace iGeoComAPI.Utilities
 
                 ElementHandle script = await page.QuerySelectorAsync(infoCode);
                 var frame = await script.ContentFrameAsync();
-                var textResult = await frame.GetContentAsync();
-
-                return textResult;
+                var info = await frame.EvaluateFunctionAsync<string>(infoCode2);
+                return info;
             }
-
         }
 
         public async Task<string> GetUrl(string url)

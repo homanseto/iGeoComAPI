@@ -5,20 +5,22 @@
         public string name { get; set; } = String.Empty;
         public string address { get; set; } = String.Empty;
         public string number { get; set; } = String.Empty;
-        public string additionInfo { get; set; } = String.Empty;
+        public string parkingInfo { get; set; } = String.Empty;
+        public string marketInfo1 { get; set; } = String.Empty;
+        public string marketInfo2 { get; set; } = String.Empty;
+        public string marketAddress1 { get; set; } = String.Empty;
+        public string marketAddress2 { get; set; } = String.Empty;
+        public string marketAddress3 { get; set; } = String.Empty;
+
         public string latlng { get; set; } = String.Empty;
         public string href { get; set; } = String.Empty;
-        public static string ExtraLatLng
+        public static string ExtractLat
         {
-            get { return "(ViewportInfoService.GetViewportInfo(?<value1>.*)nonce=\"\"><\\/script><\\/head>)|(ViewportInfoService.GetViewportInfo(?<value2>.*)AuthenticationService.Authenticate)"; }
+            get { return "maps\\?ll=(?<lat>.*),11";  }
         }
-        public static string ExtraLat
+        public static string ExtractLng
         {
-            get { return "2m2&amp;1d(?<lat>.*)&amp;2d";  }
-        }
-        public static string ExtraLng
-        {
-            get { return "&amp;2d(?<lng>.*)&amp;2m2&amp;"; }
+            get { return ",(?<lng>.*)&z"; }
         }
     }
 }
