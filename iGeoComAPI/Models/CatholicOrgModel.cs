@@ -2,16 +2,18 @@
 {
     public class CatholicOrgModel
     {
-        public string Id { get; set; } = String.Empty;
-        public string Name { get; set; } = String.Empty;
-        public string Address { get; set; } = String.Empty;
-        public string Website { get; set; } = String.Empty;
-        public string Phone { get; set; } = String.Empty;
-        public string Fax { get; set; } = String.Empty;
+        public string id { get; set; } = String.Empty;
+        public string name { get; set; } = String.Empty;
+        public string address { get; set; } = String.Empty;
+        public string href { get; set; } = String.Empty;
+        public string phone { get; set; } = String.Empty;
+        public string fax { get; set; } = String.Empty;
+        public LatLng ?latlng { get; set; }
     }
 
-    public class CatholicOrgRegion
+    public class LatLng
     {
-        public string Region { get; set; } = String.Empty;
+        public double lat { get; set; }
+        public double lng { get; set; }
     }
 }

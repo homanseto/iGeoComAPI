@@ -43,12 +43,17 @@ namespace iGeoComAPI.Services
 
             var enConnectHttp = await _httpClient.GetAsync(_options.Value.Url, query);
             var enSerializedResult = _json.Dserialize<List<ShellModel>>(enConnectHttp);
-            var mergeResult = ConvertIGeoCom(enSerializedResult);
-            var shellResult = await this.GetShopInfo(mergeResult);
+            var shellResult = new List<IGeoComGrabModel>();
+            if (enSerializedResult != null && enSerializedResult.Count > 0)
+            {
+                var mergeResult = Parsing(enSerializedResult);
+                var result = await this.GetShopInfo(mergeResult);
+                shellResult = result;
+            }
             return shellResult;
         }
 
-        public List<IGeoComGrabModel> ConvertIGeoCom(List<ShellModel> grabResult)
+        public List<IGeoComGrabModel> Parsing(List<ShellModel> grabResult)
         {
             List<IGeoComGrabModel> shellIGeoComList = new List<IGeoComGrabModel>();
             if(grabResult != null)

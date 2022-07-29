@@ -53,7 +53,6 @@ builder.Services.AddSingleton<WmoovGrabber>();
 builder.Services.AddSingleton<BmcpcGrabber>();
 builder.Services.AddSingleton<CheungKongGrabber>();
 builder.Services.AddSingleton<CatholicOrgGrabber>();
-builder.Services.AddSingleton<ChinaMobileGrabber>();
 builder.Services.AddSingleton<MarketPlaceGrabber>();
 builder.Services.AddSingleton<LinkHkGrabber>();
 builder.Services.AddSingleton<EssoGrabber>();
@@ -68,6 +67,9 @@ builder.Services.AddSingleton<YataGrabber>();
 builder.Services.AddSingleton<ThreesixtyhkGrabber>();
 builder.Services.AddSingleton<PeoplesPlaceGrabber>();
 builder.Services.AddSingleton<WilsonParkingGrabber>();
+builder.Services.AddSingleton<ChurchGrabber>();
+builder.Services.AddSingleton<ConsularGrabber>();
+builder.Services.AddSingleton<HousingGrabber>();
 builder.Services.AddMemoryCache();
 MyConfigServiceCollection.AddConfig(builder.Services, _configuration);
 builder.Services.AddOptions(); //IOptions<T>

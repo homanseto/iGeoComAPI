@@ -11,6 +11,7 @@
         public string marketAddress1 { get; set; } = String.Empty;
         public string marketAddress2 { get; set; } = String.Empty;
         public string marketAddress3 { get; set; } = String.Empty;
+        public string marketAddressEn1 { get; set; } = String.Empty;
 
         public string latlng { get; set; } = String.Empty;
         public string href { get; set; } = String.Empty;

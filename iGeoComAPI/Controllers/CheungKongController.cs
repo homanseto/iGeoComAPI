@@ -1,8 +1,10 @@
 ﻿using iGeoComAPI.Models;
 using iGeoComAPI.Services;
-using iGeoComAPI.Utilities;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using iGeoComAPI.Options;
+using Microsoft.Extensions.Options;
+using iGeoComAPI.Utilities;
+using iGeoComAPI.Repository;
 
 namespace iGeoComAPI.Controllers
 {
@@ -11,24 +13,25 @@ namespace iGeoComAPI.Controllers
     public class CheungKongController : ControllerBase
     {
         private ILogger<CheungKongController> _logger;
-        private CheungKongGrabber _cheungKongGrabber;
-        private IDataAccess _dataAccess;
+        private CheungKongGrabber _CheungKongGrabber;
+        private IGeoComGrabRepository _iGeoComGrabRepository;
+        private readonly IGeoComRepository _iGeoComRepository;
 
-        CheungKongModel cheungKongModel = new CheungKongModel();
-        //IGeoComModel igeoComModel = new IGeoComModel();
 
-        public CheungKongController(CheungKongGrabber cheungKongGrabber, ILogger<CheungKongController> logger, IDataAccess dataAccess)
+        public CheungKongController(CheungKongGrabber CheungKongGrabber, ILogger<CheungKongController> logger, IGeoComGrabRepository iGeoComGrabRepository, IGeoComRepository iGeoComRepository)
         {
-            _cheungKongGrabber = cheungKongGrabber;
+            _CheungKongGrabber = CheungKongGrabber;
             _logger = logger;
-            _dataAccess = dataAccess;
+            _iGeoComGrabRepository = iGeoComGrabRepository;
+            _iGeoComRepository = iGeoComRepository;
         }
 
-        [HttpGet]
-        public async Task<List<CheungKongModel>?> Get()
+        [HttpPost]
+        public async Task<IActionResult> Post()
         {
-            var result = await _cheungKongGrabber.GetWebSiteItems();
-            return result;
+            var GrabbedResult = await _CheungKongGrabber.GetWebSiteItems();
+            //_iGeoComGrabRepository.CreateShops(GrabbedResult);
+            return Ok(GrabbedResult);
         }
     }
 }

@@ -11,8 +11,8 @@ namespace iGeoComAPI
         {
             services.Configure<NorthEastOptions>(config.GetSection(NorthEastOptions.SectionName));
             services.Configure<GoogleMapOptions>(config.GetSection(GoogleMapOptions.SectionName));
-            services.Configure<AeonOptions>(config.GetSection(AeonOptions.SectionName));
             services.Configure<ConnectionStringsOptions>(config.GetSection(ConnectionStringsOptions.SectionName));
+            services.Configure<AeonOptions>(config.GetSection(AeonOptions.SectionName));
             services.Configure<SevenElevenOptions>(config.GetSection(SevenElevenOptions.SectionName));
             services.Configure<WellcomeOptions>(config.GetSection(WellcomeOptions.SectionName));
             services.Configure<CaltexOptions>(config.GetSection(CaltexOptions.SectionName));
@@ -27,7 +27,6 @@ namespace iGeoComAPI
             services.Configure<BmcpcOptions>(config.GetSection(BmcpcOptions.SectionName));
             services.Configure<CatholicOrgOptions>(config.GetSection(CatholicOrgOptions.SectionName));
             services.Configure<CheungKongOptions>(config.GetSection(CheungKongOptions.SectionName));
-            services.Configure<ChinaMobileOptions>(config.GetSection(ChinaMobileOptions.SectionName));
             services.Configure<LinkHkOptions>(config.GetSection(LinkHkOptions.SectionName));
             services.Configure<MarketPlaceOptions>(config.GetSection(MarketPlaceOptions.SectionName));
             services.Configure<EssoOptions>(config.GetSection(EssoOptions.SectionName));
@@ -42,6 +41,11 @@ namespace iGeoComAPI
             services.Configure<ThreesixtyhkOptions>(config.GetSection(ThreesixtyhkOptions.SectionName));
             services.Configure<PeoplesPlaceOptions>(config.GetSection(PeoplesPlaceOptions.SectionName));
             services.Configure<WilsonParkingOptions>(config.GetSection(WilsonParkingOptions.SectionName));
+            services.Configure<ChurchOptions>(config.GetSection(ChurchOptions.SectionName));
+            services.Configure<ConsularOptions>(config.GetSection(ConsularOptions.SectionName));
+            services.Configure<HousingOptions>(config.GetSection(HousingOptions.SectionName));
+            services.Configure<FortuneMallsOptions>(config.GetSection(FortuneMallsOptions.SectionName));
+            services.Configure<CorrectionalInstitutionOptions>(config.GetSection(CorrectionalInstitutionOptions.SectionName));
             return services;
         }
     }

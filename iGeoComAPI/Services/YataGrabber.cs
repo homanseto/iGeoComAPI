@@ -165,6 +165,7 @@ namespace iGeoComAPI.Services
                         YataIGeoCom.ChineseName = $"{shopZh.type} {shopZh.name}";
                     }
                     YataIGeoCom.C_Address = shopZh.address;
+                    break;
                 }
             }
             return YataIGeoCom;

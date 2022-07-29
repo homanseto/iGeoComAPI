@@ -10,17 +10,17 @@ namespace iGeoComAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CatholicOrgController : ControllerBase
+    public class ChurchController : ControllerBase
     {
-        private ILogger<CatholicOrgController> _logger;
-        private CatholicOrgGrabber _CatholicOrgGrabber;
+        private ILogger<ChurchController> _logger;
+        private ChurchGrabber _ChurchGrabber;
         private IGeoComGrabRepository _iGeoComGrabRepository;
         private readonly IGeoComRepository _iGeoComRepository;
 
 
-        public CatholicOrgController(CatholicOrgGrabber CatholicOrgGrabber, ILogger<CatholicOrgController> logger, IGeoComGrabRepository iGeoComGrabRepository, IGeoComRepository iGeoComRepository)
+        public ChurchController(ChurchGrabber ChurchGrabber, ILogger<ChurchController> logger, IGeoComGrabRepository iGeoComGrabRepository, IGeoComRepository iGeoComRepository)
         {
-            _CatholicOrgGrabber = CatholicOrgGrabber;
+            _ChurchGrabber = ChurchGrabber;
             _logger = logger;
             _iGeoComGrabRepository = iGeoComGrabRepository;
             _iGeoComRepository = iGeoComRepository;
@@ -29,7 +29,7 @@ namespace iGeoComAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Post()
         {
-            var GrabbedResult = await _CatholicOrgGrabber.GetWebSiteItems();
+            var GrabbedResult = await _ChurchGrabber.GetWebSiteItems();
             //_iGeoComGrabRepository.CreateShops(GrabbedResult);
             return Ok(GrabbedResult);
         }

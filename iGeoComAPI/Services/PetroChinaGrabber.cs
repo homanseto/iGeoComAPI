@@ -69,7 +69,7 @@ namespace iGeoComAPI.Services
                         {
                             PetroChinaIGeoCom.C_Address = shopZh.Address!.Replace(" ", "");
                             PetroChinaIGeoCom.ChineseName = $"中國石油-{shopZh.Name}";
-                            continue;
+                            break;
                         }
 
                     }
