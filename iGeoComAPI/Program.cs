@@ -70,6 +70,7 @@ builder.Services.AddSingleton<WilsonParkingGrabber>();
 builder.Services.AddSingleton<ChurchGrabber>();
 builder.Services.AddSingleton<ConsularGrabber>();
 builder.Services.AddSingleton<HousingGrabber>();
+builder.Services.AddSingleton<FortuneMallsGrabber>();
 builder.Services.AddMemoryCache();
 MyConfigServiceCollection.AddConfig(builder.Services, _configuration);
 builder.Services.AddOptions(); //IOptions<T>

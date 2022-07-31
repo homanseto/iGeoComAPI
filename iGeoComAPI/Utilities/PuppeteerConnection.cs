@@ -48,7 +48,7 @@ namespace iGeoComAPI.Utilities
             }
         }
 
-        public async Task<string> GetIframaContent(string? url, string? infoCode, string? waitSelector, string? infoCode2, Dictionary<string, object>? config = null)
+        public async Task<string> GetIframaContent(string? url, string? infoCode, string? waitSelector, string? infoCode2, string? config = "")
         {
             var timeout = (int)TimeSpan.FromSeconds(2).TotalMilliseconds;
             var options = new NavigationOptions { Timeout = timeout };
@@ -65,13 +65,23 @@ namespace iGeoComAPI.Utilities
             using (var page = await browser.NewPageAsync())
             {
                 await page.GoToAsync(url);
-
-                await page.WaitForSelectorAsync(waitSelector);
-
-                ElementHandle script = await page.QuerySelectorAsync(infoCode);
-                var frame = await script.ContentFrameAsync();
-                var info = await frame.EvaluateFunctionAsync<string>(infoCode2);
-                return info;
+                if (!String.IsNullOrEmpty(config))
+                {
+                    await page.ClickAsync(config);
+                    ElementHandle script = await page.QuerySelectorAsync(infoCode);
+                    var frame = await script.ContentFrameAsync();
+                    await frame.WaitForSelectorAsync(waitSelector);
+                    var info = await frame.EvaluateFunctionAsync<string>(infoCode2);
+                    return info;
+                }
+                else
+                {
+                    ElementHandle script = await page.QuerySelectorAsync(infoCode);
+                    var frame = await script.ContentFrameAsync();
+                    await frame.WaitForSelectorAsync(waitSelector);
+                    var info = await frame.EvaluateFunctionAsync<string>(infoCode2);
+                    return info;
+                }
             }
         }
 

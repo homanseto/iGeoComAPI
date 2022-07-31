@@ -34,7 +34,7 @@ namespace iGeoComAPI.Services
         private readonly string waitSelectorZh = ".elementor-element";
 
         private readonly string iframeInfoCode1 = @".elementor-custom-embed > iframe ";
-        private readonly string iframeWaitSelector = @".elementor-custom-embed > iframe";
+        private readonly string iframeWaitSelector = @".google-maps-link";
         private readonly string iframeInfoCode2 = @"()=>{return document.querySelector('.google-maps-link > a')? document.querySelector('.google-maps-link > a').getAttribute('href'):'' }";
 
         private readonly string shopInfoCode = @"() =>{ return {address: document.querySelectorAll('.elementor-widget-container > .elementor-text-editor > p')[2].textContent," +
