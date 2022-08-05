@@ -20,7 +20,7 @@ namespace iGeoComAPI.Services
         private readonly string infoCodeEng = @"() =>{" +
             @"const selectors = Array.from(document.querySelector(' .elementor-element-5eba2b4 > .elementor-column-gap-default>.elementor-row > .elementor-col-66 > .elementor-column-wrap" +
             @"> .elementor-widget-wrap').querySelectorAll('.elementor-text-editor > p > a'));" +
-            @"return selectors.map(v => {return {href: v.getAttribute('href')" +
+            @"return selectors.map(v => {return {href: v.getAttribute('href'), name: v.textContent" +
             @"}});}";
         private readonly string waitSelectorEng = ".elementor-element-5eba2b4";
 
@@ -28,8 +28,8 @@ namespace iGeoComAPI.Services
             @"const list1 ='.elementor-element > .elementor-column-gap-default > .elementor-row'; const list2 = '.elementor-element > .elementor-column-wrap > .elementor-widget-wrap > .elementor-element > .elementor-widget-container > .elementor-text-editor > p > a'; " +
             @"const selectors1 = Array.from(document.querySelectorAll(list1)[11].querySelectorAll(list2));" +
             @"const selectors2 = Array.from(document.querySelectorAll(list1)[12].querySelectorAll(list2));" +
-            @"const merge = [...selectors1,...selectors2];"+
-            @"return merge.map(v => {return {href: v.getAttribute('href')}});" +
+            @"const merge = [...selectors1,...selectors2];" +
+            @"return merge.map(v => {return {href: v.getAttribute('href'), name: v.textContent}});" +
             @"}";
         private readonly string waitSelectorZh = ".elementor-element";
 
@@ -37,15 +37,13 @@ namespace iGeoComAPI.Services
         private readonly string iframeWaitSelector = @".google-maps-link";
         private readonly string iframeInfoCode2 = @"()=>{return document.querySelector('.google-maps-link > a')? document.querySelector('.google-maps-link > a').getAttribute('href'):'' }";
 
-        private readonly string shopInfoCode = @"() =>{ return {address: document.querySelectorAll('.elementor-widget-container > .elementor-text-editor > p')[2].textContent," +
-            @"number: document.querySelectorAll('.elementor-widget-container > .elementor-text-editor > p')[7].textContent, name:document.querySelector('.elementor-widget-container > h2').textContent, " +
-            @"parkingInfo: document.querySelectorAll('.elementor-text-editor > .p1')[1]? document.querySelectorAll('.p1')[1].textContent: '', " +
-            @"marketInfo1: document.querySelectorAll(' .elementor-widget-container > .elementor-heading-title')[2]? document.querySelectorAll(' .elementor-widget-container > .elementor-heading-title')[2].textContent: ''," +
-            @"marketInfo2: document.querySelectorAll(' .elementor-widget-container > .elementor-heading-title')[3]? document.querySelectorAll(' .elementor-widget-container > .elementor-heading-title')[3].textContent: ''," +
-            @"marketAddress1: document.querySelectorAll('.elementor-text-editor > p > .s1')[3]? document.querySelectorAll('.elementor-text-editor > p > .s1')[3].textContent:'', " +
-            @"marketAddress2: document.querySelectorAll('.elementor-widget-wrap > .elementor-element > .elementor-widget-container > .elementor-clearfix > p')[9]? document.querySelectorAll('.elementor-widget-wrap > .elementor-element > .elementor-widget-container > .elementor-clearfix > p')[9].textContent:'', " +
-            @"marketAddress3: document.querySelectorAll('.elementor-widget-wrap > .elementor-element > .elementor-widget-container > .elementor-clearfix > p')[8]? document.querySelectorAll('.elementor-widget-wrap > .elementor-element > .elementor-widget-container > .elementor-clearfix > p')[8].textContent:'' " +
-            @" }}";
+        private readonly string shopInfoCode = @"() =>{ const marketInfo = Array.from(document.querySelectorAll('.elementor-widget-container')); " +
+            @"const shopinfo = Array.from(document.querySelectorAll('.elementor-row'));" +
+            @"const parkingArray =  Array.from(document.querySelectorAll('.elementor-widget-wrap'));" +
+            @"const infoArray = [marketInfo[12]? marketInfo[12].textContent:'',marketInfo[13]? marketInfo[13].textContent:'',marketInfo[14]? marketInfo[14].textContent:'',marketInfo[15]? marketInfo[15].textContent:''," +
+            @"shopinfo[3]? shopinfo[3].textContent:'',shopinfo[4]? shopinfo[4].textContent:'',shopinfo[5]? shopinfo[5].textContent:'',shopinfo[6]? shopinfo[6].textContent:'' ];" +
+            @"return {infoList: infoArray, parkingInfo: parkingArray[10]? parkingArray[10].textContent: '' } " +
+            @"}";
         private readonly string waitSelectorInfo = ".elementor-widget-container";
 
         static Regex ExtractInfo(string input)
@@ -66,48 +64,34 @@ namespace iGeoComAPI.Services
 
         public override async Task<List<IGeoComGrabModel>?> GetWebSiteItems()
         {
-            var zhHrefList = await _puppeteerConnection.PuppeteerGrabber<List<PeoplesPlaceModel>>(_options.Value.ZhUrl, infoCodeZh, waitSelectorZh);
-            var enHrefList = await _puppeteerConnection.PuppeteerGrabber<List<PeoplesPlaceModel>>(_options.Value.EnUrl, infoCodeEng, waitSelectorEng);
-            var enResult = new List<PeoplesPlaceModel>();
-            var zhResult = new List<PeoplesPlaceModel>();
-            foreach (var zhHref in zhHrefList)
+            var zhResult = await _puppeteerConnection.PuppeteerGrabber<List<PeoplesPlaceModel>>(_options.Value.ZhUrl, infoCodeZh, waitSelectorZh);
+            var enResult = await _puppeteerConnection.PuppeteerGrabber<List<PeoplesPlaceModel>>(_options.Value.EnUrl, infoCodeEng, waitSelectorEng);
+            var testZh = new List<PeoplesPlaceModel>();
+            var testEn = new List<PeoplesPlaceModel>();
+            foreach (var zhHref in zhResult)
             {
                 if (!String.IsNullOrEmpty(zhHref.href))
                 {
-                    var shopInfo = zhHref;
                     var iframe = await _puppeteerConnection.GetIframaContent(zhHref.href, iframeInfoCode1, iframeWaitSelector, iframeInfoCode2);
                     var info = await _puppeteerConnection.PuppeteerGrabber<PeoplesPlaceModel>(zhHref.href, shopInfoCode, waitSelectorInfo);
-                    shopInfo.latlng = iframe;
-                    shopInfo.address = info.address;
-                    shopInfo.name = info.name;
-                    shopInfo.number = info.number;
-                    shopInfo.parkingInfo = info.parkingInfo;
-                    shopInfo.marketInfo1 = info.marketInfo1;
-                    shopInfo.marketInfo2 = info.marketInfo2;
-                    shopInfo.marketAddress1 = info.marketAddress1;
-                    shopInfo.marketAddress2 = info.marketAddress2;
-                    shopInfo.marketAddress2 = info.marketAddress2;
-                    zhResult.Add(shopInfo);
+                    zhHref.infoList = info.infoList;
+                    zhHref.parkingInfo = info.parkingInfo;
+                    testZh.Add(zhHref);
+                    zhHref.latlng = iframe;
                 }
             }
-            foreach (var enHref in enHrefList)
+            foreach (var enHref in enResult)
             {
                 if (!String.IsNullOrEmpty(enHref.href))
                 {
-                    var shopInfo = enHref;
                     var info = await _puppeteerConnection.PuppeteerGrabber<PeoplesPlaceModel>(enHref.href, shopInfoCode, waitSelectorInfo);
-                    shopInfo.address = info.address;
-                    shopInfo.name = info.name;
-                    shopInfo.number = info.number;
-                    shopInfo.marketAddress3 = info.marketAddress3;
-                    enResult.Add(shopInfo);
+                    enHref.infoList = info.infoList;
+                    enHref.parkingInfo = info.parkingInfo;
+                    testEn.Add(enHref);
                 }
             }
-            var mergeResult = CreateIGeoCom(zhResult, enResult);
+           var mergeResult = CreateIGeoCom(testZh, testEn);
             var result = await this.GetShopInfo(mergeResult);
-            //var mergeResult = MergeEnAndZh(enResult, zhResult);
-            //var result = await this.GetShopInfo(testList);
-            //_memoryCache.Set("iGeoCom", mergeResult, TimeSpan.FromHours(2));
             return result;
 
         }
@@ -119,21 +103,41 @@ namespace iGeoComAPI.Services
             {
                 if (shopZh != null)
                 {
-                    var shoppingMall = MergeEnAndZh(shopZh, enResult, "");
+                    var mall = shopZh;
+                    var market = shopZh;
+                    for (int n = 0; n < shopZh.infoList.Count; n++)
+                    {
+                        if (shopZh.infoList[n].Contains("地址", comp))
+                        {
+                            string s1 = shopZh.infoList[n].Replace("\n", "").Replace("地址", "").Replace("開放時間", "");
+                            var list = s1.Split(":").ToList();
+                            mall.address = list[1];
+                        }
+                        ExtractZhNumber(shopZh.infoList[n], mall);
+                    }
+                    var shoppingMall = MergeEnAndZh(mall, enResult, "");
                     PeoplesPlaceIGeoComList.Add(shoppingMall);
+                    if (!shopZh.parkingInfo.Contains("不提供時租泊車服務及泊車優惠", comp))
+                    {
+                        var parking = MergeEnAndZh(mall, enResult, "parking");
+                        PeoplesPlaceIGeoComList.Add(parking);
+                    }
+                    for (int n = 0; n < shopZh.infoList.Count; n++)
+                    {
+
+                        if (shopZh.infoList[n].Contains("街市地點", comp))
+                        {
+                            string s1 = shopZh.infoList[n + 1].Replace("\n", "");
+                            market.address = s1;
+                            ExtractZhNumber(shopZh.infoList[n], market);
+                            var marketInfo = MergeEnAndZh(market, enResult, "market");
+                            PeoplesPlaceIGeoComList.Add(marketInfo);
+                            break;
+                        }
+                    }
+
                 }
 
-                if (shopZh != null && !shopZh.parkingInfo.Contains("不提供時租泊車服務及泊車優惠", comp))
-                {
-                    var parking = MergeEnAndZh(shopZh, enResult, "parking");
-                    PeoplesPlaceIGeoComList.Add(parking);
-                }
-                if (shopZh != null && (shopZh.marketInfo1.Contains("街市地點", comp) || shopZh.marketInfo2.Contains("街市地點", comp)))
-                {
-
-                    var marketShop = MergeEnAndZh(shopZh, enResult, "market");
-                    PeoplesPlaceIGeoComList.Add(marketShop);
-                }
             }
             return PeoplesPlaceIGeoComList;
         }
@@ -165,35 +169,28 @@ namespace iGeoComAPI.Services
                         PeoplesPlaceIGeoCom.Longitude = Convert.ToDouble(lng);
                     }
                 }
-                if(type == "parking")
+                if (type == "parking")
                 {
                     PeoplesPlaceIGeoCom.ChineseName = shopZh.name;
                     PeoplesPlaceIGeoCom.Type = "CPO";
                     PeoplesPlaceIGeoCom.Class = "TRS";
-                    PeoplesPlaceIGeoCom.C_Address = shopZh.address.Replace(":", "").Replace(" ", "")!;
+                    PeoplesPlaceIGeoCom.C_Address = $"停車場-{shopZh.address}";
                 }
-                else if(type == "market")
+                else if (type == "market")
                 {
                     PeoplesPlaceIGeoCom.Type = "MKT";
                     PeoplesPlaceIGeoCom.Class = "CMF";
                     PeoplesPlaceIGeoCom.ChineseName = $"市場-{shopZh.name}";
-                    if (String.IsNullOrEmpty(shopZh.marketAddress1))
-                    {
-                        PeoplesPlaceIGeoCom.C_Address = shopZh.marketAddress2;
-                    }
-                    else
-                    {
-                        PeoplesPlaceIGeoCom.C_Address = shopZh.marketAddress1;
-                    }
+                    PeoplesPlaceIGeoCom.C_Address = shopZh.address;
                 }
                 else
                 {
                     PeoplesPlaceIGeoCom.ChineseName = shopZh.name;
                     PeoplesPlaceIGeoCom.Class = "CMF";
                     PeoplesPlaceIGeoCom.Type = "MAL";
-                    PeoplesPlaceIGeoCom.C_Address = shopZh.address.Replace(":", "").Replace(" ", "")!;
+                    PeoplesPlaceIGeoCom.C_Address = shopZh.address;
                 }
-                PeoplesPlaceIGeoCom.Tel_No = shopZh.number.Replace(":", "").Replace(" ", "");
+                PeoplesPlaceIGeoCom.Tel_No = String.Join(",", shopZh.number);
                 PeoplesPlaceIGeoCom.Web_Site = _options.Value.BaseUrl!;
                 PeoplesPlaceIGeoCom.GrabId = $"PeoplesPlace_{PeoplesPlaceIGeoCom.Tel_No}";
                 foreach (var item2 in enResult.Select((value2, i2) => new { i2, value2 }))
@@ -201,28 +198,62 @@ namespace iGeoComAPI.Services
                     var shopEn = item2.value2;
                     var index2 = item2.i2;
 
-                    if (shopZh.number.Replace(":","").Replace(" ","").Replace(" ", "") == shopEn.number.Replace(":", "").Replace(" ", "").Replace(" ", ""))
+                    //if (shopZh.number.Replace(":","").Replace(" ","").Replace(" ", "") == shopEn.number.Replace(":", "").Replace(" ", "").Replace(" ", ""))
+                    for (int n = 0; n < shopEn.infoList.Count; n++)
                     {
-                        
-                        if (type == "market")
-                        {
-                            if (!String.IsNullOrEmpty(shopEn.marketAddress3))
-                            {
-                                PeoplesPlaceIGeoCom.E_Address = shopEn.marketAddress3;
-                                PeoplesPlaceIGeoCom.EnglishName = $"market-{shopEn.name}";
-                            }
-                        }
-                        else
-                        {
-                            PeoplesPlaceIGeoCom.E_Address = shopEn.address!.Replace(":", "");
-                            PeoplesPlaceIGeoCom.EnglishName = shopEn.name;
-                        }
-                        break;
+                        ExtractEnNumber(shopEn.infoList[n], shopEn);
                     }
+                    if (type == "parking")
+                    {
+                        PeoplesPlaceIGeoCom.EnglishName = $"parking_{shopEn.name}";
+                    }
+                    else if (type == "market")
+                    {
+                        PeoplesPlaceIGeoCom.EnglishName = $"market_{shopEn.name}";
+                    }
+                    else
+                    {
+                        PeoplesPlaceIGeoCom.EnglishName = shopEn.name;
+                    }
+                    if (shopEn.number.Count > 0)
+                    {
+                        foreach (var num in shopEn.number)
+                        {
+                            if (PeoplesPlaceIGeoCom.Tel_No.Replace(" ", "").Replace(" ", "").Contains(num.Replace(" ", "").Replace(" ", ""), comp))
+                            {
+                                if (type == "market")
+                                {
+                                    for (int n = 0; n < shopEn.infoList.Count; n++)
+                                    {
 
+                                        if (shopEn.infoList[n].Contains("Wet Market", comp))
+                                        {
+                                            string s1 = shopEn.infoList[n + 1].Replace("\n", "");
+                                            PeoplesPlaceIGeoCom.E_Address = s1;
+                                            break;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    for (int n = 0; n < shopEn.infoList.Count; n++)
+                                    {
+
+                                        if (shopEn.infoList[n].Contains("Address", comp))
+                                        {
+                                            string s1 = shopEn.infoList[n].Replace("\n", "").Replace("Address", "").Replace("Opening Hour", "");
+                                            var list = s1.Split(":").ToList();
+                                            PeoplesPlaceIGeoCom.E_Address = list[1];
+                                            break;
+                                        }
+                                    }
+                                }
+                                break;
+                            }
+                            break;
+                        }
+                    }
                 }
-
-
                 return PeoplesPlaceIGeoCom;
             }
             catch (Exception ex)
@@ -231,6 +262,38 @@ namespace iGeoComAPI.Services
                 throw;
             }
         }
+
+        public void ExtractZhNumber(string zhNumber, PeoplesPlaceModel shopZh)
+        {
+            if (zhNumber.Contains("管理處", comp))
+            {
+                string s1 = zhNumber.Replace("\n", "").Replace("租務", "").Replace("管理處", "");
+                var list = s1.Split(":").ToList();
+                foreach (var item in list)
+                {
+                    if (!String.IsNullOrEmpty(item))
+                    {
+                        shopZh.number.Add(item);
+                    }
+                }
+            }
+        }
+        public void ExtractEnNumber(string enNumber, PeoplesPlaceModel shopEn)
+        {
+            if (enNumber.Contains("Management", comp))
+            {
+                string s1 = enNumber.Replace("\n", "").Replace("Management Office", "").Replace("Leasing", "");
+                var list = s1.Split(":").ToList();
+                foreach (var item in list)
+                {
+                    if (!String.IsNullOrEmpty(item))
+                    {
+                        shopEn.number.Add(item);
+                    }
+                }
+            }
+        }
+
 
     }
 

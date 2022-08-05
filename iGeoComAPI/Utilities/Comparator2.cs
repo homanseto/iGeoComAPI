@@ -20,8 +20,6 @@ namespace iGeoComAPI.Utilities
                         {
                             object selfValue = type.GetProperty(pi.Name).GetValue(self, null);
                             object toValue = type.GetProperty(pi.Name).GetValue(to, null);
-                            int? aaa = null;
-                            int bbb = 1;
                             if (selfValue != toValue && (selfValue == null || !selfValue.Equals(toValue)))
                             {
                                 compareList.Add(false);

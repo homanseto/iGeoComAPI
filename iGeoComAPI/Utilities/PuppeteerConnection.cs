@@ -67,6 +67,11 @@ namespace iGeoComAPI.Utilities
                 await page.GoToAsync(url);
                 if (!String.IsNullOrEmpty(config))
                 {
+                    var selector = await page.QuerySelectorAsync(config);
+                    if(selector == null)
+                    {
+                        return "";
+                    }
                     await page.ClickAsync(config);
                     ElementHandle script = await page.QuerySelectorAsync(infoCode);
                     var frame = await script.ContentFrameAsync();

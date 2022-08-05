@@ -46,6 +46,7 @@ namespace iGeoComAPI
             services.Configure<HousingOptions>(config.GetSection(HousingOptions.SectionName));
             services.Configure<FortuneMallsOptions>(config.GetSection(FortuneMallsOptions.SectionName));
             services.Configure<CorrectionalInstitutionOptions>(config.GetSection(CorrectionalInstitutionOptions.SectionName));
+            services.Configure<Store759Options>(config.GetSection(Store759Options.SectionName));
             return services;
         }
     }
