@@ -51,6 +51,7 @@ namespace iGeoComAPI.Services
             Regex reg = new Regex(input);
             return reg;
         }
+        Regex rgxNum = ExtractInfo(PeoplesPlaceModel.ExtractNum);
         public PeoplesPlaceGrabber(PuppeteerConnection puppeteerConnection, IOptions<PeoplesPlaceOptions> options, IMemoryCache memoryCache, ILogger<PeoplesPlaceGrabber> logger,
     IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json, IDataAccess dataAccess) : base(httpClient, absOptions, json, dataAccess)
         {
@@ -72,12 +73,12 @@ namespace iGeoComAPI.Services
             {
                 if (!String.IsNullOrEmpty(zhHref.href))
                 {
-                    var iframe = await _puppeteerConnection.GetIframaContent(zhHref.href, iframeInfoCode1, iframeWaitSelector, iframeInfoCode2);
+                    //var iframe = await _puppeteerConnection.GetIframaContent(zhHref.href, iframeInfoCode1, iframeWaitSelector, iframeInfoCode2);
                     var info = await _puppeteerConnection.PuppeteerGrabber<PeoplesPlaceModel>(zhHref.href, shopInfoCode, waitSelectorInfo);
                     zhHref.infoList = info.infoList;
                     zhHref.parkingInfo = info.parkingInfo;
                     testZh.Add(zhHref);
-                    zhHref.latlng = iframe;
+                    //zhHref.latlng = iframe;
                 }
             }
             foreach (var enHref in enResult)
@@ -90,7 +91,7 @@ namespace iGeoComAPI.Services
                     testEn.Add(enHref);
                 }
             }
-           var mergeResult = CreateIGeoCom(testZh, testEn);
+            var mergeResult = CreateIGeoCom(testZh, testEn);
             var result = await this.GetShopInfo(mergeResult);
             return result;
 
@@ -113,7 +114,10 @@ namespace iGeoComAPI.Services
                             var list = s1.Split(":").ToList();
                             mall.address = list[1];
                         }
-                        ExtractZhNumber(shopZh.infoList[n], mall);
+                        if (String.IsNullOrEmpty(mall.number))
+                        {
+                            ExtractNumber(shopZh.infoList[n], mall);
+                        }
                     }
                     var shoppingMall = MergeEnAndZh(mall, enResult, "");
                     PeoplesPlaceIGeoComList.Add(shoppingMall);
@@ -129,7 +133,10 @@ namespace iGeoComAPI.Services
                         {
                             string s1 = shopZh.infoList[n + 1].Replace("\n", "");
                             market.address = s1;
-                            ExtractZhNumber(shopZh.infoList[n], market);
+                            if (String.IsNullOrEmpty(market.number))
+                            {
+                                ExtractNumber(shopZh.infoList[n], market);
+                            }
                             var marketInfo = MergeEnAndZh(market, enResult, "market");
                             PeoplesPlaceIGeoComList.Add(marketInfo);
                             break;
@@ -197,11 +204,12 @@ namespace iGeoComAPI.Services
                 {
                     var shopEn = item2.value2;
                     var index2 = item2.i2;
-
-                    //if (shopZh.number.Replace(":","").Replace(" ","").Replace(" ", "") == shopEn.number.Replace(":", "").Replace(" ", "").Replace(" ", ""))
                     for (int n = 0; n < shopEn.infoList.Count; n++)
                     {
-                        ExtractEnNumber(shopEn.infoList[n], shopEn);
+                        if (String.IsNullOrEmpty(shopEn.number))
+                        {
+                            ExtractNumber(shopEn.infoList[n], shopEn);
+                        }
                     }
                     if (type == "parking")
                     {
@@ -215,43 +223,36 @@ namespace iGeoComAPI.Services
                     {
                         PeoplesPlaceIGeoCom.EnglishName = shopEn.name;
                     }
-                    if (shopEn.number.Count > 0)
+                    if (shopZh.number.Replace(" ", "").Replace(" ", "") == shopEn.number.Replace(" ", "").Replace(" ", ""))
                     {
-                        foreach (var num in shopEn.number)
+                        if (type == "market")
                         {
-                            if (PeoplesPlaceIGeoCom.Tel_No.Replace(" ", "").Replace(" ", "").Contains(num.Replace(" ", "").Replace(" ", ""), comp))
+                            for (int n = 0; n < shopEn.infoList.Count; n++)
                             {
-                                if (type == "market")
-                                {
-                                    for (int n = 0; n < shopEn.infoList.Count; n++)
-                                    {
 
-                                        if (shopEn.infoList[n].Contains("Wet Market", comp))
-                                        {
-                                            string s1 = shopEn.infoList[n + 1].Replace("\n", "");
-                                            PeoplesPlaceIGeoCom.E_Address = s1;
-                                            break;
-                                        }
-                                    }
-                                }
-                                else
+                                if (shopEn.infoList[n].Contains("Wet Market", comp))
                                 {
-                                    for (int n = 0; n < shopEn.infoList.Count; n++)
-                                    {
-
-                                        if (shopEn.infoList[n].Contains("Address", comp))
-                                        {
-                                            string s1 = shopEn.infoList[n].Replace("\n", "").Replace("Address", "").Replace("Opening Hour", "");
-                                            var list = s1.Split(":").ToList();
-                                            PeoplesPlaceIGeoCom.E_Address = list[1];
-                                            break;
-                                        }
-                                    }
+                                    string s1 = shopEn.infoList[n + 1].Replace("\n", "");
+                                    PeoplesPlaceIGeoCom.E_Address = s1;
+                                    break;
                                 }
-                                break;
                             }
-                            break;
                         }
+                        else
+                        {
+                            for (int n = 0; n < shopEn.infoList.Count; n++)
+                            {
+
+                                if (shopEn.infoList[n].Contains("Address", comp))
+                                {
+                                    string s1 = shopEn.infoList[n].Replace("\n", "").Replace("Address", "").Replace("Opening Hour", "");
+                                    var list = s1.Split(":").ToList();
+                                    PeoplesPlaceIGeoCom.E_Address = list[1];
+                                    break;
+                                }
+                            }
+                        }
+                        break;
                     }
                 }
                 return PeoplesPlaceIGeoCom;
@@ -263,38 +264,22 @@ namespace iGeoComAPI.Services
             }
         }
 
-        public void ExtractZhNumber(string zhNumber, PeoplesPlaceModel shopZh)
+        public void ExtractNumber(string number, PeoplesPlaceModel shop)
         {
-            if (zhNumber.Contains("管理處", comp))
+            if (number.Contains("管理處", comp) || number.Contains("Management", comp))
             {
-                string s1 = zhNumber.Replace("\n", "").Replace("租務", "").Replace("管理處", "");
+                string s1 = number.Replace("\n", "").Replace("租務", "").Replace("管理處", "").Replace("Management Office", "").Replace("Leasing", "");
                 var list = s1.Split(":").ToList();
-                foreach (var item in list)
+                if (list.Count == 2)
                 {
-                    if (!String.IsNullOrEmpty(item))
-                    {
-                        shopZh.number.Add(item);
-                    }
+                    shop.number = list[1];
+                }
+                else if (list.Count == 3)
+                {
+                    shop.number = list[2];
                 }
             }
         }
-        public void ExtractEnNumber(string enNumber, PeoplesPlaceModel shopEn)
-        {
-            if (enNumber.Contains("Management", comp))
-            {
-                string s1 = enNumber.Replace("\n", "").Replace("Management Office", "").Replace("Leasing", "");
-                var list = s1.Split(":").ToList();
-                foreach (var item in list)
-                {
-                    if (!String.IsNullOrEmpty(item))
-                    {
-                        shopEn.number.Add(item);
-                    }
-                }
-            }
-        }
-
-
     }
 
 }

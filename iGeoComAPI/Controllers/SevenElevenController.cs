@@ -80,6 +80,25 @@ namespace iGeoComAPI.Controllers
 
         }
 
+        [HttpGet("delta/testing")]
+        public async Task<ActionResult> Testing()
+        {
+            try
+            {
+                var newResult = await iGeoComGrabRepository.GetShopsByShopId(1);
+                var oldResult = await iGeoComRepository.GetShops(1);
+                string[] ignoreList = new string[] { "GeoNameId", "EnglishName", "ChineseName", "Class", "Type", "Subcat", "Easting","Northing","Source",
+                    "E_floor", "C_floor", "E_sitename","C_sitename","E_area","C_area","C_Region", "E_Region", "C_District","E_District", "Fax_No", "Tel_No","Web_Site",
+                    "E_Address", "C_Address","Latitude", "Longitude","Shop","Rev_Date","GrabId", "Compare_ChineseName", "Compare_EnglishName", "Compare_Tel"};
+                var resultList = Comparator2.GetComparedResult(newResult, oldResult, ignoreList);
+                return Utilities.File.Download(resultList, $"sevenEleven_delta");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
         [HttpPost]
         public async Task<ActionResult<List<IGeoComGrabModel>>> Post()
         {

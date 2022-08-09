@@ -72,6 +72,7 @@ builder.Services.AddSingleton<ConsularGrabber>();
 builder.Services.AddSingleton<HousingGrabber>();
 builder.Services.AddSingleton<FortuneMallsGrabber>();
 builder.Services.AddSingleton<Store759Grabber>();
+builder.Services.AddSingleton<CorrectionalInstitutionGrabber>();
 builder.Services.AddMemoryCache();
 MyConfigServiceCollection.AddConfig(builder.Services, _configuration);
 builder.Services.AddOptions(); //IOptions<T>
