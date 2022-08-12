@@ -13,9 +13,10 @@ ConfigurationManager _configuration = builder.Configuration;
 IWebHostEnvironment _environment = builder.Environment;
 
 var logger = new LoggerConfiguration()
-    .ReadFrom.Configuration(_configuration)
+    //.ReadFrom.Configuration(_configuration)
     .Enrich.WithThreadId()
     .Enrich.FromLogContext()
+    .WriteTo.Map("Name", (name, wt) => wt.File($"../logs/{name}/{name}-.log", rollingInterval: RollingInterval.Day))
     .CreateLogger();
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(logger);

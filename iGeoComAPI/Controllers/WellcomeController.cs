@@ -5,6 +5,7 @@ using iGeoComAPI.Options;
 using Microsoft.Extensions.Options;
 using iGeoComAPI.Utilities;
 using iGeoComAPI.Repository;
+using Newtonsoft.Json;
 
 namespace iGeoComAPI.Controllers
 {
@@ -34,6 +35,7 @@ namespace iGeoComAPI.Controllers
                 var result = await _iGeoComGrabRepository.GetShopsByName(name);
                 if (result == null)
                     return NotFound();
+                
                 return Ok(result);
             }
             catch (Exception ex)
@@ -65,9 +67,9 @@ namespace iGeoComAPI.Controllers
             {
                 string name = this.GetType().Name.Replace("Controller", "").ToLower();
 
-                var previousResult = await _iGeoComRepository.GetShops(4);
+                var previousResult = await _iGeoComRepository.GetShops("");
                 //var newResult = await _iGeoComGrabRepository.GetShopsByName(name);
-                var newResult = await _iGeoComGrabRepository.GetShopsByShopId(4);
+                var newResult = await _iGeoComGrabRepository.GetShopsByShopId("");
                 var result = Comparator.GetComparedResult(newResult, previousResult);
                 return Utilities.File.Download(result, $"{name}_delta");
             }
@@ -98,11 +100,11 @@ namespace iGeoComAPI.Controllers
         //}
 
         [HttpPost]
-        public async Task<List<IGeoComGrabModel>?> Post()
+        public async Task<IActionResult> Post()
         {
             var GrabbedResult = await _wellcomeGrabber.GetWebSiteItems();
             _iGeoComGrabRepository.CreateShops(GrabbedResult);
-            return GrabbedResult;
+            return Ok(GrabbedResult);
         }
   
     }

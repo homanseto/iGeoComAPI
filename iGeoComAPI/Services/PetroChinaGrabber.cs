@@ -59,7 +59,6 @@ namespace iGeoComAPI.Services
                     PetroChinaIGeoCom.Web_Site = _options.Value.BaseUrl!;
                     PetroChinaIGeoCom.Class = "UTI";
                     PetroChinaIGeoCom.Type = "PFS";
-                    PetroChinaIGeoCom.Shop = 14;
                     PetroChinaIGeoCom.GrabId = $"PetroChina_{shopEn.id}";
                     foreach (var item2 in zhResult.Select((value2, i2) => new { i2, value2 }))
                     {

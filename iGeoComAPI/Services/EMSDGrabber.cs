@@ -80,7 +80,6 @@ namespace iGeoComAPI.Services
                     EMSDIGeoCom.Web_Site = _options.Value.BaseUrl!;
                     EMSDIGeoCom.Class = "UTI";
                     EMSDIGeoCom.Type = "LPG";
-                    EMSDIGeoCom.Shop = 13;
                     EMSDIGeoCom.GrabId = $"EMSD {shopEn.id}";
                     foreach (var item2 in zhResult.Select((value2, i2) => new { i2, value2 }))
                     {

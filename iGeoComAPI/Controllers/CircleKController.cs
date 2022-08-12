@@ -57,6 +57,25 @@ namespace iGeoComAPI.Controllers
 
         }
 
+        [HttpGet("delta/testing")]
+        public async Task<ActionResult> Testing()
+        {
+            try
+            {
+                var newResult = await _iGeoComGrabRepository.GetShopsByShopId("cvs2");
+                var oldResult = await _iGeoComRepository.GetShops("cvs2");
+                string[] ignoreList = new string[] { "GeoNameId", "EnglishName", "ChineseName", "Class", "Type", "Subcat", "Easting","Northing","Source",
+                    "E_floor", "C_floor", "E_sitename","C_sitename","E_area","C_area","C_Region", "E_Region", "C_District","E_District", "Fax_No", "Tel_No","Web_Site",
+                    "E_Address", "C_Address","Latitude", "Longitude","ShopId","Rev_Date","GrabId", "Compare_ChineseName", "Compare_EnglishName", "Compare_Tel"};
+                var resultList = Comparator2.GetComparedResult(newResult, oldResult, ignoreList);
+                return Utilities.File.Download(resultList, $"circleK_delta");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
         [HttpGet("delta/download")]
         public async Task<IActionResult> GetDelta()
         {
@@ -64,9 +83,9 @@ namespace iGeoComAPI.Controllers
             {
                 string name = this.GetType().Name.Replace("Controller", "").ToLower();
 
-                var previousResult = await _iGeoComRepository.GetShops(2);
+                var previousResult = await _iGeoComRepository.GetShops("");
                 //var newResult = await this.iGeoComGrabRepository.GetShopsByName(name);
-                var newResult = await _iGeoComGrabRepository.GetShopsByShopId(2);
+                var newResult = await _iGeoComGrabRepository.GetShopsByShopId("");
                 var result = Comparator.GetComparedResult(newResult, previousResult,"tel");
                 return Utilities.File.Download(result, $"{name}_delta");
             }

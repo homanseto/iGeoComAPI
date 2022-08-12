@@ -67,9 +67,9 @@ namespace iGeoComAPI.Controllers
             {
                 string name = this.GetType().Name.Replace("Controller", "").ToLower();
 
-                var previousResult = await this.iGeoComRepository.GetShops(1);
+                var previousResult = await this.iGeoComRepository.GetShops("cvs1");
                 //var newResult = await this.iGeoComGrabRepository.GetShopsByName(name);
-                var newResult = await this.iGeoComGrabRepository.GetShopsByShopId(1);
+                var newResult = await this.iGeoComGrabRepository.GetShopsByShopId("cvs1");
                 var result = Comparator.GetComparedResult(newResult, previousResult, "tel");
                 return Utilities.File.Download(result, $"{name}_delta");
             }
@@ -85,11 +85,11 @@ namespace iGeoComAPI.Controllers
         {
             try
             {
-                var newResult = await iGeoComGrabRepository.GetShopsByShopId(1);
-                var oldResult = await iGeoComRepository.GetShops(1);
+                var newResult = await iGeoComGrabRepository.GetShopsByShopId("cvs1");
+                var oldResult = await iGeoComRepository.GetShops("cvs1");
                 string[] ignoreList = new string[] { "GeoNameId", "EnglishName", "ChineseName", "Class", "Type", "Subcat", "Easting","Northing","Source",
                     "E_floor", "C_floor", "E_sitename","C_sitename","E_area","C_area","C_Region", "E_Region", "C_District","E_District", "Fax_No", "Tel_No","Web_Site",
-                    "E_Address", "C_Address","Latitude", "Longitude","Shop","Rev_Date","GrabId", "Compare_ChineseName", "Compare_EnglishName", "Compare_Tel"};
+                    "E_Address", "C_Address","Latitude", "Longitude","ShopId","Rev_Date","GrabId", "Compare_ChineseName", "Compare_EnglishName", "Compare_Tel"};
                 var resultList = Comparator2.GetComparedResult(newResult, oldResult, ignoreList);
                 return Utilities.File.Download(resultList, $"sevenEleven_delta");
             }

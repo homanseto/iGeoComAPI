@@ -56,7 +56,7 @@ namespace iGeoComAPI.Services
                 {
 
                     var supermaketShop = MergeEnAndZh(shopEn, zhResult, "supermarket");
-                    var departmentStore = MergeEnAndZh(shopEn, zhResult, "");
+                    var departmentStore = MergeEnAndZh(shopEn, zhResult);
                     AeonIGeoComList.Add(supermaketShop);
                     AeonIGeoComList.Add(departmentStore);
                 }
@@ -64,7 +64,7 @@ namespace iGeoComAPI.Services
             return AeonIGeoComList;
         }
 
-        public IGeoComGrabModel MergeEnAndZh(AeonModel shopEn, List<AeonModel> zhResult, string type)
+        public IGeoComGrabModel MergeEnAndZh(AeonModel shopEn, List<AeonModel> zhResult, string? type = "")
         {
             _logger.LogInformation("Merge Aeon En and Zh");
             var _rgxLat = Regexs.ExtractInfo(AeonModel.AeonLatRegex);
@@ -78,7 +78,7 @@ namespace iGeoComAPI.Services
                 }
                 else
                 {
-                    AeonIGeoCom.EnglishName = $"Supermarket-{shopEn.Name}";
+                    AeonIGeoCom.EnglishName = $"{shopEn.Name} Supermarket";
                 }
                 AeonIGeoCom.Class = "CMF";
                 AeonIGeoCom.Type = "SMK";
@@ -115,7 +115,7 @@ namespace iGeoComAPI.Services
                         }
                         else
                         {
-                            AeonIGeoCom.ChineseName = $"超級市場-{shopZh.Name}";
+                            AeonIGeoCom.ChineseName = $"{shopZh.Name}超級市場";
                         }
                     }
                     else

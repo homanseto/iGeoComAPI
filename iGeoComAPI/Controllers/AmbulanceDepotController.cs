@@ -69,9 +69,9 @@ namespace iGeoComAPI.Controllers
             {
                 string name = this.GetType().Name.Replace("Controller", "").ToLower();
 
-                var previousResult = await _iGeoComRepository.GetShops(9);
+                var previousResult = await _iGeoComRepository.GetShops("");
                 //var newResult = await _iGeoComGrabRepository.GetShopsByName(name);
-                var newResult = await _iGeoComGrabRepository.GetShopsByShopId(9);
+                var newResult = await _iGeoComGrabRepository.GetShopsByShopId("");
                 var result = Comparator.GetComparedResult(newResult, previousResult, "ambulance");
                 return Utilities.File.DownloadDelta(result, $"{name}_delta");
             }

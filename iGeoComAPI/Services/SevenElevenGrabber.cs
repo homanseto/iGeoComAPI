@@ -34,6 +34,7 @@ namespace iGeoComAPI.Services
             _iGeoComGrabRepository = iGeoComGrabRepository;
         }
 
+        
         //HttpClient _HttpClient = new HttpClient();
         public override async Task<List<IGeoComGrabModel>?> GetWebSiteItems()
         {
@@ -78,7 +79,7 @@ namespace iGeoComAPI.Services
                         sevenElevenIGeoCom.Type = "CVS";
                         sevenElevenIGeoCom.Class = "CMF";
                         sevenElevenIGeoCom.E_District = shopEn.District;
-                        sevenElevenIGeoCom.Shop = 1;
+                        sevenElevenIGeoCom.ShopId = _options.Value.ShopId;
                         sevenElevenIGeoCom.ChineseName = "7-11便利店";
                         sevenElevenIGeoCom.EnglishName = "7-Eleven";
                         if (shopEn.Opening_24 == "1")

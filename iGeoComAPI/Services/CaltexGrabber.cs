@@ -68,7 +68,6 @@ namespace iGeoComAPI.Services
                         CaltexIGeoCom.Web_Site = _options.Value.BaseUrl;
                         CaltexIGeoCom.Class = "UTI";
                         CaltexIGeoCom.Type = "PFS";
-                        CaltexIGeoCom.Shop = 7;
                         foreach (var zh in zhResult)
                         {
                             if (en.PhoneNumber == zh.PhoneNumber)

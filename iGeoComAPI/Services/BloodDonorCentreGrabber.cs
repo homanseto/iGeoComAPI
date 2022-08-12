@@ -100,7 +100,6 @@ namespace iGeoComAPI.Services
                         BloodDonorCentreIGeoCom.Longitude = Convert.ToDouble(matchesEn[2].Value);
                         BloodDonorCentreIGeoCom.Type = "BDC";
                         BloodDonorCentreIGeoCom.Class = "HNC";
-                        BloodDonorCentreIGeoCom.Shop = 12;
                         BloodDonorCentreIGeoCom.ChineseName = "香港紅十字會";
                         BloodDonorCentreIGeoCom.EnglishName = "Blood Transfusion";
                         BloodDonorCentreIGeoCom.Web_Site = _options.Value.BaseUrl;

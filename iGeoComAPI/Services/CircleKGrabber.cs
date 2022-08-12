@@ -71,13 +71,13 @@ namespace iGeoComAPI.Services
                     circleKIGeoCom.E_Region = en.zone;
                     circleKIGeoCom.Latitude = Convert.ToDouble(en.latitude);
                     circleKIGeoCom.Longitude = Convert.ToDouble(en.longitude);
-                    circleKIGeoCom.Shop = 2;
                     circleKIGeoCom.Type = "CVS";
                     circleKIGeoCom.Class = "CMF";
                     circleKIGeoCom.GrabId = $"circleK_{en.store_no}";
                     circleKIGeoCom.E_Address = en.address;
                     circleKIGeoCom.ChineseName = "OK便利店";
                     circleKIGeoCom.EnglishName = "Circle K";
+                    circleKIGeoCom.ShopId = "cvs2";
                     if (en.operation_hour.ToLower() == "24 hours")
                     {
                         circleKIGeoCom.Subcat = " ";
@@ -86,8 +86,6 @@ namespace iGeoComAPI.Services
                     {
                         circleKIGeoCom.Subcat = "NON24R";
                     }
-                    circleKIGeoCom.Class = "CMF";
-                    circleKIGeoCom.Type = "CVS";
                     foreach (KeyValuePair<string, List<CircleKModel>> zhEntry in zhResult)
                     {
                         foreach (var zh in zhEntry.Value)

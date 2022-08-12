@@ -13,5 +13,11 @@ namespace iGeoComAPI.Services
             return resultArray;
         }
 
+        public string Serialize<T>(T input)
+        {
+            var jsonResult = JsonConvert.SerializeObject(input);
+            return jsonResult;
+        }
+
     }
 }

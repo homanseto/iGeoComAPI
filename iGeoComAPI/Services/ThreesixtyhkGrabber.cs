@@ -103,7 +103,6 @@ namespace iGeoComAPI.Services
                     ThreesixtyhkIGeoCom.Web_Site = _options.Value.BaseUrl!;
                     ThreesixtyhkIGeoCom.Class = "CMF";
                     ThreesixtyhkIGeoCom.Type = "SMK";
-                    ThreesixtyhkIGeoCom.Shop = 15;
                     ThreesixtyhkIGeoCom.GrabId = $"Threesixtyhk_{ThreesixtyhkIGeoCom.Tel_No}".Replace("-","");
                     foreach (var item2 in zhResult.Select((value2, i2) => new { i2, value2 }))
                     {

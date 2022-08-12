@@ -71,9 +71,9 @@ namespace iGeoComAPI.Services
                     VangoIGeoCom.Class = "CMF";
                     VangoIGeoCom.Type = "CVS";
                     VangoIGeoCom.Source = "27";
-                    VangoIGeoCom.Shop = 3;
                     VangoIGeoCom.Web_Site = _options.Value.BaseUrl;
                     VangoIGeoCom.GrabId = $"{shop.store_number}_{shop.storename}{shop.address_geo_lat}";
+                    VangoIGeoCom.ShopId = "cvs3";
                     VangoIGeoCom.Tel_No = $"{shop.telephone} {shop.telephone2} {shop.telephone3}";
                     VangoIGeoComList.Add(VangoIGeoCom);
                 }

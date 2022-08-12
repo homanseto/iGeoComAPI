@@ -31,6 +31,19 @@ namespace iGeoComAPI.Services
             _memoryCache = memoryCache;
             _logger = logger;
         }
+        
+        public static void TestA(IGeoComModel m)
+        {
+            var v = m as IGeoComGrabModel;
+
+        }
+
+        public static void TestB()
+        {
+            IGeoComGrabModel b = new IGeoComGrabModel();
+            TestA(b);
+        }
+
 
         public override async Task<List<IGeoComGrabModel>?> GetWebSiteItems()
         {
@@ -40,14 +53,13 @@ namespace iGeoComAPI.Services
             var result = await this.GetShopInfo(mergeResult);
             //_memoryCache.Set("iGeoCom", mergeResult, TimeSpan.FromHours(2));
             return result;
-
         }
 
         public List<IGeoComGrabModel> MergeEnAndZh(List<WellcomeModel> enResult, List<WellcomeModel> zhResult)
         {
             try
             {
-                _logger.LogInformation("Merge Wellcome En and Zh");
+                _logger.LogInformation("Merge {Name} En and Zh", this.GetType().Name.Replace("Grabber", ""));
                 var _rgx = Regexs.ExtractInfo(_regLagLngRegex);
                 List<IGeoComGrabModel> WellcomeIGeoComList = new List<IGeoComGrabModel>();
                 foreach (var item in enResult.Select((value, i) => new { i, value }))
@@ -64,7 +76,6 @@ namespace iGeoComAPI.Services
                     WellcomeIGeoCom.Web_Site = _options.Value.BaseUrl!;
                     WellcomeIGeoCom.Class = "CMF";
                     WellcomeIGeoCom.Type = "SMK";
-                    WellcomeIGeoCom.Shop = 4;
                     WellcomeIGeoCom.GrabId = $"wellcome_{shopEn.LatLng}{shopEn.Phone}_{index}".Replace(" ", "").Replace("|", "").Replace(".", "");
                     foreach (var item2 in zhResult.Select((value2, i2) => new { i2, value2 }))
                     {
@@ -78,7 +89,7 @@ namespace iGeoComAPI.Services
                                 WellcomeIGeoCom.C_Address = shopZh.Address!.Replace(" ", "");
                                 WellcomeIGeoCom.ChineseName = $"惠康超級市場-{shopZh.Name}";
                                 continue;
-                            }
+                            }      
                         }
                     }
                     WellcomeIGeoComList.Add(WellcomeIGeoCom);
@@ -87,7 +98,7 @@ namespace iGeoComAPI.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message, "fail to merge Wellcome En and Zh");
+                _logger.LogError(ex.Message, "fail to merge Wellcome En and Zh", "Wellcome");
                 throw;
             }
         }

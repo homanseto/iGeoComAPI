@@ -64,7 +64,6 @@ namespace iGeoComAPI.Services
                     ParknShopIGeoCom.Tel_No = shopEn.Phone;
                     ParknShopIGeoCom.Type = "SMK";
                     ParknShopIGeoCom.Class = "CMF";
-                    ParknShopIGeoCom.Shop = 5;
                     ParknShopIGeoCom.Web_Site = _options.Value.BaseUrl;
                     ParknShopIGeoCom.GrabId = $"parknshop{shopEn.BrandName}{index}";
                     foreach (var shopZh in zhResult)

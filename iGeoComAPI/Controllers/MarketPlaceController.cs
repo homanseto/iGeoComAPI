@@ -47,9 +47,9 @@ namespace iGeoComAPI.Controllers
             {
                 string name = this.GetType().Name.Replace("Controller", "").ToLower();
 
-                var previousResult = await _iGeoComRepository.GetShops(8);
+                var previousResult = await _iGeoComRepository.GetShops("");
                 //var newResult = await this.iGeoComGrabRepository.GetShopsByName(name);
-                var newResult = await _iGeoComGrabRepository.GetShopsByShopId(8);
+                var newResult = await _iGeoComGrabRepository.GetShopsByShopId("");
                 var result = Comparator.GetComparedResult(newResult, previousResult);
                 return Utilities.File.Download(result, $"{name}_delta");
             }

@@ -35,6 +35,7 @@ namespace iGeoComAPI.Services
             foreach (IGeoComGrabModel shop in shopList)
             {
                 var northEast = await getNorthEast(shop.Latitude, shop.Longitude);
+                //var northEast = await smoGetNorthEast(shop.Latitude, shop.Longitude);
                 var mapInfo = await MapInfoFunction(shop.Longitude, shop.Latitude);
                 if (northEast != null)
                 {
@@ -61,7 +62,6 @@ namespace iGeoComAPI.Services
             }
             return resultList;
         }
-        // smo params x,y exp:http://3dmapweb3/3DMWebAPI/api/CoordinateSystem/WGS80To84?x=839662&y=818973
 
         public async Task<NorthEastModel?> getNorthEast(double lat, double lng)
         {
@@ -75,6 +75,21 @@ namespace iGeoComAPI.Services
 
                 var result = await this.httpClient.GetAsync(this.absOptions.Value.ConvertNE, query);
                 return this.json.Dserialize<NorthEastModel>(result);
+        }
+
+        // internal API
+        // smo params x,y exp:http://3dmapweb3/3DMWebAPI/api/CoordinateSystem/WGS80To84?x=839662&y=818973
+        // smo params x,y exp:http://3dmapweb3/3DMWebAPI/api/CoordinateSystem/WGS84To80?x=114.20981414461835&y=22.309724985843733
+        public async Task<NorthEastModel?> smoGetNorthEast(double lat, double lng)
+        {
+            var query = new Dictionary<string, string>()
+            {
+                ["x"] = lng.ToString(),
+                ["y"] = lat.ToString()
+            };
+
+            var result = await this.httpClient.GetAsync(this.absOptions.Value.SmoConvertNE, query);
+            return this.json.Dserialize<NorthEastModel>(result);
         }
 
         public async Task<HKMapInfo> MapInfoFunction(double lng, double lat)

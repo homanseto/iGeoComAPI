@@ -71,7 +71,6 @@ namespace iGeoComAPI.Services
                         EssoIGeoCom.Longitude = shopEn.Longitude;
                         EssoIGeoCom.Type = "PFS";
                         EssoIGeoCom.Class = "UTI";
-                        EssoIGeoCom.Shop = 11;
                         EssoIGeoCom.ChineseName = $"{shopEn.brandName}-{shopEn.locationName}";
                         if (shopEn.Open24Hours == true)
                         {

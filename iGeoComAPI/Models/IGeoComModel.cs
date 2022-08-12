@@ -2,7 +2,7 @@
 using iGeoComAPI.Utilities;
 using Microsoft.Extensions.Options;
 using System.ComponentModel.DataAnnotations;
-
+using Newtonsoft.Json;
 namespace iGeoComAPI.Models
 {
     public class IGeoComModel
@@ -38,9 +38,10 @@ namespace iGeoComAPI.Models
         public string Tel_No { get; set; } = String.Empty;
         public string Fax_No { get; set; } = String.Empty;
         public string Web_Site { get; set; } = String.Empty;
-        public int Shop { get; set; }
+        public string ShopId { get; set; } = String.Empty;
         public DateTime Rev_Date { get; set; } = DateTime.Now;
 
+        [JsonIgnore]
         public string Compare_E_Address
         {
             get
@@ -49,6 +50,7 @@ namespace iGeoComAPI.Models
             }
         }
 
+        [JsonIgnore]
         public string Compare_C_Address
         {
             get
@@ -56,6 +58,7 @@ namespace iGeoComAPI.Models
                 return this.C_Address.ToLower().Replace(" ", "").Replace(",", "").Replace(".", "").Replace("/", "").Replace("(", "").Replace(")", "").Replace("，","").Replace("<br/>", "").Replace("<br />", "").Replace("\t", "").Replace("\\", "").Replace("。", "").Trim();
             }
         }
+        [JsonIgnore]
         public string Compare_ChineseName
         {
             get
@@ -63,6 +66,7 @@ namespace iGeoComAPI.Models
                 return this.ChineseName.ToLower().Replace(" ", "").Replace(",", "").Replace("(", "").Replace(")", "").Replace("<br/>", "").Replace("\t", "").Replace("\\", "").Replace("。", "").Trim();
             }
         }
+        [JsonIgnore]
         public string Compare_EnglishName
         {
             get
@@ -70,6 +74,7 @@ namespace iGeoComAPI.Models
                 return this.EnglishName.ToLower().Replace(" ", "").Replace(",", "").Replace("(", "").Replace(")", "").Replace("<br/>", "").Replace("\t", "").Replace("\\", "").Replace("。", "").Trim();
             }
         }
+        [JsonIgnore]
         public string Compare_Tel
         {
             get

@@ -61,11 +61,11 @@ namespace iGeoComAPI.Controllers
         {
             try
             {
-                var newResult = await _iGeoComGrabRepository.GetShopsByShopId(3);
-                var oldResult = await _iGeoComRepository.GetShops(3);
+                var newResult = await _iGeoComGrabRepository.GetShopsByShopId("cvs3");
+                var oldResult = await _iGeoComRepository.GetShops("cvs3");
                 string[] ignoreList = new string[] { "GeoNameId", "EnglishName", "ChineseName", "Class", "Type", "Subcat", "Easting","Northing","Source",
                     "E_floor", "C_floor", "E_sitename","C_sitename","E_area","C_area","C_Region", "E_Region", "C_District","E_District", "Fax_No", "Tel_No","Web_Site",
-                    "E_Address", "C_Address","Latitude", "Longitude","Shop","Rev_Date","GrabId", "Compare_ChineseName", "Compare_EnglishName","Compare_E_Address"};
+                    "E_Address", "C_Address","Latitude", "Longitude","ShopId","Rev_Date","GrabId", "Compare_ChineseName", "Compare_EnglishName","Compare_E_Address"};
                 var resultList = Comparator2.GetComparedResult(newResult, oldResult, ignoreList);
                 return Utilities.File.Download(resultList, $"testing_delta");
             }

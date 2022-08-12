@@ -74,7 +74,6 @@ namespace iGeoComAPI.Services
                         USelectIGeoCom.Class = "CMF";
                         USelectIGeoCom.Type = "SMK";
                         USelectIGeoCom.Source = "27";
-                        USelectIGeoCom.Shop = 6;
                         USelectIGeoCom.Web_Site = _options.Value.BaseUrl;
                         USelectIGeoCom.GrabId = $"{shop.store_number}_{shop.storename}{shop.address_geo_lat}";
                         USelectIGeoCom.Tel_No = $"{shop.telephone} {shop.telephone2} {shop.telephone3}";

@@ -60,7 +60,6 @@ namespace iGeoComAPI.Services
                     MarketPlaceIGeoCom.Class = "CMF";
                     MarketPlaceIGeoCom.Latitude = shopEn.latitude;
                     MarketPlaceIGeoCom.Longitude = shopEn.longitude;
-                    MarketPlaceIGeoCom.Shop = 8;
                     foreach (var shopZh in zhResult)
                     {
                         if (shopEn.id == shopZh.id)
