@@ -50,9 +50,9 @@ namespace iGeoComAPI.Services
             var enResult = await _puppeteerConnection.PuppeteerGrabber<List<WellcomeModel>>(_options.Value.EnUrl, infoCode, waitSelector);
             var zhResult = await _puppeteerConnection.PuppeteerGrabber<List<WellcomeModel>>(_options.Value.ZhUrl, infoCode, waitSelector);
             var mergeResult = MergeEnAndZh(enResult, zhResult);
-            var result = await this.GetShopInfo(mergeResult);
+            //var result = await this.GetShopInfo(mergeResult);
             //_memoryCache.Set("iGeoCom", mergeResult, TimeSpan.FromHours(2));
-            return result;
+            return mergeResult;
         }
 
         public List<IGeoComGrabModel> MergeEnAndZh(List<WellcomeModel> enResult, List<WellcomeModel> zhResult)
@@ -76,6 +76,7 @@ namespace iGeoComAPI.Services
                     WellcomeIGeoCom.Web_Site = _options.Value.BaseUrl!;
                     WellcomeIGeoCom.Class = "CMF";
                     WellcomeIGeoCom.Type = "SMK";
+                    WellcomeIGeoCom.ShopId = "smk2";
                     WellcomeIGeoCom.GrabId = $"wellcome_{shopEn.LatLng}{shopEn.Phone}_{index}".Replace(" ", "").Replace("|", "").Replace(".", "");
                     foreach (var item2 in zhResult.Select((value2, i2) => new { i2, value2 }))
                     {

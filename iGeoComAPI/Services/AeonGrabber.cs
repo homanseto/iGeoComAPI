@@ -36,10 +36,9 @@ namespace iGeoComAPI.Services
             var filterEnResult = enResult.Where(v => !(v.Name.Contains("Living PLAZA", comp) || v.Name.Contains("Daiso", comp) || v.Name.Contains("bento express", comp) || v.Name.Contains("Mono Mono", comp))).ToList();
             var filterZhResult = zhResult.Where(v => !(v.Name.Contains("Living PLAZA", comp) || v.Name.Contains("Daiso", comp) || v.Name.Contains("bento express", comp) || v.Name.Contains("ものもの", comp))).ToList();
             var mergeResult = CreateIGeoCom(filterEnResult, filterZhResult);
-            var result = await this.GetShopInfo(mergeResult);
+            //var result = await this.GetShopInfo(mergeResult);
             //_memoryCache.Set("iGeoCom", mergeResult, TimeSpan.FromHours(2));
-            return result;
-
+            return mergeResult;
         }
 
         public List<IGeoComGrabModel> CreateIGeoCom(List<AeonModel> enResult, List<AeonModel> zhResult)
@@ -82,12 +81,14 @@ namespace iGeoComAPI.Services
                 }
                 AeonIGeoCom.Class = "CMF";
                 AeonIGeoCom.Type = "SMK";
+                AeonIGeoCom.ShopId = "smk5";
             }
             else
             {
                 AeonIGeoCom.EnglishName = shopEn.Name;
                 AeonIGeoCom.Class = "CMF";
                 AeonIGeoCom.Type = "ROI";
+                AeonIGeoCom.ShopId = "roi1";
             }
             AeonIGeoCom.E_Address = shopEn.Address;
             AeonIGeoCom.GrabId = $"Aeon_{shopEn.Id}";

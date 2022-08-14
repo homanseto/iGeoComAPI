@@ -40,33 +40,31 @@ namespace iGeoComAPI.Controllers
             }
         }
 
+
         [HttpGet("delta/download")]
-        public async Task<IActionResult> GetDelta()
+        public async Task<ActionResult> Testing()
         {
             try
             {
-                string name = this.GetType().Name.Replace("Controller", "").ToLower();
-
-                var previousResult = await _iGeoComRepository.GetShops("");
-                //var newResult = await this.iGeoComGrabRepository.GetShopsByName(name);
-                var newResult = await _iGeoComGrabRepository.GetShopsByShopId("");
-                var result = Comparator.GetComparedResult(newResult, previousResult);
-                return Utilities.File.Download(result, $"{name}_delta");
+                var newResult = await _iGeoComGrabRepository.GetShopsByShopId("smk4");
+                var oldResult = await _iGeoComRepository.GetShops("smk4");
+                string[] ignoreList = new string[] { "GeoNameId", "EnglishName", "ChineseName", "Class", "Type", "Subcat", "Easting","Northing","Source",
+                    "E_floor", "C_floor", "E_sitename","C_sitename","E_area","C_area","C_Region", "E_Region", "C_District","E_District", "Fax_No", "Tel_No","Web_Site",
+                    "E_Address", "C_Address","Latitude", "Longitude","ShopId","Rev_Date","GrabId", "Compare_ChineseName", "Compare_EnglishName"};
+                var resultList = Comparator2.GetComparedResult(newResult, oldResult, ignoreList);
+                return Utilities.File.Download(resultList, $"marketPlace_delta");
             }
             catch (Exception ex)
             {
                 return StatusCode(500, ex.Message);
             }
-
         }
 
         [HttpPost]
         public async Task<IActionResult> Post()
         {
             var GrabbedResult = await _marketPlaceGrabber.GetWebSiteItems();
-            if (GrabbedResult == null)
-                return BadRequest("Cannot insert grabbed data");
-            //_iGeoComGrabRepository.CreateShops(GrabbedResult);
+            _iGeoComGrabRepository.CreateShops(GrabbedResult);
             return Ok(GrabbedResult);
         }
     }

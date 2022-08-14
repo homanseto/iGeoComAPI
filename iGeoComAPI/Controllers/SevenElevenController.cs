@@ -60,27 +60,8 @@ namespace iGeoComAPI.Controllers
 
         }
 
+
         [HttpGet("delta/download")]
-        public async Task<IActionResult> GetDelta()
-        {
-            try
-            {
-                string name = this.GetType().Name.Replace("Controller", "").ToLower();
-
-                var previousResult = await this.iGeoComRepository.GetShops("cvs1");
-                //var newResult = await this.iGeoComGrabRepository.GetShopsByName(name);
-                var newResult = await this.iGeoComGrabRepository.GetShopsByShopId("cvs1");
-                var result = Comparator.GetComparedResult(newResult, previousResult, "tel");
-                return Utilities.File.Download(result, $"{name}_delta");
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-
-        }
-
-        [HttpGet("delta/testing")]
         public async Task<ActionResult> Testing()
         {
             try

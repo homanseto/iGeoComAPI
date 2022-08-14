@@ -55,7 +55,7 @@ namespace iGeoComAPI.Models
         {
             get
             {
-                return this.C_Address.ToLower().Replace(" ", "").Replace(",", "").Replace(".", "").Replace("/", "").Replace("(", "").Replace(")", "").Replace("，","").Replace("<br/>", "").Replace("<br />", "").Replace("\t", "").Replace("\\", "").Replace("。", "").Trim();
+                return this.C_Address.ToLower().Replace(" ", "").Replace(",", "").Replace(".", "").Replace("/", "").Replace("(", "").Replace(")", "").Replace("，","").Replace("<br/>", "").Replace("<br />", "").Replace("\t", "").Replace("\\", "").Replace("。", "").Replace(" ","").Trim();
             }
         }
         [JsonIgnore]
@@ -63,7 +63,7 @@ namespace iGeoComAPI.Models
         {
             get
             {
-                return this.ChineseName.ToLower().Replace(" ", "").Replace(",", "").Replace("(", "").Replace(")", "").Replace("<br/>", "").Replace("\t", "").Replace("\\", "").Replace("。", "").Trim();
+                return this.ChineseName.ToLower().Replace(" ", "").Replace(",", "").Replace("(", "").Replace(")", "").Replace("<br/>", "").Replace("\t", "").Replace("\\", "").Replace("。", "").Replace(" ", "").Trim();
             }
         }
         [JsonIgnore]
@@ -71,7 +71,7 @@ namespace iGeoComAPI.Models
         {
             get
             {
-                return this.EnglishName.ToLower().Replace(" ", "").Replace(",", "").Replace("(", "").Replace(")", "").Replace("<br/>", "").Replace("\t", "").Replace("\\", "").Replace("。", "").Trim();
+                return this.EnglishName.ToLower().Replace(" ", "").Replace(",", "").Replace("(", "").Replace(")", "").Replace("<br/>", "").Replace("\t", "").Replace("\\", "").Replace("。", "").Replace(" ", "").Trim();
             }
         }
         [JsonIgnore]
@@ -79,7 +79,7 @@ namespace iGeoComAPI.Models
         {
             get
             {
-                return this.Tel_No.Replace(" ", "").Replace("-", "").Replace("\t", "").Replace("+", "").Replace("(", "").Replace("<br/>", "").Replace(")", "").Replace("\\", "").Replace("。", "").Trim();
+                return !String.IsNullOrEmpty(this.Tel_No)? this.Tel_No.Replace(" ", "").Replace("-", "").Replace("\t", "").Replace("+", "").Replace("(", "").Replace("<br/>", "").Replace(")", "").Replace("\\", "").Replace("。", "").Trim(): "";
             }
         }
     }

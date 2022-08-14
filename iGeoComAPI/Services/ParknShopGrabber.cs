@@ -1,90 +1,119 @@
 ﻿using iGeoComAPI.Models;
-using iGeoComAPI.Options;
 using iGeoComAPI.Utilities;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
+using iGeoComAPI.Options;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace iGeoComAPI.Services
 {
     public class ParknShopGrabber : AbstractGrabber
     {
-        private PuppeteerConnection _puppeteerConnection;
+        private ConnectClient _httpClient;
+        private JsonFunction _json;
         private IOptions<ParknShopOptions> _options;
         private IMemoryCache _memoryCache;
         private ILogger<ParknShopGrabber> _logger;
         private readonly IDataAccess dataAccess;
 
-        private string infoCode = @"() =>{
-                                 const selectors = Array.from(document.querySelectorAll('.result-list > .shop-list > .iscroll-object > .scroll > .location-info'));
-                                 return selectors.map(v => {return {BrandName: v.getAttribute('data-brandname').trim(), Region: v.getAttribute('data-region').trim(),
-                                 District: v.getAttribute('data-district').trim(), Latitude: v.getAttribute('data-latitude').trim(), Longitude: v.getAttribute('data-longitude').trim(),
-                                 Phone: v.querySelector('.detail > .info > .phone').textContent.trim(), Address: v.querySelector('.detail > .info > .address').textContent.trim(),
-                                 Name: v.querySelector('.detail > .info > .shop-name').textContent.trim()
-                                 }});
-                                 }";
-        private string waitSelector = ".result-list";
-
-        public ParknShopGrabber(PuppeteerConnection puppeteerConnection, IOptions<ParknShopOptions> options, IMemoryCache memoryCache, ILogger<ParknShopGrabber> logger,
-            IOptions<NorthEastOptions> absOptions, ConnectClient httpClient, JsonFunction json, IDataAccess dataAccess) : base(httpClient, absOptions, json, dataAccess)
+        public ParknShopGrabber(ConnectClient httpClient, JsonFunction json, IOptions<ParknShopOptions> options, IMemoryCache memoryCache, ILogger<ParknShopGrabber> logger, IOptions<NorthEastOptions> absOptions, IDataAccess dataAccess) : base(httpClient, absOptions, json, dataAccess)
         {
-            _puppeteerConnection = puppeteerConnection;
+            _httpClient = httpClient;
+            _json = json;
             _options = options;
             _memoryCache = memoryCache;
             _logger = logger;
         }
-
+        StringComparison comp = StringComparison.OrdinalIgnoreCase;
         public override async Task<List<IGeoComGrabModel>?> GetWebSiteItems()
         {
-            var enResult = await _puppeteerConnection.PuppeteerGrabber<ParknShopModel[]>(_options.Value.EnUrl, infoCode, waitSelector);
-            var zhResult = await _puppeteerConnection.PuppeteerGrabber<ParknShopModel[]>(_options.Value.ZhUrl, infoCode, waitSelector);
-            var enResultList = enResult.ToList();
-            var zhResultList = zhResult.ToList();
-            var mergeResult = MergeEnAndZh(enResultList, zhResultList);
-            var result = await this.GetShopInfo(mergeResult);
-            //_memoryCache.Set("iGeoCom", mergeResult, TimeSpan.FromHours(2));
-            return result;
+            _logger.LogInformation("start grabbing ParknShop rowdata");
+            string num = "0";
+            int totalPage = 0;
+            var totalConnectHttp = await _httpClient.GetAsync(String.Format(_options.Value.EnUrl, num));
+            var totalSerializedResult = _json.Dserialize<ParknShopModel>(totalConnectHttp);
+            if (totalSerializedResult != null)
+            {
+                totalPage = totalSerializedResult.pagination.totalPages;
+            }
+            var enResult = await Parsing(_options.Value.EnUrl, totalPage);
+            var zhResult = await Parsing(_options.Value.ZhUrl, totalPage);
+            var mergeResult = MergeEnAndZh(enResult, zhResult);
+            // _memoryCache.Set("iGeoCom", mergeResult, TimeSpan.FromHours(2));
+            return mergeResult;
         }
 
-        public List<IGeoComGrabModel> MergeEnAndZh(List<ParknShopModel> enResult, List<ParknShopModel> zhResult)
+        public async Task<List<IGeoComGrabModel>> Parsing(string url, int totalPage)
         {
             try
             {
-                _logger.LogInformation("Merge ParknShop En and Zh");
-                List<IGeoComGrabModel> ParknShopIGeoComList = new List<IGeoComGrabModel>();
-                foreach (var item in enResult.Select((value, i) => new { i, value }))
+                List<IGeoComGrabModel> parknshopIGeoComList = new List<IGeoComGrabModel>();
+                for (int i = 0; i < totalPage; i++)
                 {
-                    var shopEn = item.value;
-                    var index = item.i;
-                    IGeoComGrabModel ParknShopIGeoCom = new IGeoComGrabModel();
-                    ParknShopIGeoCom.E_Address = shopEn.Address;
-                    ParknShopIGeoCom.EnglishName = $"{shopEn.BrandName}-{shopEn.Name}";
-                    ParknShopIGeoCom.E_District = shopEn.District;
-                    ParknShopIGeoCom.Latitude = Convert.ToDouble(shopEn.Latitude);
-                    ParknShopIGeoCom.Longitude = Convert.ToDouble(shopEn.Longitude);
-                    ParknShopIGeoCom.Tel_No = shopEn.Phone;
-                    ParknShopIGeoCom.Type = "SMK";
-                    ParknShopIGeoCom.Class = "CMF";
-                    ParknShopIGeoCom.Web_Site = _options.Value.BaseUrl;
-                    ParknShopIGeoCom.GrabId = $"parknshop{shopEn.BrandName}{index}";
-                    foreach (var shopZh in zhResult)
+                    var connectHttp = await _httpClient.GetAsync(String.Format(url, i));
+                    var serializedResult = _json.Dserialize<ParknShopModel>(connectHttp);
+                    if (serializedResult != null)
                     {
-                        if (shopEn.Latitude == shopZh.Latitude && shopEn.Longitude == shopZh.Longitude && shopEn.Phone == shopZh.Phone && shopEn.BrandName == shopZh.BrandName)
+                        var stores = serializedResult.stores;
+                        foreach (var store in stores)
                         {
-                            ParknShopIGeoCom.ChineseName = $"{shopZh.BrandName}-{shopZh.Name}";
-                            ParknShopIGeoCom.C_Address = shopZh.Address.Replace(" ", "");
+                            if (store != null)
+                            {
+                                if (store.address.country.isocode == "MO")
+                                {
+                                    continue;
+                                }
+                                else
+                                {
+                                    var ParknShopIGeoCom = new IGeoComGrabModel();
+                                    if (url.Contains("lang=en_HK", comp))
+                                    {
+                                        ParknShopIGeoCom.E_Address = store.address.displayAddress1;
+                                        ParknShopIGeoCom.EnglishName = $"{store.storeContent} {store.displayName}";
+                                    }
+                                    else
+                                    {
+                                        ParknShopIGeoCom.C_Address = store.address.displayAddress1;
+                                        ParknShopIGeoCom.ChineseName = $"{store.storeContent} {store.displayName}";
+                                    }
+                                    ParknShopIGeoCom.ShopId = "smk1";
+                                    ParknShopIGeoCom.GrabId = $"parknshop_{store.elabStoreNumber}";
+                                    ParknShopIGeoCom.Latitude = store.geoPoint.latitude;
+                                    ParknShopIGeoCom.Longitude = store.geoPoint.longitude;
+                                    ParknShopIGeoCom.Tel_No = store.address.phone;
+
+                                    parknshopIGeoComList.Add(ParknShopIGeoCom);
+                                }
+                            }
+                        }
+                    }
+                }
+                return parknshopIGeoComList;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw;
+            }
+        }
+        public List<IGeoComGrabModel> MergeEnAndZh(List<IGeoComGrabModel> enResult, List<IGeoComGrabModel> zhResult)
+        {
+            var mergedList = enResult;
+            if (enResult != null && zhResult != null)
+            {
+                foreach (IGeoComGrabModel en in mergedList)
+                {
+                    foreach (IGeoComGrabModel zh in zhResult)
+                    {
+                        if (en.GrabId == zh.GrabId)
+                        {
+                            en.ChineseName = zh.ChineseName;
+                            en.C_Address = zh.C_Address;
                             break;
                         }
                     }
-                    ParknShopIGeoComList.Add(ParknShopIGeoCom);
                 }
-                List<IGeoComGrabModel> ReplacedDuplicated = ParknShopIGeoComList.GroupBy(x => x.E_Address).Select(x => x.First()).GroupBy(x => x.C_Address).Select(x => x.First()).ToList();
-                return ReplacedDuplicated.Where(shop => shop.E_District.ToLower() != "macau").ToList();
-            }catch (Exception ex)
-            {
-                _logger.LogError(ex.Message, "fail to merge ParknShop En and Zh");
-                throw;
             }
-            
+            return mergedList;
         }
     }
 }

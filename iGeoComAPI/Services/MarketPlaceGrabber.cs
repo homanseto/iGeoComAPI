@@ -35,9 +35,9 @@ namespace iGeoComAPI.Services
             var enResult = await _puppeteerConnection.PuppeteerGrabber<List<MarketPlaceModel>>(_options.Value.EnUrl, infoCode, waitSelector);
             var zhResult = await _puppeteerConnection.PuppeteerGrabber<List<MarketPlaceModel>>(_options.Value.ZhUrl, infoCode, waitSelector);
             var mergeResult = MergeEnAndZh(enResult, zhResult);
-            var result = await this.GetShopInfo(mergeResult);
+            //var result = await this.GetShopInfo(mergeResult);
             //_memoryCache.Set("iGeoCom", mergeResult, TimeSpan.FromHours(2));
-            return result;
+            return mergeResult;
         }
 
         public List<IGeoComGrabModel> MergeEnAndZh(List<MarketPlaceModel> enResult, List<MarketPlaceModel> zhResult)
@@ -58,6 +58,7 @@ namespace iGeoComAPI.Services
                     MarketPlaceIGeoCom.Tel_No = shopEn.tel_no;
                     MarketPlaceIGeoCom.Type = "SMK";
                     MarketPlaceIGeoCom.Class = "CMF";
+                    MarketPlaceIGeoCom.ShopId = "smk4";
                     MarketPlaceIGeoCom.Latitude = shopEn.latitude;
                     MarketPlaceIGeoCom.Longitude = shopEn.longitude;
                     foreach (var shopZh in zhResult)
